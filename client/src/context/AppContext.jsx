@@ -7,7 +7,9 @@ import { useLocation } from "react-router-dom";
 export const AppContext = createContext();
 
 export const AppContextProvider = ({ children }) => {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL
+const rawBackendUrl = import.meta.env.VITE_BACKEND_URL;
+const backendUrl = rawBackendUrl.replace(/\/+$/, ''); // strip trailing slash
+
   const location = useLocation();
 
 

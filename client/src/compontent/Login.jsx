@@ -36,7 +36,10 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const { data } = await axios.post(`${backendUrl}/api/auth/login`, { email, password }, { withCredentials: true });
+     const { data } = await axios.post(`${backendUrl}/api/auth/login`, { email, password });
+if (data.success && data.token) {
+  localStorage.setItem("token", data.token); // ✅ Save the token
+  setIsLoggedin(true);
 
       if (data.success) {
         setIsLoggedin(true);

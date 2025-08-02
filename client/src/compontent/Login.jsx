@@ -63,7 +63,13 @@ const Login = () => {
 
 
   useEffect(() => {
-    axios.get(`${backendUrl}/api/auth/is-auth`, { withCredentials: true })
+   axios.get(`${backendUrl}/api/auth/is-auth`, {
+  withCredentials: true,
+  headers: {
+    Authorization: `Bearer ${localStorage.getItem('token')}`, // optional if using cookies
+  }
+})
+
       .then(res => {
         if (res.data.success) {
           setUserData(res.data.user); 

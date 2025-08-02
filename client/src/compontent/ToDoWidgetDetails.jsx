@@ -1,0 +1,650 @@
+import React, { useState, useContext, useEffect } from 'react';
+import axios from 'axios';
+import {
+  Grid,
+  Paper,
+  Typography,
+  Checkbox,
+  FormControlLabel,
+  List,
+  ListItem,
+  Divider,
+  Box,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Alert,
+  InputLabel,
+  CircularProgress,
+  IconButton,
+  Menu,
+  MenuItem
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { AppContext } from '../context/AppContext';
+import { toast } from 'react-toastify';
+
+const DashboardWidget = ({ title, children, sx }) => (
+<Paper
+  sx={{
+    p: 2,
+    borderRadius: 4,
+    height: '350px', 
+    overflowY: 'auto', 
+    ...sx,
+  }}
+>
+
+    <Typography fontWeight="bold" mb={1} color="#74512D">
+      {title}
+    </Typography>
+    {children}
+  </Paper>
+);
+
+const TodoWidget = () => {
+  const { backendUrl } = useContext(AppContext);
+  const [todos, setTodos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showDialog, setShowDialog] = useState(false);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [form, setForm] = useState({ title: '', subtitle: '', date: '', time: '', image: null });
+  const [editForm, setEditForm] = useState({ title: '', subtitle: '', date: '', time: '', image: null });
+  const [selectedTodo, setSelectedTodo] = useState(null);
+  const [editingTodo, setEditingTodo] = useState(null);
+  const [error, setError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedTodoForMenu, setSelectedTodoForMenu] = useState(null);
+
+  useEffect(() => {
+    const fetchTodos = async () => {
+      try {
+        const res = await axios.get(`${backendUrl}/api/todo/user`, { withCredentials: true });
+        setTodos(res.data.data || []);
+      } catch (err) {
+        console.error('Error fetching todos:', err);
+        setError('Failed to load todos');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTodos();
+  }, [backendUrl]);
+
+  const toggleDone = async (id) => {
+    try {
+      const todoToUpdate = todos.find(t => t._id === id);
+      const updated = todos.map((todo) =>
+        todo._id === id ? { ...todo, done: !todo.done } : todo
+      );
+      setTodos(updated);
+      
+      await axios.put(`${backendUrl}/api/todo/update/${id}`, 
+        { done: !todoToUpdate.done }, 
+        { withCredentials: true }
+      );
+    } catch (err) {
+      console.error('Error updating todo status:', err);
+      toast.error('Failed to update todo status');
+     
+      const originalTodos = todos.map((todo) =>
+        todo._id === id ? { ...todo, done: !todo.done } : todo
+      );
+      setTodos(originalTodos);
+    }
+  };
+
+  const handleAdd = async () => {
+
+    if (!form.title.trim()) {
+      toast.error('Please enter a title for your todo');
+      return;
+    }
+
+    setSubmitting(true);
+    setError(null);
+    
+    try {
+      const formData = new FormData();
+      formData.append('title', form.title.trim());
+      formData.append('subtitle', form.subtitle.trim());
+      formData.append('date', form.date);
+      formData.append('time', form.time);
+      if (form.image) {
+        formData.append('image', form.image);
+      }
+
+      const res = await axios.post(`${backendUrl}/api/todo/create`, formData, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      if (res.data.success) {
+        setTodos([res.data.data, ...todos]);
+        setForm({ title: '', subtitle: '', date: '', time: '', image: null });
+        setShowDialog(false);
+        toast.success('Todo added successfully!');
+      } else {
+        throw new Error(res.data.message || 'Failed to add todo');
+      }
+    } catch (err) {
+      console.error('Failed to add todo:', err);
+      const errorMessage = err.response?.data?.message || err.message || 'Failed to add todo';
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleEdit = async () => {
+    if (!editForm.title.trim()) {
+      toast.error('Please enter a title for your todo');
+      return;
+    }
+
+    setSubmitting(true);
+    setError(null);
+    
+    try {
+      const formData = new FormData();
+      formData.append('title', editForm.title.trim());
+      formData.append('subtitle', editForm.subtitle.trim());
+      formData.append('date', editForm.date);
+      formData.append('time', editForm.time);
+      if (editForm.image) {
+        formData.append('image', editForm.image);
+      }
+
+      const res = await axios.put(`${backendUrl}/api/todo/edit/${editingTodo._id}`, formData, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      if (res.data.success) {
+        setTodos(todos.map(todo => 
+          todo._id === editingTodo._id ? res.data.data : todo
+        ));
+        setEditForm({ title: '', subtitle: '', date: '', time: '', image: null });
+        setEditingTodo(null);
+        setShowEditDialog(false);
+        toast.success('Todo updated successfully!');
+      } else {
+        throw new Error(res.data.message || 'Failed to update todo');
+      }
+    } catch (err) {
+      console.error('Failed to update todo:', err);
+      const errorMessage = err.response?.data?.message || err.message || 'Failed to update todo';
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (todo) => {
+    if (!window.confirm(`Are you sure you want to delete "${todo.title}"?`)) {
+      return;
+    }
+
+    try {
+      const res = await axios.delete(`${backendUrl}/api/todo/delete/${todo._id}`, {
+        withCredentials: true
+      });
+
+      if (res.data.success) {
+        setTodos(todos.filter(t => t._id !== todo._id));
+        toast.success('Todo deleted successfully!');
+      } else {
+        throw new Error(res.data.message || 'Failed to delete todo');
+      }
+    } catch (err) {
+      console.error('Failed to delete todo:', err);
+      const errorMessage = err.response?.data?.message || err.message || 'Failed to delete todo';
+      toast.error(errorMessage);
+    }
+  };
+
+  const openEditDialog = (todo) => {
+    setEditingTodo(todo);
+    setEditForm({
+      title: todo.title,
+      subtitle: todo.subtitle || '',
+      date: todo.date || '',
+      time: todo.time || '',
+      image: null
+    });
+    setShowEditDialog(true);
+    setAnchorEl(null);
+  };
+
+  const handleCloseDialog = () => {
+    setShowDialog(false);
+    setForm({ title: '', subtitle: '', date: '', time: '', image: null });
+    setError(null);
+  };
+
+  const handleCloseEditDialog = () => {
+    setShowEditDialog(false);
+    setEditForm({ title: '', subtitle: '', date: '', time: '', image: null });
+    setEditingTodo(null);
+    setError(null);
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('Image size should be less than 5MB');
+        return;
+      }
+   
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please select a valid image file');
+        return;
+      }
+      setForm({ ...form, image: file });
+    }
+  };
+
+  const handleEditImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+    
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('Image size should be less than 5MB');
+        return;
+      }
+     
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please select a valid image file');
+        return;
+      }
+      setEditForm({ ...editForm, image: file });
+    }
+  };
+
+  const handleMenuOpen = (event, todo) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedTodoForMenu(todo);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setSelectedTodoForMenu(null);
+  };
+
+  const formatDateTime = (date, time) => {
+    if (!date && !time) return null;
+    
+    let displayText = '';
+    if (date) {
+      const dateObj = new Date(date);
+      displayText += dateObj.toLocaleDateString();
+    }
+    if (time) {
+      if (displayText) displayText += ' at ';
+      displayText += time;
+    }
+    return displayText;
+  };
+
+  return (
+    <Grid item xs={12} md={4} sx={{height: '350px'}}>
+      <DashboardWidget title="My To-Do List" sx={{width: {xs: 400, md: 320}}}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
+        <Button
+          variant="contained"
+          onClick={() => setShowDialog(true)}
+          sx={{
+            borderRadius: '50%',
+            minWidth: '40px',
+            width: '40px',
+            height: '40px',
+            backgroundColor: '#8d1f58',
+            color: '#fff',
+            p: 0
+          }}
+        >
+          <AddIcon />
+        </Button>
+        <Button
+    variant="text"
+    size="small"
+    sx={{
+      textTransform: 'none',
+      color: '#8d1f58',
+      fontWeight: 'bold'
+    }}
+    onClick={() => window.location.href = '/all-tasks'}
+  >
+    Show More
+  </Button>
+        </Box>
+
+        {loading ? (
+  <Box display="flex" justifyContent="center" p={2}>
+    <CircularProgress size={24} />
+  </Box>
+) : error ? (
+  <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>
+) : (
+  <List>
+    {todos.length === 0 ? (
+      <Typography variant="body2" color="textSecondary" sx={{ textAlign: 'center', py: 2 }}>
+        No todos yet. Click the + button to add one!
+      </Typography>
+    ) : (
+      todos.slice(0, 3).map((todo, index) => (
+        <React.Fragment key={todo._id}>
+          <ListItem 
+            disableGutters 
+            sx={{ 
+              display: 'flex', 
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              pr: 1
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={todo.done}
+                    onChange={() => toggleDone(todo._id)}
+                    color="success"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                }
+                label={
+                  <Box onClick={() => setSelectedTodo(todo)} sx={{ cursor: 'pointer' }}>
+                    <Typography
+                      variant="subtitle1"
+                      style={{
+                        textDecoration: todo.done ? 'line-through' : 'none',
+                        color: todo.done ? 'gray' : '#6c0e0eff'
+                      }}
+                    >
+                      {todo.title}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      {todo.subtitle}
+                    </Typography>
+                    {formatDateTime(todo.date, todo.time) && (
+                      <Typography variant="caption" color="textSecondary" sx={{ display: 'block', mt: 0.5 }}>
+                        📅 {formatDateTime(todo.date, todo.time)}
+                      </Typography>
+                    )}
+                  </Box>
+                }
+              />
+            </Box>
+            <IconButton
+              size="small"
+              onClick={(e) => handleMenuOpen(e, todo)}
+              sx={{ ml: 1 }}
+            >
+              <MoreVertIcon />
+            </IconButton>
+          </ListItem>
+          {index < todos.slice(0, 3).length - 1 && <Divider />}
+        </React.Fragment>
+      ))
+    )}
+  </List>
+)}
+
+       
+        <Dialog open={showDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+          <DialogTitle>Add To-Do Item</DialogTitle>
+          <DialogContent>
+            {error && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {error}
+              </Alert>
+            )}
+            
+            <TextField
+              label="Title *"
+              fullWidth
+              margin="dense"
+              value={form.title}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
+              disabled={submitting}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter' && !submitting && form.title.trim()) {
+                  handleAdd();
+                }
+              }}
+            />
+            <TextField
+              label="Subtitle (optional)"
+              fullWidth
+              margin="dense"
+              value={form.subtitle}
+              onChange={(e) => setForm({ ...form, subtitle: e.target.value })}
+              disabled={submitting}
+            />
+            <Grid container spacing={2} sx={{ mt: 0 }}>
+              <Grid item xs={6}>
+                <TextField
+                  label="Date (optional)"
+                  type="date"
+                  fullWidth
+                  margin="dense"
+                  InputLabelProps={{ shrink: true }}
+                  value={form.date}
+                  onChange={(e) => setForm({ ...form, date: e.target.value })}
+                  disabled={submitting}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  label="Time (optional)"
+                  type="time"
+                  fullWidth
+                  margin="dense"
+                  InputLabelProps={{ shrink: true }}
+                  value={form.time}
+                  onChange={(e) => setForm({ ...form, time: e.target.value })}
+                  disabled={submitting}
+                />
+              </Grid>
+            </Grid>
+            <InputLabel sx={{ mt: 2, mb: 1 }}>Upload Image (optional)</InputLabel>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              disabled={submitting}
+              style={{ marginBottom: '16px' }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseDialog} disabled={submitting}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleAdd} 
+              variant="contained" 
+              disabled={submitting || !form.title.trim()}
+              sx={{ backgroundColor: '#8d1f58', color: 'white' }}
+            >
+              {submitting ? (
+                <>
+                  <CircularProgress size={16} sx={{ mr: 1, color: 'white' }} />
+                  Adding...
+                </>
+              ) : (
+                'Add Todo'
+              )}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+       
+        <Dialog open={showEditDialog} onClose={handleCloseEditDialog} maxWidth="sm" fullWidth>
+          <DialogTitle>Edit To-Do Item</DialogTitle>
+          <DialogContent>
+            {error && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {error}
+              </Alert>
+            )}
+            
+            <TextField
+              label="Title *"
+              fullWidth
+              margin="dense"
+              value={editForm.title}
+              onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+              disabled={submitting}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter' && !submitting && editForm.title.trim()) {
+                  handleEdit();
+                }
+              }}
+            />
+            <TextField
+              label="Subtitle (optional)"
+              fullWidth
+              margin="dense"
+              value={editForm.subtitle}
+              onChange={(e) => setEditForm({ ...editForm, subtitle: e.target.value })}
+              disabled={submitting}
+            />
+            <Grid container spacing={2} sx={{ mt: 0 }}>
+              <Grid item xs={6}>
+                <TextField
+                  label="Date (optional)"
+                  type="date"
+                  fullWidth
+                  margin="dense"
+                  InputLabelProps={{ shrink: true }}
+                  value={editForm.date}
+                  onChange={(e) => setEditForm({ ...editForm, date: e.target.value })}
+                  disabled={submitting}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  label="Time (optional)"
+                  type="time"
+                  fullWidth
+                  margin="dense"
+                  InputLabelProps={{ shrink: true }}
+                  value={editForm.time}
+                  onChange={(e) => setEditForm({ ...editForm, time: e.target.value })}
+                  disabled={submitting}
+                />
+              </Grid>
+            </Grid>
+            <InputLabel sx={{ mt: 2, mb: 1 }}>Upload New Image (optional)</InputLabel>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleEditImageChange}
+              disabled={submitting}
+              style={{ marginBottom: '16px' }}
+            />
+            {editingTodo?.image && (
+              <Box mt={2}>
+                <Typography variant="body2" color="textSecondary" gutterBottom>
+                  Current Image:
+                </Typography>
+                <img 
+                  src={`${backendUrl}${editingTodo.image}`} 
+                  alt="current" 
+                  width="100px" 
+                  style={{ borderRadius: '8px' }} 
+                />
+              </Box>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseEditDialog} disabled={submitting}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleEdit} 
+              variant="contained" 
+              disabled={submitting || !editForm.title.trim()}
+              sx={{ backgroundColor: '#8d1f58', color: 'white' }}
+            >
+              {submitting ? (
+                <>
+                  <CircularProgress size={16} sx={{ mr: 1, color: 'white' }} />
+                  Updating...
+                </>
+              ) : (
+                'Update Todo'
+              )}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+      
+        <Dialog open={!!selectedTodo} onClose={() => setSelectedTodo(null)}>
+          <DialogTitle>{selectedTodo?.title}</DialogTitle>
+          <DialogContent>
+            <Typography variant="subtitle1">{selectedTodo?.subtitle}</Typography>
+            {formatDateTime(selectedTodo?.date, selectedTodo?.time) && (
+              <Typography variant="body2" sx={{ mt: 1 }}>
+                📅 {formatDateTime(selectedTodo.date, selectedTodo.time)}
+              </Typography>
+            )}
+            {selectedTodo?.image && (
+              <Box mt={2}>
+                <img 
+                  src={`${backendUrl}${selectedTodo.image}`} 
+                  alt="task" 
+                  width="100%" 
+                  style={{ borderRadius: '10px' }} 
+                />
+              </Box>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setSelectedTodo(null)}>Close</Button>
+          </DialogActions>
+        </Dialog>
+
+     
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleMenuClose}
+        >
+          <MenuItem onClick={() => openEditDialog(selectedTodoForMenu)}>
+            <EditIcon sx={{ mr: 1, fontSize: 20 }} />
+            Edit
+          </MenuItem>
+          <MenuItem 
+            onClick={() => {
+              handleDelete(selectedTodoForMenu);
+              handleMenuClose();
+            }}
+            sx={{ color: 'error.main' }}
+          >
+            <DeleteIcon sx={{ mr: 1, fontSize: 20 }} />
+            Delete
+          </MenuItem>
+        </Menu>
+      </DashboardWidget>
+    </Grid>
+  );
+};
+
+export default TodoWidget;

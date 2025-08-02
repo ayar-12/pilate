@@ -1,0 +1,433 @@
+import React, { useState, useEffect, useContext } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { ChevronRight } from "lucide-react";
+import { Link } from 'react-router-dom';
+import Snackbar from '@mui/material/Snackbar';
+import { useInView } from 'react-intersection-observer';
+import MuiAlert from '@mui/material/Alert';
+import axios from 'axios';
+import {
+  Box,
+  Typography,
+  Button,
+  CircularProgress,
+  Alert,
+  List,
+  ListItem,
+  ListItemText,
+  Grid,
+  Container,
+  Chip,
+  Divider,
+  Card,
+  CardMedia,
+  CardContent
+} from '@mui/material';
+import { AppContext } from '../context/AppContext';
+import { motion } from 'framer-motion';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+
+const BookingDetails = () => {
+  const { courseId } = useParams();
+  const navigate = useNavigate();
+  const { backendUrl, courses } = useContext(AppContext);
+  const [course, setCourse] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [videoPreview, setVideoPreview] = useState(null);
+  const [openAlert, setOpenAlert] = useState(false);
+  const { ref: videoRef, inView: videoInView } = useInView({ triggerOnce: true });
+const { isLoggedin } = useContext(AppContext); // assuming you store login state
+
+const handleBookNow = () => {
+  if (!isLoggedin) {
+    setOpenAlert(true);
+    return;
+  }
+  if (course) navigate(`/booking/${courseId}`);
+};
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  const getImageUrl = (path) => {
+    if (!path) return "/placeholder-image.png";
+    if (path.startsWith("http")) return path;
+    return `${backendUrl}/${path.replace(/^\/+/g, "")}`;
+  };
+
+  const normalizePath = (path) => path?.replace(/^\/+/g, '').replace(/^uploads\//, 'uploads/');
+
+ useEffect(() => {
+  const controller = new AbortController(); // in case of quick unmount
+
+  const fetchCourseDetails = async () => {
+    try {
+      const res = await axios.get(`${backendUrl}/api/course/courses/${courseId}`, {
+        signal: controller.signal
+      });
+      if (res.data.success) {
+        const data = res.data.data;
+        setCourse(data);
+        if (data.video) {
+          setVideoPreview(data.video.startsWith("http") ? data.video : `${backendUrl}/${normalizePath(data.video)}`);
+        }
+      }
+    } catch (err) {
+      if (err.name !== 'CanceledError') setError('Failed to load course');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchCourseDetails();
+  return () => controller.abort();
+}, [courseId, backendUrl]);
+
+
+  if (loading)
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+        <CircularProgress />
+      </Box>
+    );
+
+  if (error)
+    return (
+      <Container>
+        <Alert severity="error">{error}</Alert>
+      </Container>
+    );
+
+
+  return (
+          <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true, amount: 0.4 }}
+      >
+<Box sx={{ minHeight: "100vh", py:6, padding: { xs: 1, sm: 1, md: 1 },}}>
+
+ 
+   
+
+<Box
+  sx={{
+    display: 'flex',
+    flexDirection: { xs: 'column', md: 'row' },
+    gap: 4,
+    mt: 6,
+    width: '100%',
+  }}
+>
+
+  <Box
+    sx={{
+      flex: 1,
+      minWidth: 0,
+      position: 'relative',
+      height: { xs: 300, md: 650 },
+      borderRadius: 4,
+      overflow: 'hidden',
+    }}
+  >
+    <img
+      src={course.image}
+      alt={course.title}
+      style={{
+        width: '100%',
+        height: { xs: 240, sm: 300, md: 460 },
+        objectFit: 'cover',
+        borderRadius: '16px',
+      }}
+    />
+
+
+    <Box
+      sx={{
+        position: 'absolute',
+        top: 16,
+        left: 16,
+        background: '#fff',
+        px: 2,
+        py: 1,
+        borderRadius: '12px',
+        boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+      }}
+    >
+      <Typography fontWeight="bold" fontSize={14}>
+        Target
+      </Typography>
+      <Typography fontSize={13}>Strength & control</Typography>
+    </Box>
+
+    <Box
+      sx={{
+        position: 'absolute',
+        top: {xs: 500, md:500},
+        left: {xs: 220, md: 450},
+        background: '#fff',
+        px: 2,
+        py: 1,
+        borderRadius: '12px',
+        boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+      }}
+    >
+      <Typography fontWeight="bold" fontSize={14}>
+        Core Focus
+      </Typography>
+      <Typography fontSize={13}>Strength & control</Typography>
+    </Box>
+  </Box>
+
+  {/* RIGHT - DETAILS */}
+  <Box
+    sx={{
+      flex: 1,
+      minWidth: 0,
+    }}
+  >
+    <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 1 }}>
+      Wellness & Fitness
+    </Typography>
+
+    <Typography
+      variant="h4"
+      sx={{
+        fontFamily: 'Druk Wide Bold',
+        fontWeight: 'bold',
+        color: '#8d1f58',
+        mb: 2,
+      }}
+    >
+      {course.title}
+    </Typography>
+
+    <Typography variant="h6" fontWeight={600} color="#bd84a1" sx={{ mb: 2 }}>
+      OMR {course.price}
+    </Typography>
+
+    <Typography
+      variant="body1"
+      color="text.secondary"
+      sx={{ fontSize: 15, mb: 3 }}
+    >
+      {course.description}
+    </Typography>
+
+    <Box display="flex" gap={1} flexWrap="wrap" mb={2}>
+      <Chip label={`Coach: ${course.couchName}`} />
+      <Chip label="Popular" variant="outlined" />
+    </Box>
+
+    <Divider sx={{ my: 3 }} />
+
+    {course.timing?.length > 0 && (
+      <>
+        <Typography variant="h6" fontWeight={300} fontSize={14}>
+          Available Timings
+        </Typography>
+        <List>
+          {course.timing.map((t, idx) => (
+            <ListItem key={idx} sx={{ px: 0 }}>
+              <ListItemText primary={`📅 ${t.date}`} secondary={`⏰ ${t.time}`} />
+            </ListItem>
+          ))}
+        </List>
+      </>
+    )}
+
+    <Button
+      onClick={handleBookNow}
+      variant="contained"
+      fullWidth
+      sx={{
+        mt: 4,
+        py: 1.5,
+        borderRadius: '999px',
+        backgroundColor: '#8d1f58',
+        '&:hover': { backgroundColor: '#a13b65' },
+      }}
+    >
+      Book Now
+    </Button>
+  </Box>
+</Box>
+
+
+{videoPreview && (
+  <Box ref={videoRef} mt={10}>
+           <Typography
+              variant="h5"
+              fontWeight="bold"
+              color="#8d1f58"
+              textAlign="center"
+              sx={{ fontFamily: 'Druk Wide Bold', mb: 3 }}
+            >
+              Video Triller
+            </Typography>
+    {videoInView && (
+     
+        <video
+  ref={(ref) => (window.courseVideo = ref)} // just for demo
+  onClick={() => {
+    const video = window.courseVideo;
+    if (video.paused) {
+      video.play();
+    } else {
+      video.pause();
+    }
+  }}
+  controls
+  playsInline
+  style={{
+    width: '100%',
+    maxHeight: '600px',
+    borderRadius: 20,
+    objectFit: 'cover',
+    boxShadow: '0 6px 24px rgba(0,0,0,0.1)',
+    cursor: 'pointer',
+  }}
+>
+  <source src={videoPreview} type="video/mp4" />
+  Your browser does not support the video tag.
+</video>
+
+          )}
+  </Box>
+)}
+
+
+
+{courses && courses.length > 0 && (
+  <Box mt={10}>
+    <Typography variant="h6"  color='#670D2F' fontFamily= 'Magical Childhood, cursive' mb={4} textAlign="center">
+      You Might Also Like
+    </Typography>       
+
+    <Grid container spacing={4} justifyContent="center" alignItems="stretch">
+      {courses
+        .filter((c) => c._id !== courseId)
+        .slice(0, 3)
+        .map((course) => (
+          <Grid item xs={12} sm={6} md={4} key={course._id} display="flex" justifyContent="center">
+            <Box sx={{ width: 400 }}>
+              <Card
+                sx={{
+                  position: 'relative',
+                  width: '100%',
+                  height: { xs: 240, sm: 300, md: 360 },
+                  borderRadius: '16px',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <CardMedia
+                  component="img"
+                  image={getImageUrl(course.image)}
+                  alt={course.title}
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    zIndex: 0,
+                  }}
+                  onError={(e) => {
+                    e.target.src = "/placeholder-image.png";
+                  }}
+                />
+
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'linear-gradient(to top, rgba(0,0,0,0.45), rgba(0,0,0,0.15))',
+                    backdropFilter: 'blur(3px)',
+                    zIndex: 1,
+                  }}
+                />
+
+                <CardContent
+                  sx={{
+                    position: 'relative',
+                    zIndex: 2,
+                    p: 3,
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-end',
+                    color: 'white',
+                  }}
+                >
+                  <Typography variant="p"   fontFamily= 'Magical Childhood, cursive'>
+                    {course.title}
+                  </Typography>
+
+                  <Typography sx={{ fontSize: '13px', mt: 1 }}>
+                    {course.description?.slice(0, 80)}...
+                  </Typography>
+
+                  <Typography sx={{ fontSize: '12px', mt: 1, color: '#f5f5f5' }}>
+                    🕒{" "}
+                    {Array.isArray(course.timing)
+                      ? course.timing.map((slot) => `${slot.date} ${slot.time}`).join(" | ")
+                      : "No schedule"}
+                  </Typography>
+
+                  <Button
+                    variant="contained"
+                    size="small"
+                    sx={{
+                      mt: 2,
+                      backgroundColor: "#670D2F",
+                      borderRadius: 999,
+                      fontWeight: "bold",
+                      textTransform: "none",
+                      px: 3,
+                      py: 1,
+                      fontSize: "14px",
+                    }}
+                    endIcon={<ChevronRight size={16} />}
+                    component={Link}
+                    to={`/booking-details/${course._id}`}
+                  >
+                    Book Now
+                  </Button>
+                </CardContent>
+              </Card>
+            </Box>
+          </Grid>
+        ))}
+    </Grid>
+  </Box>
+)}
+
+<Snackbar
+  open={openAlert}
+  autoHideDuration={3000}
+  onClose={() => setOpenAlert(false)}
+  anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+>
+  <MuiAlert severity="warning" onClose={() => setOpenAlert(false)} sx={{ width: '100%' }}>
+    Please login to book this course.
+  </MuiAlert>
+</Snackbar>
+
+
+    
+    </Box>
+    </motion.div>
+  );
+};
+
+export default BookingDetails;

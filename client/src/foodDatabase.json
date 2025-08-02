@@ -1,0 +1,200 @@
+{
+    "protein": {
+      "chicken_breast": {
+        "name": "Chicken Breast",
+        "calories": 165,
+        "protein": 31,
+        "carbs": 0,
+        "fat": 3.6,
+        "fiber": 0,
+        "sugar": 0,
+        "cholesterol": 85,
+        "sodium": 74
+      },
+      "salmon": {
+        "name": "Salmon",
+        "calories": 208,
+        "protein": 25,
+        "carbs": 0,
+        "fat": 12,
+        "fiber": 0,
+        "sugar": 0,
+        "omega3": 2.3,
+        "sodium": 59
+      },
+      "eggs": {
+        "name": "Eggs (2 large)",
+        "calories": 155,
+        "protein": 13,
+        "carbs": 1.1,
+        "fat": 11,
+        "fiber": 0,
+        "sugar": 1.1,
+        "cholesterol": 372,
+        "vitaminD": 1.1
+      },
+      "tofu": {
+        "name": "Firm Tofu",
+        "calories": 144,
+        "protein": 16,
+        "carbs": 3.9,
+        "fat": 8,
+        "fiber": 1.5,
+        "sugar": 0.3,
+        "calcium": 253,
+        "iron": 2.7
+      },
+      "greek_yogurt": {
+        "name": "Greek Yogurt",
+        "calories": 59,
+        "protein": 10,
+        "carbs": 3.6,
+        "fat": 0.4,
+        "fiber": 0,
+        "sugar": 3.2,
+        "calcium": 110,
+        "probiotic": true
+      }
+    },
+    "carbs": {
+      "white_rice": {
+        "name": "White Rice",
+        "calories": 130,
+        "protein": 2.7,
+        "carbs": 28,
+        "fat": 0.3,
+        "fiber": 0.4,
+        "sugar": 0.1,
+        "glycemic_index": 73
+      },
+      "pasta": {
+        "name": "Whole Wheat Pasta",
+        "calories": 174,
+        "protein": 7.5,
+        "carbs": 37,
+        "fat": 0.8,
+        "fiber": 6,
+        "sugar": 1.4,
+        "iron": 1.5
+      },
+      "oats": {
+        "name": "Rolled Oats",
+        "calories": 389,
+        "protein": 17,
+        "carbs": 66,
+        "fat": 7,
+        "fiber": 11,
+        "sugar": 1,
+        "beta_glucan": 4
+      },
+      "sweet_potato": {
+        "name": "Sweet Potato",
+        "calories": 86,
+        "protein": 1.6,
+        "carbs": 20,
+        "fat": 0.1,
+        "fiber": 3,
+        "sugar": 4.2,
+        "vitaminA": 961
+      }
+    },
+    "fat": {
+      "olive_oil": {
+        "name": "Olive Oil",
+        "calories": 884,
+        "protein": 0,
+        "carbs": 0,
+        "fat": 100,
+        "fiber": 0,
+        "sugar": 0,
+        "monounsaturated": 73,
+        "polyunsaturated": 11
+      },
+      "avocado": {
+        "name": "Avocado",
+        "calories": 160,
+        "protein": 2,
+        "carbs": 9,
+        "fat": 15,
+        "fiber": 7,
+        "sugar": 0.7,
+        "potassium": 485,
+        "vitaminK": 21
+      },
+      "almonds": {
+        "name": "Almonds",
+        "calories": 579,
+        "protein": 21,
+        "carbs": 22,
+        "fat": 50,
+        "fiber": 12,
+        "sugar": 4.4,
+        "vitaminE": 25.6
+      },
+      "chia_seeds": {
+        "name": "Chia Seeds",
+        "calories": 486,
+        "protein": 17,
+        "carbs": 42,
+        "fat": 31,
+        "fiber": 34,
+        "sugar": 0,
+        "omega3": 17
+      }
+    },
+    "fiber": {
+      "broccoli": {
+        "name": "Broccoli",
+        "calories": 34,
+        "protein": 2.8,
+        "carbs": 7,
+        "fat": 0.4,
+        "fiber": 2.6,
+        "sugar": 1.5,
+        "vitaminC": 89
+      },
+      "lentils": {
+        "name": "Cooked Lentils",
+        "calories": 116,
+        "protein": 9,
+        "carbs": 20,
+        "fat": 0.4,
+        "fiber": 8,
+        "sugar": 1.8,
+        "iron": 3.3
+      },
+      "apple": {
+        "name": "Apple",
+        "calories": 52,
+        "protein": 0.3,
+        "carbs": 14,
+        "fat": 0.2,
+        "fiber": 2.4,
+        "sugar": 10.4,
+        "vitaminC": 4.6
+      }
+    },
+    "sugar": {
+      "banana": {
+        "name": "Banana",
+        "calories": 89,
+        "protein": 1.1,
+        "carbs": 23,
+        "fat": 0.3,
+        "fiber": 2.6,
+        "sugar": 12.2,
+        "potassium": 358
+      },
+      "honey": {
+        "name": "Honey",
+        "calories": 304,
+        "protein": 0.3,
+        "carbs": 82,
+        "fat": 0,
+        "fiber": 0.2,
+        "sugar": 82,
+        "antioxidants": true
+      }
+    }
+  }
+  

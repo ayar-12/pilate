@@ -147,9 +147,12 @@ const verifyEmail = async (req, res) => {
 
 const isAuthenticated = async (req, res) => {
   try {
-    const token = req.cookies.token;
-    if (!token) return res.json({ success: false, message: 'No token' });
+    const authHeader = req.headers.authorization || "";
 
+    if (!authHeader.startsWith("Bearer "))
+      return res.json({ success: false, message: 'No token' });
+
+    const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await userModel.findById(decoded.id).select('-password');
 

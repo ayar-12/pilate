@@ -217,7 +217,7 @@ function Home() {
         border: 'none',
         borderRadius: '20px',
         overflow: 'hidden',
-        position: 'relative',
+       
         zIndex: 2,
         padding: 0,
         margin: 0,

@@ -66,12 +66,12 @@ if (data.success && data.token) {
 
 
   useEffect(() => {
-   axios.get(`${backendUrl}/api/auth/is-auth`, {
-  withCredentials: true,
+axios.get(`${backendUrl}/api/auth/is-auth`, {
   headers: {
-    Authorization: `Bearer ${localStorage.getItem('token')}`, // optional if using cookies
+    Authorization: `Bearer ${localStorage.getItem('token')}`,
   }
 })
+
 
       .then(res => {
         if (res.data.success) {

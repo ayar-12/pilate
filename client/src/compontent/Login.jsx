@@ -35,34 +35,32 @@ const Login = () => {
 
     setLoading(true);
 
-    try {
-     const { data } = await axios.post(`${backendUrl}/api/auth/login`, { email, password });
-if (data.success && data.token) {
-  localStorage.setItem("token", data.token); // ✅ Save the token
-  setIsLoggedin(true);
+    
+try {
+  const { data } = await axios.post(`${backendUrl}/api/auth/login`, { email, password });
 
-      if (data.success) {
-        setIsLoggedin(true);
-        toast.success("Welcome back!", { position: "top-center", autoClose: 2000 });
-        setTimeout(async () => {
-          try {
-            await getUserData();
-          } catch (err) {
-            console.error("User data fetch error:", err);
-          } finally {
-            navigate("/");
-          }
-        }, 200);
-      } else {
-        setError(data.message || "Login failed");
+  if (data.success && data.token) {
+    localStorage.setItem("token", data.token);
+    setIsLoggedin(true);
+    toast.success("Welcome back!", { position: "top-center", autoClose: 2000 });
+
+    setTimeout(async () => {
+      try {
+        await getUserData();
+      } catch (err) {
+        console.error("User data fetch error:", err);
+      } finally {
+        navigate("/");
       }
-    } catch (err) {
-      console.error("Login error:", err);
-      setError(err.response?.data?.message || "Something went wrong.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    }, 200);
+  } else {
+    setError(data.message || "Login failed");
+  }
+} catch (err) {
+  console.error("Login error:", err);
+  setError(err.response?.data?.message || "Something went wrong.");
+}
+
 
 
   useEffect(() => {

@@ -7,7 +7,7 @@ import { useLocation } from "react-router-dom";
 export const AppContext = createContext();
 
 export const AppContextProvider = ({ children }) => {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || "https://pilate-1.onrender.com";
+  const backendUrl = import.meta.env.VITE_BACKEND_URL
   const location = useLocation();
 
 

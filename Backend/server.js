@@ -33,7 +33,7 @@ connectDB();
 
 // Middleware
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'https://pilate-2.onrender.com/',
+  origin: process.env.CLIENT_URL,
   credentials: true
 }));
 app.use(express.json());
@@ -82,6 +82,11 @@ app.use((err, req, res, next) => {
     error: process.env.NODE_ENV === 'development' ? err.stack : undefined
   });
 });
+
+app.get('/', (req, res) => {
+  res.send('Pilate API is running');
+});
+
 
 // 404 handler
 app.use((req, res) => {

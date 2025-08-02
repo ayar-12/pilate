@@ -82,7 +82,7 @@ const login = async (req, res) => {
     const token = createToken(user._id);
     res.cookie('token', token, cookieOptions);
 
-    return res.json({ success: true });
+    return res.json({ success: true, token });
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }

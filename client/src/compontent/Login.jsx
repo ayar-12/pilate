@@ -1,4 +1,4 @@
-import React, { useState, useContext , useEffect} from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -7,13 +7,13 @@ import {
   Paper,
   CircularProgress,
   Alert,
-  Grid
+  Grid,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AppContext } from "../context/AppContext";
-import { toast } from 'react-toastify';
-import loginImg from '../assets/5.jpeg';
+import { toast } from "react-toastify";
+import loginImg from "../assets/5.jpeg";
 
 const Login = () => {
   const { backendUrl, setIsLoggedin, getUserData, setUserData } = useContext(AppContext);
@@ -35,55 +35,56 @@ const Login = () => {
 
     setLoading(true);
 
-    
-try {
-  const { data } = await axios.post(`${backendUrl}/api/auth/login`, { email, password });
+    try {
+      const { data } = await axios.post(`${backendUrl}/api/auth/login`, {
+        email,
+        password,
+      });
 
-  if (data.success && data.token) {
-    localStorage.setItem("token", data.token);
-    setIsLoggedin(true);
-    toast.success("Welcome back!", { position: "top-center", autoClose: 2000 });
+      if (data.success && data.token) {
+        localStorage.setItem("token", data.token);
+        setIsLoggedin(true);
+        toast.success("Welcome back!", { position: "top-center", autoClose: 2000 });
 
-    setTimeout(async () => {
-      try {
-        await getUserData();
-      } catch (err) {
-        console.error("User data fetch error:", err);
-      } finally {
-        navigate("/");
+        setTimeout(async () => {
+          try {
+            await getUserData();
+          } catch (err) {
+            console.error("User data fetch error:", err);
+          } finally {
+            navigate("/");
+          }
+        }, 200);
+      } else {
+        setError(data.message || "Login failed");
       }
-    }, 200);
-  } else {
-    setError(data.message || "Login failed");
-  }
-} catch (err) {
-  console.error("Login error:", err);
-  setError(err.response?.data?.message || "Something went wrong.");
-}
-
-
+    } catch (err) {
+      console.error("Login error:", err);
+      setError(err.response?.data?.message || "Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-axios.get(`${backendUrl}/api/auth/is-auth`, {
-  headers: {
-    Authorization: `Bearer ${localStorage.getItem('token')}`,
-  }
-})
-
-
-      .then(res => {
+    axios
+      .get(`${backendUrl}/api/auth/is-auth`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+      .then((res) => {
         if (res.data.success) {
-          setUserData(res.data.user); 
-
+          setUserData(res.data.user);
         } else {
           setUserData(null);
         }
       })
-      .catch(err => {
+      .catch(() => {
         setUserData(null);
       });
   }, []);
-  
+
   return (
     <Grid container sx={{ minHeight: "100vh" }}>
       <Grid
@@ -99,13 +100,12 @@ axios.get(`${backendUrl}/api/auth/is-auth`, {
         <Paper
           elevation={0}
           sx={{
-            width: '100%',
-           
+            width: "100%",
             maxWidth: 800,
             p: { xs: 4, sm: 6 },
             borderRadius: 4,
-            background: '#fff7f3a3',
-            backdropFilter: 'blur(10px)',
+            background: "#fff7f3a3",
+            backdropFilter: "blur(10px)",
           }}
         >
           <Typography variant="h5" fontWeight="bold" mb={1} sx={{ color: "#8d1f58" }}>
@@ -144,7 +144,7 @@ axios.get(`${backendUrl}/api/auth/is-auth`, {
                 variant="contained"
                 fullWidth
                 disabled={loading}
-                sx={{ py: 1.5, borderRadius: 8, background: '#8d1f58' }}
+                sx={{ py: 1.5, borderRadius: 8, background: "#8d1f58" }}
               >
                 {loading ? <CircularProgress size={24} color="inherit" /> : "Login"}
               </Button>
@@ -152,7 +152,7 @@ axios.get(`${backendUrl}/api/auth/is-auth`, {
           </form>
 
           <Box textAlign="center" mt={2}>
-            <Link to="/forgot-password" style={{ fontSize: 14, color: '#555' }}>
+            <Link to="/forgot-password" style={{ fontSize: 14, color: "#555" }}>
               Forgot Password?
             </Link>
           </Box>
@@ -160,7 +160,7 @@ axios.get(`${backendUrl}/api/auth/is-auth`, {
           <Box mt={3} textAlign="center">
             <Typography variant="body2">
               Don't have an account?{" "}
-              <Link to="/register" style={{ fontWeight: 'bold', color: '#8d1f58' }}>
+              <Link to="/register" style={{ fontWeight: "bold", color: "#8d1f58" }}>
                 Sign up
               </Link>
             </Typography>
@@ -168,30 +168,26 @@ axios.get(`${backendUrl}/api/auth/is-auth`, {
         </Paper>
       </Grid>
 
-     
       <Grid item xs={12} md={6} sx={{ display: { xs: "none", md: "block" }, p: 0, m: 0 }}>
-  <Box
-    sx={{
-      height: "80vh",
-      width: "850px",
-      backgroundImage: `url(${loginImg})`,
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-      backgroundRepeat: "no-repeat",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "flex-end",
-      color: "white",
-      p: 6,
-      borderBottomLeftRadius: 20,
-      borderTopLeftRadius: '20px',
-      marginLeft: '2px',
-      marginTop: '80px'
-      
-
-    }}
-  >
-
+        <Box
+          sx={{
+            height: "80vh",
+            width: "850px",
+            backgroundImage: `url(${loginImg})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-end",
+            color: "white",
+            p: 6,
+            borderBottomLeftRadius: 20,
+            borderTopLeftRadius: "20px",
+            marginLeft: "2px",
+            marginTop: "80px",
+          }}
+        >
           <Typography variant="h6" fontWeight="bold">
             Transform Your Mind & Body with Yoga and Pilates
           </Typography>
@@ -199,10 +195,10 @@ axios.get(`${backendUrl}/api/auth/is-auth`, {
             Experience holistic workouts that build strength, flexibility, and peace of mind — anywhere, anytime.
           </Typography>
           <Box display="flex" gap={2} mt={3} flexWrap="wrap">
-            <Button variant="outlined" sx={{ color: '#fff', borderColor: '#fff', borderRadius: 8 }}>
+            <Button variant="outlined" sx={{ color: "#fff", borderColor: "#fff", borderRadius: 8 }}>
               100% Healthy life
             </Button>
-            <Button variant="outlined" sx={{ color: '#fff', borderColor: '#fff', borderRadius: 8 }}>
+            <Button variant="outlined" sx={{ color: "#fff", borderColor: "#fff", borderRadius: 8 }}>
               Free trial for the first time
             </Button>
           </Box>
@@ -213,3 +209,4 @@ axios.get(`${backendUrl}/api/auth/is-auth`, {
 };
 
 export default Login;
+

@@ -65,7 +65,6 @@ const register = async (req, res) => {
     return res.json({ success: false, message: error.message });
   }
 };
-
 const login = async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password)
@@ -80,8 +79,8 @@ const login = async (req, res) => {
       return res.json({ success: false, message: 'Please verify your email before logging in' });
 
     const token = createToken(user._id);
-    res.cookie('token', token, cookieOptions);
 
+    // don't use cookie, send token in JSON
     return res.json({ success: true, token });
   } catch (error) {
     return res.json({ success: false, message: error.message });

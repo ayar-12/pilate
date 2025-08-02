@@ -4,7 +4,26 @@ const path = require("path");
 const cloudinary = require("../utils/cloudinary");
 const fs = require('fs');
 const userModel = require("../models/user");
+const cloudinary = require('cloudinary').v2;
 
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+exports.uploadImage = async (req, res) => {
+  try {
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      folder: 'pilates'
+    });
+    // Save result.secure_url in your DB, not a local path
+    res.json({ success: true, url: result.secure_url });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
 
 const createUploadDirs = () => {
   const dirs = ['uploads/images', 'uploads/videos'];

@@ -34,10 +34,22 @@ const port = process.env.PORT || 3000;
 connectDB();
 
 
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://pilates-frontend-7wv9.onrender.com'
+];
+
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'https://pilate.onrender.com',
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));

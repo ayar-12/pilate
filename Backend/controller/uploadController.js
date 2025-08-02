@@ -45,6 +45,30 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 } // 5MB
 });
 
+// Avatar-specific uploader
+const uploadAvatar = multer({
+  storage: multer.diskStorage({
+    destination: function (req, file, cb) {
+      const folder = path.join(__dirname, '..', 'uploads/images');
+      cb(null, folder);
+    },
+    filename: function (req, file, cb) {
+      const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+      const ext = path.extname(file.originalname);
+      cb(null, `avatar-${uniqueSuffix}${ext}`);
+    }
+  }),
+  fileFilter: (req, file, cb) => {
+    const allowed = ["image/png", "image/jpg", "image/jpeg"];
+    if (allowed.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only .png, .jpg, .jpeg formats allowed for avatar!"));
+    }
+  },
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB
+});
+
 // Upload files to Cloudinary after saving locally
 const uploadFiles = async (req, res) => {
   try {
@@ -91,5 +115,6 @@ const uploadFiles = async (req, res) => {
 
 module.exports = {
   upload,
+  uploadAvatar,
   uploadFiles
 };

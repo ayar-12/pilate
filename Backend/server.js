@@ -82,12 +82,6 @@ app.get('*', (req, res, next) => {
 });
 
 
-  if (pathMatch) {
-    res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
-  } else {
-    next();
-  }
-});
 
 
 app.get('/', (req, res) => {

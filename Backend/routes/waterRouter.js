@@ -9,7 +9,8 @@ router.post('/', userAuth, async (req, res) => {
 
   try {
     const log = await WaterLog.findOneAndUpdate(
-      { userId: req.userId, date },
+       { userId: req.user._id, date },
+
       { $inc: { amount }, $setOnInsert: { date } }, // ensure date is set
       { upsert: true, new: true }
     );

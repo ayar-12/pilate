@@ -11,7 +11,7 @@ const {
   deleteBlog,
   searchBlogs,
   favoriteBlog
-} = require('../controller/blogController');
+} = require('../controller/blogControlller');
 
 
 router.get('/blogs', getAllBlogs);

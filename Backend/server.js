@@ -46,9 +46,26 @@ app.use('/api/steps', require('./routes/stepRouter'));
 
 app.use(express.static(path.join(__dirname, 'client', 'build')));
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
+const allowedPaths = [
+  '/', '/class', '/contact', '/login', '/register', '/email-verify',
+  '/user-dashboard', '/admin-dashboard', '/my-booking',
+  '/all-tasks', '/calories-data', '/forgot-password', '/edit-profile',
+  '/blog', /^\/blog-details\/.*/, /^\/booking\/.*/, /^\/booking-details\/.*/,
+  '/book-consultation', '/workout-meals'
+];
+
+app.get('*', (req, res, next) => {
+  const pathMatch = allowedPaths.some(pattern =>
+    typeof pattern === 'string' ? req.path === pattern : pattern.test(req.path)
+  );
+
+  if (pathMatch) {
+    res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
+  } else {
+    next();
+  }
 });
+
 
 app.get('/', (req, res) => {
   res.send('Pilate API is running 🧘‍♀️');

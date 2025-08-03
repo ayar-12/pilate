@@ -7,18 +7,14 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
 
-
 connectDB();
 
-
 app.use(cors({
-  origin: process.env.CLIENT_URL,
+  origin: process.env.CLIENT_URL || 'http://localhost:5173',
   credentials: true
 }));
 app.use(express.json());
-
 app.use(cookieParser());
-
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
   setHeaders: (res) => {
@@ -26,7 +22,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
     res.set('Cache-Control', 'public, max-age=31536000');
   }
 }));
-// 1. Mount API routes FIRST
+
+// Mount API routes
 app.use('/api/auth', require('./routes/authRouter'));
 app.use('/api/user', require('./routes/userRoutes'));
 app.use('/api/course', require('./routes/courseRouter'));
@@ -40,13 +37,12 @@ app.use('/api/todo', require('./routes/todoRouter'));
 app.use('/api/contact', require('./routes/contactRouter'));
 app.use('/api/home', require('./routes/homeRouter'));
 app.use('/api/consultation', require('./routes/consultationRoutes'));
-app.use('/api/class-widget', require('./routes/classWidgetRouter'));
+app.use('/api/class-widget', require('./routes/classWidgetRouter')); // <--- use only this
 app.use('/api/profile', require('./routes/profileRouter'));
 app.use('/api/steps', require('./routes/stepRouter'));
 
 app.use(express.static(path.join(__dirname, 'client', 'build')));
 
-// Remove the unused allowedPaths array and simplify
 const validStaticPaths = [
   '/', '/class', '/contact', '/login', '/register', '/email-verify',
   '/user-dashboard', '/admin-dashboard', '/my-booking',
@@ -62,14 +58,9 @@ const dynamicRegexRoutes = [
 ];
 
 app.get('*', (req, res, next) => {
-  // Skip API routes
-  if (req.path.startsWith('/api/')) {
-    return next();
-  }
-  
+  if (req.path.startsWith('/api/')) return next();
   const matched = validStaticPaths.includes(req.path) || 
                   dynamicRegexRoutes.some(regex => regex.test(req.path));
-  
   if (matched) {
     res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
   } else {
@@ -77,25 +68,9 @@ app.get('*', (req, res, next) => {
   }
 });
 
-
-try {
-  app.use('/api/classwidget', require('./routes/classWidgetRouter'));
-} catch (err) {
-  console.error('❌ Error in classWidgetRouter:', err.message);
-}
-
-try {
-  app.use('/api/course', require('./routes/courseRouter'));
-} catch (err) {
-  console.error('❌ Error in courseRouter:', err.message);
-}
-
-
-
 app.get('/', (req, res) => {
   res.send('Pilate API is running 🧘‍♀️');
 });
-
 
 app.use((req, res) => {
   console.warn('404 Not Found:', req.method, req.url);
@@ -104,7 +79,6 @@ app.use((req, res) => {
     message: `Route not found: ${req.method} ${req.url}`
   });
 });
-
 
 app.use((err, req, res, next) => {
   console.error('💥 Error:', err.stack);
@@ -115,7 +89,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-// ====== Start Server ======
 app.listen(port, () => {
   console.log(`🚀 Server running on port ${port}`);
 });

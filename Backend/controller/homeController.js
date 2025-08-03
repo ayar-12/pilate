@@ -27,9 +27,7 @@ exports.updateHome = async (req, res) => {
   await home.save();
 
   const out = home.toObject();
-  out.video = home.videoHome
-    ? `${BASE_URL}/uploads/videos/${home.videoHome}`
-    : null;
+  out.video = home.videoHome ? `/uploads/videos/${home.videoHome}` : null;
   out.image = home.image
     ? `${BASE_URL}/uploads/images/${home.image}`
     : null;

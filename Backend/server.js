@@ -32,7 +32,7 @@ app.use('/api/user', require('./routes/userRoutes'));
 app.use('/api/course', require('./routes/courseRouter'));
 app.use('/api/booking', require('./routes/bookingRouter'));
 app.use('/api/admin', require('./routes/adminRouter'));
-app.use('/api/blog', require('./routes/blogRouter'));
+app.use('/blog', require('./routes/blogRouter'));
 app.use('/api/water', require('./routes/waterRouter'));
 app.use('/api/food', require('./routes/foodRouter'));
 app.use('/api/newsletter', require('./routes/newsletterRouter'));

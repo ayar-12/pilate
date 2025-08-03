@@ -70,11 +70,11 @@ function Home() {
     return () => clearInterval(interval);
   }, [latestCourses.length]);
 
-  const getImageUrl = (path) => {
-    if (!path) return '';
-    if (path.startsWith('http')) return path;
-    return `${backendUrl}/${path.startsWith('/') ? path.slice(1) : path}`;
-  };
+const getImageUrl = (path) => {
+  if (!path) return '';
+  if (path.startsWith('http')) return path;
+  return `${backendUrl}/${path.startsWith('/') ? path.slice(1) : path}`;
+};
 
   if (latestCourses.length === 0) return null;
 

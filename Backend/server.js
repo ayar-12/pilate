@@ -46,14 +46,7 @@ app.use('/api/steps', require('./routes/stepRouter'));
 
 app.use(express.static(path.join(__dirname, 'client', 'build')));
 
-const allowedPaths = [
-  '/', '/class', '/contact', '/login', '/register', '/email-verify',
-  '/user-dashboard', '/admin-dashboard', '/my-booking',
-  '/all-tasks', '/calories-data', '/forgot-password', '/edit-profile',
-  '/blog', /^\/blog-details\/.*/, /^\/booking\/.*/, /^\/booking-details\/.*/,
-  '/book-consultation', '/workout-meals'
-];
-
+// Remove the unused allowedPaths array and simplify
 const validStaticPaths = [
   '/', '/class', '/contact', '/login', '/register', '/email-verify',
   '/user-dashboard', '/admin-dashboard', '/my-booking',
@@ -61,7 +54,6 @@ const validStaticPaths = [
   '/blog', '/book-consultation', '/workout-meals'
 ];
 
-// Regex routes for dynamic pages
 const dynamicRegexRoutes = [
   /^\/booking\/[a-zA-Z0-9]+$/,
   /^\/booking-details\/[a-zA-Z0-9]+$/,
@@ -70,10 +62,14 @@ const dynamicRegexRoutes = [
 ];
 
 app.get('*', (req, res, next) => {
-  const matched =
-    validStaticPaths.includes(req.path) ||
-    dynamicRegexRoutes.some(rx => rx.test(req.path));
-
+  // Skip API routes
+  if (req.path.startsWith('/api/')) {
+    return next();
+  }
+  
+  const matched = validStaticPaths.includes(req.path) || 
+                  dynamicRegexRoutes.some(regex => regex.test(req.path));
+  
   if (matched) {
     res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
   } else {

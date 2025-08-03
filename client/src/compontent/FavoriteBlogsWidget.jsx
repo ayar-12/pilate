@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { AppContext } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
-import noFavoritesImg from '../assets/no-favorites.png';
+
 
 const FavoriteBlogsWidget = () => {
   const { blogs, backendUrl } = useContext(AppContext);

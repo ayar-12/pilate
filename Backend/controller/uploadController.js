@@ -68,8 +68,6 @@ const uploadAvatar = multer({
   },
   limits: { fileSize: 5 * 1024 * 1024 } // 5MB
 });
-
-// Upload files to Cloudinary after saving locally
 const uploadFiles = async (req, res) => {
   try {
     const uploadedFiles = req.files;
@@ -86,11 +84,30 @@ const uploadFiles = async (req, res) => {
       } else if (ext === "pdf") {
         pdf = await cloudinary.uploader.upload(filePath, { pages: true });
       }
+
       // Delete local file after upload
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
       }
     }
+
+    res.status(201).json({
+      success: true,
+      data: {
+        avatar: img?.secure_url,
+        video: vid?.secure_url,
+        pdf: pdf?.secure_url,
+      }
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Upload failed",
+      error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
+  }
+};
+
 const newUser = new userModel({
   name: req.body.name,
   avatar: img?.secure_url,

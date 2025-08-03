@@ -54,10 +54,33 @@ const allowedPaths = [
   '/book-consultation', '/workout-meals'
 ];
 
+const validStaticPaths = [
+  '/', '/class', '/contact', '/login', '/register', '/email-verify',
+  '/user-dashboard', '/admin-dashboard', '/my-booking',
+  '/all-tasks', '/calories-data', '/forgot-password', '/edit-profile',
+  '/blog', '/book-consultation', '/workout-meals'
+];
+
+// Regex routes for dynamic pages
+const dynamicRegexRoutes = [
+  /^\/booking\/[a-zA-Z0-9]+$/,
+  /^\/booking-details\/[a-zA-Z0-9]+$/,
+  /^\/blog-details\/[a-zA-Z0-9]+$/,
+  /^\/admin\/user\/[a-zA-Z0-9]+$/
+];
+
 app.get('*', (req, res, next) => {
-  const pathMatch = allowedPaths.some(pattern =>
-    typeof pattern === 'string' ? req.path === pattern : pattern.test(req.path)
-  );
+  const matched =
+    validStaticPaths.includes(req.path) ||
+    dynamicRegexRoutes.some(rx => rx.test(req.path));
+
+  if (matched) {
+    res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
+  } else {
+    next();
+  }
+});
+
 
   if (pathMatch) {
     res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));

@@ -26,13 +26,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
     res.set('Cache-Control', 'public, max-age=31536000');
   }
 }));
-
-app.use(express.static(path.join(__dirname, 'client', 'build')));
-
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
-});
-
+// 1. Mount API routes FIRST
 app.use('/api/auth', require('./routes/authRouter'));
 app.use('/api/user', require('./routes/userRoutes'));
 app.use('/api/course', require('./routes/courseRouter'));
@@ -49,6 +43,14 @@ app.use('/api/consultation', require('./routes/consultationRoutes'));
 app.use('/api/class-widget', require('./routes/classWidgetRouter'));
 app.use('/api/profile', require('./routes/profileRouter'));
 app.use('/api/steps', require('./routes/stepRouter'));
+
+// 2. Then serve React static files
+app.use(express.static(path.join(__dirname, 'client', 'build')));
+
+// 3. Catch-all route **AFTER** APIs and static middleware
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
+});
 
 
 app.get('/', (req, res) => {

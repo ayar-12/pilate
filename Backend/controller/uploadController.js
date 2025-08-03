@@ -92,15 +92,15 @@ const uploadFiles = async (req, res) => {
       }
     }
 
-    const user = new userModel({
-      name: req.body.name,
-      avatar: img?.secure_url,
-      video: vid?.secure_url,
-      pdf: pdf?.secure_url,
-      cloudinary_id_img: img?.public_id,
-      cloudinary_id_vid: vid?.public_id,
-      cloudinary_id_pdf: pdf?.public_id,
-    });
+res.status(201).json({
+  success: true,
+  data: {
+    avatar: img?.secure_url,
+    video: vid?.secure_url,
+    pdf: pdf?.secure_url,
+  }
+});
+
 
     await user.save();
     res.status(201).json({ success: true, data: user });

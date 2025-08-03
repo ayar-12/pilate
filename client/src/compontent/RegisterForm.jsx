@@ -64,7 +64,7 @@ const RegisterForm = () => {
         photo: "", // optional
       };
       
-      if (adminCode) payload.adminCode = adminCode;
+      
       
 
       const { data } = await axios.post(

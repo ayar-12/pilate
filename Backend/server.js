@@ -16,7 +16,7 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
 app.use(cookieParser());
 
 
@@ -44,14 +44,11 @@ app.use('/api/class-widget', require('./routes/classWidgetRouter'));
 app.use('/api/profile', require('./routes/profileRouter'));
 app.use('/api/steps', require('./routes/stepRouter'));
 
-// 2. Then serve React static files
 app.use(express.static(path.join(__dirname, 'client', 'build')));
 
-// 3. Catch-all route **AFTER** APIs and static middleware
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
 });
-
 
 app.get('/', (req, res) => {
   res.send('Pilate API is running 🧘‍♀️');

@@ -24,23 +24,36 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
   }
 }));
 
-// Mount API routes
-app.use('/api/auth', require('./routes/authRouter'));
-app.use('/api/user', require('./routes/userRoutes'));
-app.use('/api/course', require('./routes/courseRouter'));
-app.use('/api/booking', require('./routes/bookingRouter'));
-app.use('/api/admin', require('./routes/adminRouter'));
-app.use('/api/blog', require('./routes/blogRouter'));
-app.use('/api/water', require('./routes/waterRouter'));
-app.use('/api/food', require('./routes/foodRouter'));
-app.use('/api/newsletter', require('./routes/newsletterRouter'));
-app.use('/api/todo', require('./routes/todoRouter'));
-app.use('/api/contact', require('./routes/contactRouter'));
-app.use('/api/home', require('./routes/homeRouter'));
-app.use('/api/consultation', require('./routes/consultationRoutes'));
-app.use('/api/class-widget', require('./routes/classWidgetRouter')); // <--- use only this
-app.use('/api/profile', require('./routes/profileRouter'));
-app.use('/api/steps', require('./routes/stepRouter'));
+const safeUse = (path, router) => {
+  try {
+    if (!path || typeof path !== 'string' || path.includes('/:')) {
+      throw new Error(`❌ Invalid route path: "${path}"`);
+    }
+    app.use(path, router);
+  } catch (err) {
+    console.error(`❌ Failed to mount router at ${path}:`, err.message);
+    process.exit(1); // force exit so Render shows the real error
+  }
+};
+
+// SAFELY MOUNT ROUTES
+safeUse('/api/auth', require('./routes/authRouter'));
+safeUse('/api/user', require('./routes/userRoutes'));
+safeUse('/api/course', require('./routes/courseRouter'));
+safeUse('/api/booking', require('./routes/bookingRouter'));
+safeUse('/api/admin', require('./routes/adminRouter'));
+safeUse('/api/blog', require('./routes/blogRouter'));
+safeUse('/api/water', require('./routes/waterRouter'));
+safeUse('/api/food', require('./routes/foodRouter'));
+safeUse('/api/newsletter', require('./routes/newsletterRouter'));
+safeUse('/api/todo', require('./routes/todoRouter'));
+safeUse('/api/contact', require('./routes/contactRouter'));
+safeUse('/api/home', require('./routes/homeRouter'));
+safeUse('/api/consultation', require('./routes/consultationRoutes'));
+safeUse('/api/class-widget', require('./routes/classWidgetRouter'));
+safeUse('/api/profile', require('./routes/profileRouter'));
+safeUse('/api/steps', require('./routes/stepRouter'));
+
 
 const staticPath = path.join(__dirname, 'client', 'build');
 if (fs.existsSync(staticPath)) {

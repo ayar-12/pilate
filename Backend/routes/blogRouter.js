@@ -13,10 +13,10 @@ const {
   favoriteBlog
 } = require('../controller/blogControlller');
 
-
 router.get('/blogs', getAllBlogs);
-router.get('/blogs/:id', getSingleBlog);
-router.get('/blogs/search', searchBlogs);
+router.get('/blogs/search', searchBlogs);        // ✅ Move this BEFORE the dynamic route
+router.get('/blogs/:id', getSingleBlog);         // ✅ Dynamic route comes after specific routes
+
 router.post('/blogs/favorite/:id', userAuth, async (req, res) => {
   try {
     const blogId = req.params.id;
@@ -24,10 +24,8 @@ router.post('/blogs/favorite/:id', userAuth, async (req, res) => {
     if (!blog) {
       return res.status(404).json({ success: false, message: "Blog not found" });
     }
-
     blog.isFavorite = !blog.isFavorite;
     await blog.save();
-
     res.json({ success: true, message: "Favorite status toggled", blog });
   } catch (err) {
     console.error('Error toggling favorite:', err);
@@ -35,7 +33,7 @@ router.post('/blogs/favorite/:id', userAuth, async (req, res) => {
   }
 });
 
-
+// Rest of your routes stay the same...
 router.post(
   '/blogs',
   userAuth,

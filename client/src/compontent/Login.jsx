@@ -41,8 +41,9 @@ const Login = () => {
         password,
       });
 
-      if (data.success && data.token) {
-        localStorage.setItem("token", data.token);
+   if (data.success && data.token) {
+  localStorage.setItem("token", data.token);
+  axios.defaults.headers.common['Authorization'] = `Bearer ${data.token}`; // <== ADD THIS
         setIsLoggedin(true);
         toast.success("Welcome back!", { position: "top-center", autoClose: 2000 });
 

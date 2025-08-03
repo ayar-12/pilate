@@ -8,10 +8,12 @@ import {
   CardMedia,
   CardContent,
   Button,
-  CircularProgress
+  CircularProgress,
+  Container
 } from '@mui/material';
 import { AppContext } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
+import noFavoritesImg from '../assets/no-favorites.png';
 
 const FavoriteBlogsWidget = () => {
   const { blogs, backendUrl } = useContext(AppContext);
@@ -20,8 +22,7 @@ const FavoriteBlogsWidget = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // simulate load
-    const fav = blogs.filter(b => b.isFavorite);
+    const fav = blogs.filter((b) => b.isFavorite);
     setFavorites(fav);
     setLoading(false);
   }, [blogs]);
@@ -33,90 +34,104 @@ const FavoriteBlogsWidget = () => {
     return `${backendUrl}/${clean}`;
   };
 
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (favorites.length === 0) {
+    return (
+      <Box textAlign="center" py={6}>
+        <img
+          src={noFavoritesImg}
+          alt="No favorites"
+          style={{ width: '100%', maxWidth: 300, objectFit: 'contain' }}
+        />
+        <Typography variant="h6" mt={2}>
+          No favorite blogs yet.
+        </Typography>
+      </Box>
+    );
+  }
+
+  const fav = favorites[0]; // show first or random later if needed
+
   return (
-    <Grid item xs={12} sm={6} md={6} lg={4} xl={3}>
-      {loading ? (
-        <Box display="flex" justifyContent="center" p={2}>
-          <CircularProgress size={24} />
-        </Box>
-      ) : favorites.length === 0 ? (
-        <Box textAlign="center" p={2}>
-          <img
-            src="/assets/no-favorites.png"
-            alt="No favorites"
-            style={{ width: '100%', maxHeight: 200, objectFit: 'contain' }}
-          />
-          <Typography variant="body2" color="textSecondary" mt={1}>
-            No favorite blogs yet.
-          </Typography>
-        </Box>
-      ) : (
-        <Card
+    <Container maxWidth="md" sx={{ mt: 4, mb: 6 }}>
+      <Typography variant="h4" fontWeight="bold" mb={3} color="#8d1f58">
+        Your Favorite Blog
+      </Typography>
+
+      <Card
+        sx={{
+          height: 400,
+          borderRadius: 3,
+          position: 'relative',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-end',
+          color: 'white',
+          boxShadow: 6
+        }}
+      >
+        <CardMedia
+          component="img"
+          image={getImageUrl(fav.image)}
+          alt={fav.title}
           sx={{
-            height: 350,
-            borderRadius: 2,
-            position: 'relative',
-            overflow: 'hidden',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'flex-end',
-            color: 'white'
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            zIndex: 0
           }}
-        >
-          <CardMedia
-            component="img"
-            image={getImageUrl(favorites[0].image)}
-            alt={favorites[0].title}
+        />
+        <Box
+          sx={{
+            position: 'absolute',
+            inset: 0,
+            background: 'linear-gradient(to top, rgba(0,0,0,0.6), rgba(0,0,0,0.1))',
+            zIndex: 1
+          }}
+        />
+        <CardContent sx={{ position: 'relative', zIndex: 2 }}>
+          <Typography variant="caption" sx={{ opacity: 0.8 }}>
+            Featured Favorite
+          </Typography>
+          <Typography variant="h5" fontWeight="bold" mt={1}>
+            {fav.title}
+          </Typography>
+          <Typography variant="body2" sx={{ mt: 1, color: 'rgba(255,255,255,0.9)' }}>
+            {fav.description?.slice(0, 100)}…
+          </Typography>
+          <Button
+            onClick={() => navigate('/blogs')}
+            variant="contained"
+            size="small"
             sx={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              zIndex: 0
+              mt: 2,
+              backgroundColor: '#FDFAF6',
+              color: '#111',
+              borderRadius: '50px',
+              textTransform: 'none',
+              px: 3,
+              py: 0.5,
+              fontSize: '13px'
             }}
-          />
-          <Box
-            sx={{
-              position: 'absolute',
-              inset: 0,
-              background: 'linear-gradient(to top, rgba(0,0,0,0.55), rgba(0,0,0,0.1))',
-              zIndex: 1
-            }}
-          />
-          <CardContent sx={{ position: 'relative', zIndex: 2 }}>
-            <Typography variant="caption" sx={{ opacity: 0.8 }}>
-              Favorite Blog
-            </Typography>
-            <Typography variant="h6" fontWeight="bold" mt={0.5}>
-              {favorites[0].title}
-            </Typography>
-            <Typography variant="body2" sx={{ mt: 1, color: 'rgba(255,255,255,0.9)' }}>
-              {favorites[0].description?.slice(0, 70)}…
-            </Typography>
-            <Button
-              onClick={() => navigate('/blogs')}
-              variant="contained"
-              size="small"
-              sx={{
-                mt: 2,
-                backgroundColor: '#FDFAF6',
-                color: '#111',
-                borderRadius: '50px',
-                textTransform: 'none',
-                px: 3,
-                py: 0.5,
-                fontSize: '13px'
-              }}
-            >
-              View All Favorite Blogs
-            </Button>
-          </CardContent>
-        </Card>
-      )}
-    </Grid>
+          >
+            View All Favorite Blogs
+          </Button>
+        </CardContent>
+      </Card>
+    </Container>
   );
 };
 
 export default FavoriteBlogsWidget;
+

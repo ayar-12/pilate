@@ -41,7 +41,11 @@ app.use('/api/class-widget', require('./routes/classWidgetRouter')); // <--- use
 app.use('/api/profile', require('./routes/profileRouter'));
 app.use('/api/steps', require('./routes/stepRouter'));
 
-app.use(express.static(path.join(__dirname, 'client', 'build')));
+const staticPath = path.join(__dirname, 'client', 'build');
+if (fs.existsSync(staticPath)) {
+  app.use(express.static(staticPath));
+}
+
 
 const validStaticPaths = [
   '/', '/class', '/contact', '/login', '/register', '/email-verify',
@@ -58,15 +62,20 @@ const dynamicRegexRoutes = [
 ];
 
 app.get('*', (req, res, next) => {
-  if (req.path.startsWith('/api/')) return next();
-  const matched = validStaticPaths.includes(req.path) || 
-                  dynamicRegexRoutes.some(regex => regex.test(req.path));
-  if (matched) {
-    res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
-  } else {
+  try {
+    if (req.path.startsWith('/api/')) return next();
+    const matched = validStaticPaths.includes(req.path) || 
+                    dynamicRegexRoutes.some(regex => regex.test(req.path));
+    if (matched) {
+      return res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
+    }
     next();
+  } catch (err) {
+    console.error('Wildcard route crash:', err);
+    res.status(500).send('Internal error');
   }
 });
+
 
 app.get('/', (req, res) => {
   res.send('Pilate API is running 🧘‍♀️');

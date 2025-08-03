@@ -6,6 +6,7 @@ const connectDB = require('./config/mongoDB');
 const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
+const fs = require('fs');
 
 connectDB();
 

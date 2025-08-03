@@ -84,6 +84,7 @@ app.get('*', (req, res, next) => {
 
 
 
+
 app.get('/', (req, res) => {
   res.send('Pilate API is running 🧘‍♀️');
 });

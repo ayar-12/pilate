@@ -5,7 +5,8 @@ const { createConsultation, getAllConsultations } = require('../controller/consu
 const { verifyAdmin } = require('../middleware/userAuth.js');
 
 router.post('/new', createConsultation);
-router.get('/all', getAllConsultations, verifyAdmin)
+router.get('/all', verifyAdmin, getAllConsultations)
+
 
 
 module.exports = router;

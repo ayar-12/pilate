@@ -3,8 +3,13 @@ import User from "../models/user.js";
 
 export const userAuth = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
-    if (!token) return res.status(401).json({ message: "No token" });
+    const authHeader = req.headers.authorization || "";
+
+    if (!authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "Missing or malformed token" });
+    }
+
+    const token = authHeader.split(" ")[1];
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     if (!decoded?.id) return res.status(401).json({ message: "Invalid token" });
@@ -12,13 +17,13 @@ export const userAuth = async (req, res, next) => {
     const user = await User.findById(decoded.id).select("-password");
     if (!user) return res.status(401).json({ message: "User not found" });
 
-    req.user = user; 
+    req.user = user;
     next();
   } catch (err) {
+    console.error("Auth Error:", err.message);
     return res.status(401).json({ message: "Unauthorized", error: err.message });
   }
 };
-
 
 export const verifyAdmin = [
   userAuth,
@@ -34,9 +39,7 @@ export const verifyAdmin = [
 export const verifyUser = [
   userAuth,
   (req, res, next) => {
-
-    const userId = req.user.id;
-
+    const userId = req.user._id?.toString(); // make sure it's a string
     if (userId === req.params.id || req.user.role === "admin") {
       next();
     } else {
@@ -44,3 +47,4 @@ export const verifyUser = [
     }
   },
 ];
+

@@ -208,7 +208,7 @@ function Home() {
 {homeData?.video && (
     <div
       style={{
-        position: 'absolute',
+        position: 'relative',
         top: 0,
         left: 0,
         height: '100%',
@@ -217,7 +217,7 @@ function Home() {
         border: 'none',
         borderRadius: '20px',
         overflow: 'hidden',
-        position: 'relative',
+       
         zIndex: 2,
         padding: 0,
         margin: 0,

@@ -73,8 +73,9 @@ const createBlog = async (req, res) => {
     const newBlog = new Blog({
       title,
       description,
-      image: req.files.image[0].path,
-      video: req.files.video[0].path
+      image: `uploads/images/${req.files.image[0].filename}`,
+     video: `uploads/videos/${req.files.video[0].filename}`,
+
     });
 
     const savedBlog = await newBlog.save();
@@ -112,7 +113,7 @@ const updateBlog = async (req, res) => {
 
     const updateData = { ...req.body };
 
-    if (req.files?.image) updateData.image = req.files.image[0].path;
+    if (req.files?.image) updateData.image = `uploads/images/${req.files.image[0].filename}`;
     if (req.files?.video) updateData.video = req.files.video[0].path;
 
     const updatedBlog = await Blog.findByIdAndUpdate(id, { $set: updateData }, { new: true });

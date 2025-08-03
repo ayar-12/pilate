@@ -137,20 +137,25 @@ formDataToSend.append("video", videoFile);
       setLoading(false);
     }
   };
+const handleFileChange = (type, file) => {
+  try {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (type === "image") {
+        setImageFile(file);
+        setImagePreview(e.target.result);
+      } else {
+        setVideoFile(file);
+        setVideoPreview(e.target.result);
+      }
+    };
+    reader.readAsDataURL(file);
+  } catch (err) {
+    console.error("File read error:", err);
+    setError("Invalid file. Try again.");
+  }
+};
 
-  const handleFileChange = (type, file) => {
-    if (type === "image") {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onload = (e) => setImagePreview(e.target.result);
-      reader.readAsDataURL(file);
-    } else {
-      setVideoFile(file);
-      const reader = new FileReader();
-      reader.onload = (e) => setVideoPreview(e.target.result);
-      reader.readAsDataURL(file);
-    }
-  };
 
   return (
     <Box sx={{ p: 3 }}>

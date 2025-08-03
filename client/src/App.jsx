@@ -24,6 +24,7 @@ import MyBookingWidget from './compontent/MyBookingWidget';
 import AllTasksPage from './compontent/AllTasks';
 import UserDetails from './pages/Dashboard/UserDetails';
 import {AnimatePresence} from  'framer-motion'
+import { useLocation } from 'react-router-dom';
 
 import BlogDetails from './pages/BlogDetails';
 import BookConsultation from './pages/BookConsultation';
@@ -36,6 +37,7 @@ function App() {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }, []);
 
+ const location = useLocation();
 
  
 
@@ -71,11 +73,7 @@ function App() {
           <AdminDashboard />
         </AdminRouter>
       }/>
-    <Route path='/admin/user/:id' element={
-        <AdminRouter>
-          <AdminUserDetails />
-        </AdminRouter>
-      } />
+  
         <Route path='/admin/booking-state' element={
         <AdminRouter>
           <BookingStateByDay />

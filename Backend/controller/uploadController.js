@@ -1,44 +1,28 @@
 const multer = require("multer");
-const { v4: uuidv4 } = require("uuid");
 const path = require("path");
-const cloudinary = require("../utils/cloudinary");
 const fs = require('fs');
+const { v4: uuidv4 } = require("uuid");
+const cloudinary = require('cloudinary').v2;
 const userModel = require("../models/user");
 
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
-const createUploadDirs = () => {
-  const dirs = ['uploads/images', 'uploads/videos'];
-  dirs.forEach(dir => {
-    const fullPath = path.join(__dirname, '..', dir);
-    if (!fs.existsSync(fullPath)) {
-      fs.mkdirSync(fullPath, { recursive: true });
-    }
-  });
-};
-
-createUploadDirs();
-
+// Multer disk storage for local save
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const field = file.fieldname;
-    let folder = null;
-
-    if (["image", "avatar", "uploaded_Image"].includes(field)) {
+    let folder;
+    if (["image", "avatar", "uploaded_Image"].includes(file.fieldname)) {
       folder = path.join(__dirname, '..', 'uploads/images');
-    } else if (field === "video") {
+    } else if (file.fieldname === "video") {
       folder = path.join(__dirname, '..', 'uploads/videos');
     }
-
-    if (!folder) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log("Unexpected field name:", field);
-      }
-      return cb(new Error(`Unexpected field: ${field}`));
-    }
-
-    cb(null, folder);
+    cb(null, folder || path.join(__dirname, '..', 'uploads'));
   },
-
   filename: function (req, file, cb) {
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
     const ext = path.extname(file.originalname);
@@ -51,9 +35,6 @@ const fileFilter = (req, file, cb) => {
   if (allowed.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    if (process.env.NODE_ENV === 'development') {
-      console.log("File type not allowed:", file.mimetype);
-    }
     cb(new Error("Only .png, .jpg, .jpeg, .mp4, and .pdf formats allowed!"));
   }
 };
@@ -87,11 +68,10 @@ const uploadAvatar = multer({
   },
   limits: { fileSize: 5 * 1024 * 1024 } // 5MB
 });
-
 const uploadFiles = async (req, res) => {
   try {
     const uploadedFiles = req.files;
-    let img, vid, pdff;
+    let img, vid, pdf;
 
     for (const file of uploadedFiles) {
       const ext = path.extname(file.filename).slice(1);
@@ -102,32 +82,29 @@ const uploadFiles = async (req, res) => {
       } else if (ext === "mp4") {
         vid = await cloudinary.uploader.upload(filePath, { resource_type: "video" });
       } else if (ext === "pdf") {
-        pdff = await cloudinary.uploader.upload(filePath, { pages: true });
+        pdf = await cloudinary.uploader.upload(filePath, { pages: true });
       }
 
-      // Optionally remove the local file after upload
+      // Delete local file after upload
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath);
       }
     }
 
-    const user = new userModel({
+    const newUser = new userModel({
       name: req.body.name,
       avatar: img?.secure_url,
       video: vid?.secure_url,
-      pdf: pdff?.secure_url,
+      pdf: pdf?.secure_url,
       cloudinary_id_img: img?.public_id,
       cloudinary_id_vid: vid?.public_id,
-      cloudinary_id_pdf: pdff?.public_id,
+      cloudinary_id_pdf: pdf?.public_id,
     });
 
-    await user.save();
-    res.status(201).json({ success: true, data: user });
-  } catch (err) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error("Upload error:", err);
-    }
+    await newUser.save();
 
+    res.status(201).json({ success: true, data: newUser });
+  } catch (err) {
     res.status(500).json({
       success: false,
       message: "Upload failed",
@@ -135,6 +112,7 @@ const uploadFiles = async (req, res) => {
     });
   }
 };
+
 
 module.exports = {
   upload,

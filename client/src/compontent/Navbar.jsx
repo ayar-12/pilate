@@ -17,9 +17,9 @@ const Navbar = () => {
   const location = useLocation();
 
 const getAvatarUrl = (avatar) => {
-  if (!avatar) return avater;
-  if (avatar.startsWith('http')) return avatar; 
-  return `${backendUrl}/${avatar}`; 
+  if (!avatar) return avatar; // ✅ correctly use the imported 'avatar'
+  if (avatar.startsWith('http')) return avatar;
+  return `${backendUrl}/${avatar}`;
 };
 
 
@@ -68,7 +68,8 @@ const getAvatarUrl = (avatar) => {
     <ChevronDown size={18} />
 
     {showDropdown && (
-      <div className="dropdown-menu-glass">
+     <div className="dropdown-menu-glass" onClick={e => e.stopPropagation()}>
+
         {!userData.isAccountVerified && (
           <Link to='/email-verify' >🔒 Verify Email</Link>
         )}
@@ -77,7 +78,8 @@ const getAvatarUrl = (avatar) => {
 
         <Link to="/my-booking">📅 My Booking</Link>
       
-        <li onClick={logout}>🚪 Logout</li>
+       <div onClick={logout} style={{ cursor: 'pointer' }}>🚪 Logout</div>
+
       </div>
     )}
   </div>

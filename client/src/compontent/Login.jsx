@@ -66,24 +66,19 @@ const Login = () => {
     }
   };
 
-  useEffect(() => {
-    axios
-      .get(`${backendUrl}/api/auth/is-auth`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
-      .then((res) => {
-        if (res.data.success) {
-          setUserData(res.data.user);
-        } else {
-          setUserData(null);
-        }
-      })
-      .catch(() => {
-        setUserData(null);
-      });
-  }, []);
+useEffect(() => {
+  axios
+    .get(`${backendUrl}/api/auth/is-auth`, { withCredentials: true })
+    .then((res) => {
+      if (res.data.success) {
+        setUserData(res.data.user);
+        navigate("/"); // ✅ redirect if already authenticated
+      }
+    })
+    .catch(() => {
+      setUserData(null);
+    });
+}, []);
 
   return (
     <Grid container sx={{ minHeight: "100vh" }}>

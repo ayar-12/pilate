@@ -78,6 +78,17 @@ app.get('*', (req, res, next) => {
 });
 
 
+try {
+  app.use('/api/classwidget', require('./routes/classWidgetRouter'));
+} catch (err) {
+  console.error('❌ Error in classWidgetRouter:', err.message);
+}
+
+try {
+  app.use('/api/course', require('./routes/courseRouter'));
+} catch (err) {
+  console.error('❌ Error in courseRouter:', err.message);
+}
 
 
 

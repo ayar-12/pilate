@@ -7,10 +7,10 @@ const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
 
-// ====== DB ======
+
 connectDB();
 
-// ====== Middleware ======
+
 app.use(cors({
   origin: process.env.CLIENT_URL,
   credentials: true
@@ -19,9 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// ====== Cloudinary Upload Folders (optional CDN support) ======
-// This block is now optional — files should go directly to Cloudinary.
-// Keeping it only for backwards compatibility with local dev.
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
   setHeaders: (res) => {
     res.set('Cross-Origin-Resource-Policy', 'cross-origin');
@@ -29,7 +27,12 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
   }
 }));
 
-// ====== API Routes ======
+app.use(express.static(path.join(__dirname, 'client', 'build')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client', 'build', 'index.html'));
+});
+
 app.use('/api/auth', require('./routes/authRouter'));
 app.use('/api/user', require('./routes/userRoutes'));
 app.use('/api/course', require('./routes/courseRouter'));
@@ -47,12 +50,12 @@ app.use('/api/class-widget', require('./routes/classWidgetRouter'));
 app.use('/api/profile', require('./routes/profileRouter'));
 app.use('/api/steps', require('./routes/stepRouter'));
 
-// ====== Root Health Check ======
+
 app.get('/', (req, res) => {
   res.send('Pilate API is running 🧘‍♀️');
 });
 
-// ====== 404 Handler ======
+
 app.use((req, res) => {
   console.warn('404 Not Found:', req.method, req.url);
   res.status(404).json({
@@ -61,7 +64,7 @@ app.use((req, res) => {
   });
 });
 
-// ====== Global Error Handler ======
+
 app.use((err, req, res, next) => {
   console.error('💥 Error:', err.stack);
   res.status(err.status || 500).json({

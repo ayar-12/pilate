@@ -81,9 +81,15 @@ const RegisterForm = () => {
         toast.error(data.message || "Registration failed");
       }
     } catch (err) {
-      console.error("Registration error:", err);
-      setError(err.response?.data?.message || "Something went wrong");
-      toast.error(err.response?.data?.message || "Something went wrong");
+   const message = err.response?.data?.message;
+
+if (message?.toLowerCase().includes('exists')) {
+  setError("This email is already registered.");
+} else {
+  setError("Something went wrong. Please try again.");
+}
+toast.error(error);
+
     } finally {
       setLoading(false);
     }
@@ -152,15 +158,16 @@ const RegisterForm = () => {
               value={name}
               disabled={loading}
             />
-            <TextField
-              label="Email"
-              type="email"
-              fullWidth
-              margin="normal"
-              onChange={(e) => setEmail(e.target.value)}
-              value={email}
-              disabled={loading}
-            />
+ <TextField
+  label="Email"
+  type="email"
+  fullWidth
+  margin="normal"
+  onChange={(e) => setEmail(e.target.value)}
+  onFocus={() => setError("")}
+  value={email}
+/>
+
             <TextField
               label="Phone"
               fullWidth

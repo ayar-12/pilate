@@ -1,39 +1,27 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Input } from '@mui/material';
+import {
+  Box,
+  Button,
+  Typography,
+  CircularProgress,
+  Paper
+} from '@mui/material';
 import axios from 'axios';
-import { AppContext } from "../context/AppContext";import { toast } from 'react-toastify';
+import { AppContext } from "../context/AppContext";
+import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
-function EmailVerify() {
+const EmailVerify = () => {
   const navigate = useNavigate();
-  const [resendLoading, setResendLoading] = useState(false)
-  axios.defaults.withCredentials = true;
   const { backendUrl, isLoggedin, userData, getUserData } = useContext(AppContext);
   const inputRef = useRef([]);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   const handleInput = (e, index) => {
     const value = e.target.value;
     if (value.length > 0 && index < inputRef.current.length - 1) {
       inputRef.current[index + 1].focus();
-    }
-  };
-
-  const resendOtp = async () => {
-    try {
-      setResendLoading(true);
-      const { data } = await axios.post(`${backendUrl}/api/auth/send-verify-otp`, {
-        userId: userData._id,
-      });
-
-      if (data.success) {
-        toast.success("OTP sent again to your email.");
-      } else {
-        toast.error(data.message || "Failed to resend OTP.");
-      }
-    } catch (err) {
-      toast.error("Server error while resending OTP.");
-    } finally {
-      setResendLoading(false);
     }
   };
 
@@ -60,6 +48,13 @@ function EmailVerify() {
     e.preventDefault();
     const otp = inputRef.current.map((input) => input.value).join('');
 
+    if (otp.length !== 6 || !/^\d{6}$/.test(otp)) {
+      toast.error("Please enter a valid 6-digit OTP");
+      return;
+    }
+
+    setSubmitLoading(true);
+
     try {
       const { data } = await axios.post(`${backendUrl}/api/auth/verify-account`, {
         userId: userData._id,
@@ -72,28 +67,66 @@ function EmailVerify() {
         navigate('/');
       } else {
         toast.error(data.message);
+        inputRef.current.forEach(input => {
+          input.style.border = '1px solid red';
+        });
       }
     } catch (error) {
       toast.error(error.message || 'Verification failed');
+    } finally {
+      setSubmitLoading(false);
+    }
+  };
+
+  const resendOtp = async () => {
+    try {
+      setResendLoading(true);
+      const { data } = await axios.post(`${backendUrl}/api/auth/send-verify-otp`, {
+        userId: userData._id,
+      });
+
+      if (data.success) {
+        toast.success("OTP resent to your email.");
+      } else {
+        toast.error(data.message || "Failed to resend OTP.");
+      }
+    } catch (err) {
+      toast.error("Server error while resending OTP.");
+    } finally {
+      setResendLoading(false);
     }
   };
 
   useEffect(() => {
-    if (isLoggedin && userData?.isAccountVerified) navigate('/');
+    // Clear OTP boxes on load or user change
+    inputRef.current.forEach(input => {
+      if (input) input.value = "";
+    });
+
+    // Redirect if already verified
+    if (isLoggedin && userData?.isAccountVerified) {
+      navigate('/');
+    }
   }, [isLoggedin, userData, navigate]);
 
   return (
-    <div style={{ textAlign: 'center', padding: '40px' }}>
-      <form onSubmit={onSubmitHandler}>
-        <h1>Email Verification</h1>
-        <p>Enter the 6-digit code sent to your email</p>
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', p: 3 }}>
+      <Paper elevation={3} sx={{ p: 4, maxWidth: 500, width: '100%', borderRadius: 4, textAlign: 'center' }}>
+        <Typography variant="h5" fontWeight="bold" color="#8d1f58">
+          Email Verification
+        </Typography>
+        <Typography variant="body2" sx={{ mt: 1, mb: 3 }}>
+          Enter the 6-digit code sent to your email
+        </Typography>
 
-        {/* OTP Inputs */}
-        <div onPaste={handlePaste} style={{ display: 'flex', justifyContent: 'center', gap: '10px', margin: '20px 0' }}>
-          {Array(6).fill(0).map((_, index) => (
+        <form onSubmit={onSubmitHandler}>
+          <Box
+            onPaste={handlePaste}
+            sx={{ display: 'flex', justifyContent: 'center', gap: 1, mb: 3 }}
+          >
+            {Array(6).fill(0).map((_, index) => (
               <input
                 key={index}
-           
                 type="text"
                 maxLength="1"
                 ref={(el) => (inputRef.current[index] = el)}
@@ -109,29 +142,39 @@ function EmailVerify() {
                 }}
               />
             ))}
-        </div>
+          </Box>
 
-        <button type="submit">Verify Email</button>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            disabled={submitLoading}
+            sx={{
+              borderRadius: 99,
+              px: 4,
+              backgroundColor: '#8d1f58',
+              '&:hover': { backgroundColor: '#6e2345' },
+            }}
+          >
+            {submitLoading ? <CircularProgress size={24} color="inherit" /> : "Verify Email"}
+          </Button>
+        </form>
 
-        <div style={{ marginTop: '20px' }}>
-          <button
+        <Box mt={3}>
+          <Button
             type="button"
             onClick={resendOtp}
             disabled={resendLoading}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: '#007bff',
-              textDecoration: 'underline',
-              cursor: 'pointer'
-            }}
+            variant="text"
+            sx={{ textDecoration: 'underline', color: '#8d1f58' }}
           >
             {resendLoading ? "Sending..." : "Resend OTP"}
-          </button>
-        </div>
-      </form>
-    </div>
+          </Button>
+        </Box>
+      </Paper>
+    </Box>
   );
-}
+};
 
 export default EmailVerify;
+

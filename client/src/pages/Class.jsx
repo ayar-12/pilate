@@ -80,10 +80,10 @@ const itemMotion = {
 
 
 
-const getImageUrl = (file) => {
+  const getImageUrl = (file) => {
   if (!file) return '';
   if (file.startsWith('http')) return file;
-  return `${backendUrl}/uploads/${file.replace(/^uploads[\\/]/, '')}`;
+  return `${backendUrl}/uploads/${file}`;
 };
 
   useEffect(() => {

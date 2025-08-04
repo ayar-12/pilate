@@ -80,6 +80,11 @@ const AddClassPage = () => {
   };
 
   const handleSuccessDialogClose = () => setShowSuccessDialog(false);
+  const fixImageUrl = (url) => {
+  if (!url) return null;
+  return url.startsWith("http") ? url : `${backendUrl}/${url}`;
+};
+
 
   return (
     <Box sx={{ background: "#f6f0ed", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", px: 2 }}>

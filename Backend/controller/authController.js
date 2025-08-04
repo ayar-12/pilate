@@ -1,6 +1,10 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer'); // ✅ THIS IS WHAT'S MISSING
+
 const userModel = require('../models/user');
+require('dotenv').config();
+
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -8,6 +12,7 @@ const transporter = nodemailer.createTransport({
     pass: process.env.SENDER_PASS
   }
 });
+
 
 const {
   EMAIL_VERIFY_TEMPLATE,

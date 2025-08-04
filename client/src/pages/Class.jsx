@@ -80,13 +80,12 @@ const itemMotion = {
 
 
 
-  const getImageUrl = (file) => {
-    if (!file) return '';
-    if (file.startsWith('http')) return file;
-    const cleanPath = file.replace(/^uploads\/images\//, '');
-  return `${backendUrl}/uploads/images/${cleanPath}`;
-  };
-  
+const getImageUrl = (file) => {
+  if (!file) return '';
+  if (file.startsWith('http')) return file;
+  return `${backendUrl}/uploads/${file.replace(/^uploads[\\/]/, '')}`;
+};
+
   useEffect(() => {
   if (courses && courses.length > 0) {
     setLoading(false);

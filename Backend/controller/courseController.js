@@ -2,15 +2,18 @@ const Course = require('../models/course');
 const mongoose = require('mongoose');
 const path = require('path');
 
+
+BASE_URL= https:https://pilate-1.onrender.com
+
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
-// Helper to format image/video URLs
+
 const formatUrl = (filePath) => {
   if (!filePath) return null;
-  return filePath.startsWith('http')
-    ? filePath
-    : `${BASE_URL.replace(/\/+$/, '')}/${filePath.replace(/^\/+/, '')}`;
+  if (filePath.startsWith('http')) return filePath;
+  return `${BASE_URL.replace(/\/+$/, '')}/${filePath.replace(/^\/+/, '')}`;
 };
+
 
 const getAllCourses = async (req, res) => {
   try {
@@ -151,8 +154,20 @@ const updateCourse = async (req, res) => {
       }
     }
 
-    if (req.files?.image) updateData.image = req.files.image[0].path;
-    if (req.files?.video) updateData.video = req.files.video[0].path;
+if (req.files?.image) {
+  updateData.image = req.files.image[0].path;
+} else {
+  const existing = await Course.findById(id);
+  if (existing) updateData.image = existing.image;
+}
+
+if (req.files?.video) {
+  updateData.video = req.files.video[0].path;
+} else {
+  const existing = await Course.findById(id);
+  if (existing) updateData.video = existing.video;
+}
+
 
     const updatedCourse = await Course.findByIdAndUpdate(id, { $set: updateData }, {
       new: true,

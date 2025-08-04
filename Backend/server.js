@@ -7,6 +7,7 @@ const path = require('path');
 const fs = require('fs');
 
 const app = express();
+app.set('trust proxy', 1); // <- 🛠️ Add this here
 const port = process.env.PORT || 3000;
 app.use(express.static('public'));
 connectDB();

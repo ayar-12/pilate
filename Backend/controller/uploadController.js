@@ -12,16 +12,19 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-// Multer disk storage for local save
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    let folder;
-    if (["image", "avatar", "uploaded_Image"].includes(file.fieldname)) {
+    let folder = path.join(__dirname, '..', 'uploads/others');
+
+    if (file.mimetype.startsWith("image/")) {
       folder = path.join(__dirname, '..', 'uploads/images');
-    } else if (file.fieldname === "video") {
+    } else if (file.mimetype.startsWith("video/")) {
       folder = path.join(__dirname, '..', 'uploads/videos');
+    } else if (file.mimetype === "application/pdf") {
+      folder = path.join(__dirname, '..', 'uploads/docs');
     }
-    cb(null, folder || path.join(__dirname, '..', 'uploads'));
+
+    cb(null, folder);
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
@@ -30,16 +33,18 @@ const storage = multer.diskStorage({
   }
 });
 
+
 const fileFilter = (req, file, cb) => {
   const allowed = [
     "image/png", "image/jpg", "image/jpeg", "image/webp", "image/gif", "image/svg+xml",
-    "video/mp4", "video/quicktime", "video/x-msvideo", "video/x-matroska", "video/webm"
+    "video/mp4", "video/quicktime", "video/x-msvideo", "video/x-matroska", "video/webm",
+    "application/pdf"
   ];
   
   if (allowed.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error("Only common image/video formats allowed!"), false);
+    cb(new Error("Only image, video, and PDF formats are allowed!"), false);
   }
 };
 
@@ -72,28 +77,25 @@ const uploadAvatar = multer({
     }
   },
   limits: { fileSize: 5 * 1024 * 1024 } // 5MB
-});
-const uploadFiles = async (req, res) => {
+});const uploadFiles = async (req, res) => {
   try {
     const uploadedFiles = req.files;
     let img, vid, pdf;
 
     for (const file of uploadedFiles) {
       const ext = path.extname(file.filename).slice(1);
-      const filePath = path.resolve(__dirname, "../uploads", file.filename);
 
-      if (["jpg", "jpeg", "png"].includes(ext)) {
+      const filePath = path.join(file.destination, file.filename); // ✅ full path
+      
+      if (["jpg", "jpeg", "png", "webp", "gif", "svg"].includes(ext)) {
         img = await cloudinary.uploader.upload(filePath);
-      } else if (ext === "mp4") {
+      } else if (["mp4", "mov", "avi", "mkv", "webm"].includes(ext)) {
         vid = await cloudinary.uploader.upload(filePath, { resource_type: "video" });
       } else if (ext === "pdf") {
-        pdf = await cloudinary.uploader.upload(filePath, { pages: true });
+        pdf = await cloudinary.uploader.upload(filePath, { resource_type: "raw" });
       }
 
-      // Delete local file after upload
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-      }
+      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
     }
 
     const newUser = new userModel({
@@ -117,6 +119,7 @@ const uploadFiles = async (req, res) => {
     });
   }
 };
+
 
 
 module.exports = {

@@ -32,7 +32,9 @@ const logout = async () => {
     setIsLoggedin(false);
     setUserData(null);
     localStorage.removeItem("token"); // or sessionStorage if you use that
-    navigate("/");
+   navigate("/");
+window.location.reload(); // force context reset
+
   } catch (error) {
     toast.error("Logout failed");
   }

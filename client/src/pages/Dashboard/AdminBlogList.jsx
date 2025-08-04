@@ -41,10 +41,12 @@ const AdminBlogList = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const fixImageUrl = (url) => {
-    if (!url) return null;
-    return url.startsWith("http") ? url : `${backendUrl}/${url}`;
-  };
+const getImageUrl = (imagePath) => {
+  if (!imagePath) return "/placeholder-image.png";
+  if (imagePath.startsWith("http")) return imagePath;
+  return `${backendUrl}/${imagePath}`;
+};
+
 
   const handleOpenDialog = (blog = null) => {
     if (blog) {

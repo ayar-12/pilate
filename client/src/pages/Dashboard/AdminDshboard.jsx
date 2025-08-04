@@ -119,14 +119,25 @@ const AdminDashboard = () => {
           <TableCell>{user.name}</TableCell>
           <TableCell>{user.email}</TableCell>
           <TableCell align="right">
-            <Button
-              size="small"
-              variant="outlined"
-              onClick={() => navigate(`/admin/user/${user._id}`)}
-              sx={{ borderRadius: 20, textTransform: 'none', fontWeight: 'bold' }}
-            >
-              View Details
-            </Button>
+<Button
+  size="small"
+  variant="outlined"
+  onClick={() => {
+    const message = `
+Name: ${user.name}
+Email: ${user.email}
+Phone: ${user.phone || 'N/A'}
+Role: ${user.role || 'N/A'}
+Created At: ${new Date(user.createdAt).toLocaleString() || 'N/A'}
+`;
+    alert(message);
+  }}
+  sx={{ borderRadius: 20, textTransform: 'none', fontWeight: 'bold' }}
+>
+  View Details
+</Button>
+
+
           </TableCell>
         </TableRow>
       ))}

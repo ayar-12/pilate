@@ -8,7 +8,7 @@ const fs = require('fs');
 
 const app = express();
 const port = process.env.PORT || 3000;
-
+app.use(express.static('public'));
 connectDB();
 
 app.use(cors({
@@ -86,6 +86,7 @@ app.use((req, res) => {
     message: `Route not found: ${req.method} ${req.url}`
   });
 });
+
 
 // Error handler
 app.use((err, req, res, next) => {

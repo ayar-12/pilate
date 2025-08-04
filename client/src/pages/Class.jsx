@@ -80,10 +80,13 @@ const itemMotion = {
 
 
 
-  const getImageUrl = (file) => {
+const getImageUrl = (file) => {
   if (!file) return '';
   if (file.startsWith('http')) return file;
-  return `${backendUrl}/uploads/${file}`;
+
+  // Remove leading "uploads/" if it exists to prevent double "/uploads/uploads/"
+  const cleanedPath = file.replace(/^uploads\//, '');
+  return `${backendUrl}/uploads/${cleanedPath}`;
 };
 
   useEffect(() => {
@@ -108,9 +111,9 @@ const getMediaUrl = (file) => {
   if (file.startsWith('http')) return file;
 
   const ext = file.split('.').pop().toLowerCase();
-  const type = ['mp4', 'mov', 'webm', 'png', 'jpeg'].includes(ext) ? 'videos' : 'images';
-  const cleanPath = file.replace(/^uploads\/(images|videos)\//, '');
-  return `${backendUrl}/uploads/${type}/${cleanPath}`;
+  const type = ['mp4', 'mov', 'webm'].includes(ext) ? 'videos' : 'images';
+  const cleanedFile = file.replace(/^uploads\/(images|videos)\//, '');
+  return `${backendUrl}/uploads/${type}/${cleanedFile}`;
 };
 
 

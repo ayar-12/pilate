@@ -3,13 +3,19 @@ const Blog = require('../models/blog');
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
+const formatUrl = (filePath) => {
+  if (!filePath) return null;
+  if (filePath.startsWith('http')) return filePath;
+  return `${BASE_URL.replace(/\/+$/, '')}/${filePath.replace(/^\/+/, '')}`;
+};
+
 const getAllBlogs = async (req, res) => {
   try {
     const blogs = await Blog.find({});
     const processedBlogs = blogs.map(blog => ({
       ...blog.toObject(),
-      image: blog.image?.startsWith('http') ? blog.image : `${BASE_URL}/${blog.image}`,
-      video: blog.video?.startsWith('http') ? blog.video : `${BASE_URL}/${blog.video}`
+      image: formatUrl(blog.image),
+      video: formatUrl(blog.video)
     }));
 
     res.status(200).json({
@@ -20,7 +26,6 @@ const getAllBlogs = async (req, res) => {
     });
   } catch (error) {
     return res.json({ success: false, message: 'Something went wrong. Try again.' });
-
   }
 };
 
@@ -45,8 +50,8 @@ const getSingleBlog = async (req, res) => {
 
     const processedBlog = {
       ...blog.toObject(),
-      image: blog.image?.startsWith('http') ? blog.image : `${BASE_URL}/${blog.image}`,
-      video: blog.video?.startsWith('http') ? blog.video : `${BASE_URL}/${blog.video}`
+      image: formatUrl(blog.image),
+      video: formatUrl(blog.video)
     };
 
     res.status(200).json({
@@ -56,14 +61,13 @@ const getSingleBlog = async (req, res) => {
     });
   } catch (error) {
     return res.json({ success: false, message: 'Something went wrong. Try again.' });
-
   }
 };
 
 const createBlog = async (req, res) => {
   try {
     const { title, description } = req.body;
-    if (!title || !description || !req.files?.image || !req.files?.video) {
+    if (!title || !description || !req.files || !req.files.image || !req.files.video) {
       return res.status(400).json({
         success: false,
         message: 'Title, description, image and video are required'
@@ -73,10 +77,8 @@ const createBlog = async (req, res) => {
     const newBlog = new Blog({
       title,
       description,
-    if (req.files?.image) updateData.image = `uploads/images/${req.files.image[0].filename}`;
-if (req.files?.video) updateData.video = `uploads/videos/${req.files.video[0].filename}`;
-
-
+      image: `uploads/images/${req.files.image[0].filename}`,
+      video: `uploads/videos/${req.files.video[0].filename}`,
     });
 
     const savedBlog = await newBlog.save();
@@ -114,8 +116,12 @@ const updateBlog = async (req, res) => {
 
     const updateData = { ...req.body };
 
-   if (req.files?.image) updateData.image = `uploads/images/${req.files.image[0].filename}`;
-if (req.files?.video) updateData.video = `uploads/videos/${req.files.video[0].filename}`;
+    if (req.files && req.files.image) {
+      updateData.image = `uploads/images/${req.files.image[0].filename}`;
+    }
+    if (req.files && req.files.video) {
+      updateData.video = `uploads/videos/${req.files.video[0].filename}`;
+    }
 
     const updatedBlog = await Blog.findByIdAndUpdate(id, { $set: updateData }, { new: true });
 
@@ -157,7 +163,6 @@ const deleteBlog = async (req, res) => {
     });
   } catch (error) {
     return res.json({ success: false, message: 'Something went wrong. Try again.' });
-
   }
 };
 
@@ -178,14 +183,19 @@ const searchBlogs = async (req, res) => {
       ]
     });
 
+    const processedBlogs = blogs.map(blog => ({
+      ...blog.toObject(),
+      image: formatUrl(blog.image),
+      video: formatUrl(blog.video)
+    }));
+
     res.status(200).json({
       success: true,
-      count: blogs.length,
-      data: blogs
+      count: processedBlogs.length,
+      data: processedBlogs
     });
   } catch (error) {
     return res.json({ success: false, message: 'Something went wrong. Try again.' });
-
   }
 };
 
@@ -207,9 +217,7 @@ const favoriteBlog = async (req, res) => {
       data: blog
     });
   } catch (err) {
-  
     return res.json({ success: false, message: 'Something went wrong. Try again.' });
-
   }
 };
 

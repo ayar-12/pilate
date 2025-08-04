@@ -74,7 +74,8 @@ const RegisterForm = () => {
       );
 
       if (data.success) {
-        setShowSuccessDialog(true);
+        navigate(`/verify-email/${data.userId}`);
+
       } else {
         setError(data.message || "Registration failed");
         toast.error(data.message || "Registration failed");

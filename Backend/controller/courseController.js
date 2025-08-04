@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 
 
-BASE_URL= https:https://pilate-1.onrender.com
+BASE_URL= https://pilate-1.onrender.com
 
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 

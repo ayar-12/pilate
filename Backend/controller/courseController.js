@@ -112,11 +112,16 @@ const createCourse = async (req, res) => {
 
     const savedCourse = await newCourse.save();
 
-    res.status(201).json({
-      success: true,
-      message: 'Course created successfully',
-      data: savedCourse
-    });
+ res.status(201).json({
+  success: true,
+  message: 'Course created successfully',
+  data: {
+    ...savedCourse.toObject(),
+    image: formatUrl(savedCourse.image),
+    video: formatUrl(savedCourse.video)
+  }
+});
+
   } catch (error) {
     res.status(500).json({
       success: false,

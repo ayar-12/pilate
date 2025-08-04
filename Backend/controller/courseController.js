@@ -106,8 +106,9 @@ const createCourse = async (req, res) => {
       price,
       couchName,
       timing: timingData,
-      image: req.files.image[0].path,
-      video: req.files.video[0].path
+     image: req.files.image[0].path.replace(/\\/g, '/').replace(/^.*uploads\//, 'uploads/'),
+video: req.files.video[0].path.replace(/\\/g, '/').replace(/^.*uploads\//, 'uploads/')
+
     });
 
     const savedCourse = await newCourse.save();

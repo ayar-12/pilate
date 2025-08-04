@@ -183,11 +183,16 @@ if (req.files?.video) {
       return res.status(404).json({ success: false, message: 'Course not found' });
     }
 
-    res.status(200).json({
-      success: true,
-      message: 'Course updated successfully',
-      data: updatedCourse
-    });
+res.status(200).json({
+  success: true,
+  message: 'Course updated successfully',
+  data: {
+    ...updatedCourse.toObject(),
+    image: formatUrl(updatedCourse.image),
+    video: formatUrl(updatedCourse.video)
+  }
+});
+
   } catch (error) {
     res.status(500).json({
       success: false,

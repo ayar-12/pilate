@@ -31,13 +31,18 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowed = ["image/png", "image/jpg", "image/jpeg", "video/mp4", "application/pdf"];
+  const allowed = [
+    "image/png", "image/jpg", "image/jpeg", "image/webp", "image/gif", "image/svg+xml",
+    "video/mp4", "video/quicktime", "video/x-msvideo", "video/x-matroska", "video/webm"
+  ];
+  
   if (allowed.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error("Only .png, .jpg, .jpeg, .mp4, and .pdf formats allowed!"));
+    cb(new Error("Only common image/video formats allowed!"), false);
   }
 };
+
 
 const upload = multer({
   storage,

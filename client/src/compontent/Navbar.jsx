@@ -23,20 +23,21 @@ const getAvatarUrl = (avatar) => {
 };
 
 
+const logout = async () => {
+  try {
+    // optional: tell backend you're logging out (not really needed here)
+    await axios.post(`${backendUrl}/api/auth/logout`);
 
-  const logout = async () => {
-    try {
-      axios.defaults.withCredentials = true;
-      const { data } = await axios.post(backendUrl + "/api/auth/logout");
-      if (data.success) {
-        setIsLoggedin(false);
-        setUserData(null);
-        navigate("/");
-      }
-    } catch (error) {
-      toast.error("Logout failed");
-    }
-  };
+    // clear local token manually
+    setIsLoggedin(false);
+    setUserData(null);
+    localStorage.removeItem("token"); // or sessionStorage if you use that
+    navigate("/");
+  } catch (error) {
+    toast.error("Logout failed");
+  }
+};
+
 
   return (
     <header className="navbar">

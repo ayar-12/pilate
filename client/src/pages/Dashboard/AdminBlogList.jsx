@@ -16,17 +16,18 @@ import {
   Tooltip,
   Fab,
   Alert,
-  CircularProgress
+  CircularProgress,
 } from "@mui/material";
 
 import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   Add as AddIcon,
-  CloudUpload as CloudUploadIcon
+  CloudUpload as CloudUploadIcon,
 } from "@mui/icons-material";
 
-import { AppContext } from "../../context/AppContext";import axios from "axios";
+import axios from "axios";
+import { AppContext } from "../../context/AppContext";
 
 const AdminBlogList = () => {
   const { backendUrl, blogs, getAllBlogs } = useContext(AppContext);
@@ -41,22 +42,21 @@ const AdminBlogList = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-const getImageUrl = (imagePath) => {
-  if (!imagePath) return "/placeholder-image.png";
-  if (imagePath.startsWith("http")) return imagePath;
-  return `${backendUrl}/${imagePath}`;
-};
-
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return "/placeholder-image.png";
+    if (imagePath.startsWith("http")) return imagePath;
+    return `${backendUrl}/${imagePath}`;
+  };
 
   const handleOpenDialog = (blog = null) => {
     if (blog) {
       setEditingBlog(blog);
       setFormData({
         title: blog.title || "",
-        description: blog.description || ""
+        description: blog.description || "",
       });
-      setImagePreview(fixImageUrl(blog.image));
-      setVideoPreview(fixImageUrl(blog.video));
+      setImagePreview(getImageUrl(blog.image));
+      setVideoPreview(getImageUrl(blog.video));
     } else {
       setEditingBlog(null);
       setFormData({ title: "", description: "" });
@@ -91,9 +91,8 @@ const getImageUrl = (imagePath) => {
       const formDataToSend = new FormData();
       formDataToSend.append("title", formData.title);
       formDataToSend.append("description", formData.description);
-    formDataToSend.append("image", imageFile);
-formDataToSend.append("video", videoFile);
-
+      formDataToSend.append("image", imageFile);
+      formDataToSend.append("video", videoFile);
 
       const url = editingBlog
         ? `${backendUrl}/api/blog/blogs/${editingBlog._id}`
@@ -104,7 +103,7 @@ formDataToSend.append("video", videoFile);
         url,
         data: formDataToSend,
         withCredentials: true,
-        headers: { "Content-Type": "multipart/form-data" }
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
       if (response.data.success) {
@@ -139,30 +138,32 @@ formDataToSend.append("video", videoFile);
       setLoading(false);
     }
   };
-const handleFileChange = (type, file) => {
-  try {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      if (type === "image") {
-        setImageFile(file);
-        setImagePreview(e.target.result);
-      } else {
-        setVideoFile(file);
-        setVideoPreview(e.target.result);
-      }
-    };
-    reader.readAsDataURL(file);
-  } catch (err) {
-    console.error("File read error:", err);
-    setError("Invalid file. Try again.");
-  }
-};
 
+  const handleFileChange = (type, file) => {
+    try {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (type === "image") {
+          setImageFile(file);
+          setImagePreview(e.target.result);
+        } else {
+          setVideoFile(file);
+          setVideoPreview(e.target.result);
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch (err) {
+      console.error("File read error:", err);
+      setError("Invalid file. Try again.");
+    }
+  };
 
   return (
     <Box sx={{ p: 3 }}>
       <Box display="flex" justifyContent="space-between" mb={3}>
-        <Typography variant="h5" fontWeight="bold" color="#8d1f58">Manage Blogs</Typography>
+        <Typography variant="h5" fontWeight="bold" color="#8d1f58">
+          Manage Blogs
+        </Typography>
         <Tooltip title="Add Blog">
           <Fab color="primary" onClick={() => handleOpenDialog()} sx={{ backgroundColor: "#8d1f58" }}>
             <AddIcon />
@@ -175,26 +176,37 @@ const handleFileChange = (type, file) => {
       {loading && <CircularProgress />}
 
       <Grid container spacing={3}>
-        {blogs && blogs.map(blog => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={blog._id}>
-            <Card>
-              <CardMedia
-                component="img"
-                height="180"
-                image={fixImageUrl(blog.image)}
-                onError={(e) => { e.target.src = "/placeholder-image.png"; }}
-              />
-              <CardContent>
-                <Typography fontWeight="bold" gutterBottom>{blog.title}</Typography>
-                <Typography variant="body2" sx={{ mb: 2 }}>{blog.description?.slice(0, 100)}...</Typography>
-                <Box display="flex" justifyContent="space-between">
-                  <IconButton color="primary" onClick={() => handleOpenDialog(blog)}><EditIcon /></IconButton>
-                  <IconButton color="error" onClick={() => handleDelete(blog._id)}><DeleteIcon /></IconButton>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
+        {blogs &&
+          blogs.map((blog) => (
+            <Grid item xs={12} sm={6} md={4} lg={3} key={blog._id}>
+              <Card>
+                <CardMedia
+                  component="img"
+                  height="180"
+                  image={getImageUrl(blog.image)}
+                  onError={(e) => {
+                    e.target.src = "/placeholder-image.png";
+                  }}
+                />
+                <CardContent>
+                  <Typography fontWeight="bold" gutterBottom>
+                    {blog.title}
+                  </Typography>
+                  <Typography variant="body2" sx={{ mb: 2 }}>
+                    {blog.description?.slice(0, 100)}...
+                  </Typography>
+                  <Box display="flex" justifyContent="space-between">
+                    <IconButton color="primary" onClick={() => handleOpenDialog(blog)}>
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton color="error" onClick={() => handleDelete(blog._id)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
       </Grid>
 
       <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
@@ -221,24 +233,14 @@ const handleFileChange = (type, file) => {
             />
             <Grid container spacing={2}>
               <Grid item xs={6}>
-                <Button
-                  component="label"
-                  variant="outlined"
-                  fullWidth
-                  startIcon={<CloudUploadIcon />}
-                >
+                <Button component="label" variant="outlined" fullWidth startIcon={<CloudUploadIcon />}>
                   Upload Image
                   <input hidden type="file" accept="image/*" onChange={(e) => handleFileChange("image", e.target.files[0])} />
                 </Button>
                 {imagePreview && <img src={imagePreview} alt="Preview" style={{ width: "100%", marginTop: 10 }} />}
               </Grid>
               <Grid item xs={6}>
-                <Button
-                  component="label"
-                  variant="outlined"
-                  fullWidth
-                  startIcon={<CloudUploadIcon />}
-                >
+                <Button component="label" variant="outlined" fullWidth startIcon={<CloudUploadIcon />}>
                   Upload Video
                   <input hidden type="file" accept="video/*" onChange={(e) => handleFileChange("video", e.target.files[0])} />
                 </Button>
@@ -248,8 +250,8 @@ const handleFileChange = (type, file) => {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseDialog}>Cancel</Button>
-            <Button type="submit" variant="contained" sx={{ backgroundColor: "#670D2F" , borderRadius: '50px'}}>
-              {loading ? <CircularProgress size={20} /> : (editingBlog ? "Update" : "Create")}
+            <Button type="submit" variant="contained" sx={{ backgroundColor: "#670D2F", borderRadius: "50px" }}>
+              {loading ? <CircularProgress size={20} /> : editingBlog ? "Update" : "Create"}
             </Button>
           </DialogActions>
         </form>

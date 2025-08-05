@@ -74,7 +74,8 @@ const RegisterForm = () => {
       );
 
       if (data.success) {
-        navigate(`/ navigate('/email-verify')`);
+navigate('/email-verify');
+
 
       } else {
         setError(data.message || "Registration failed");

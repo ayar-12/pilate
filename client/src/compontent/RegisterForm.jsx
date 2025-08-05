@@ -74,7 +74,8 @@ const RegisterForm = () => {
       );
 
       if (data.success) {
-navigate(`/email-verify?userId=${data.userId}`);
+navigate('/email-verify', { state: { userId: data.userId } });
+
 
 
 

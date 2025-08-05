@@ -9,20 +9,25 @@ import {
 import axios from 'axios';
 import { AppContext } from "../context/AppContext";
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
-import { useSearchParams } from "react-router-dom";
-
-
+import { useLocation, useNavigate } from "react-router-dom";
 
 const EmailVerify = () => {
-  const navigate = useNavigate();
-  const { backendUrl, isLoggedin, userData, getUserData } = useContext(AppContext);
+  const { backendUrl, getUserData } = useContext(AppContext);
   const inputRef = useRef([]);
   const [resendLoading, setResendLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
-const [searchParams] = useSearchParams();
-const userId = searchParams.get("userId");
-  
+
+  const location = useLocation();
+  const navigate = useNavigate();
+  const userId = location.state?.userId;
+
+  useEffect(() => {
+    if (!userId) {
+      toast.error("User ID not found. Please register again.");
+      navigate("/register");
+    }
+  }, [userId, navigate]);
+
   const handleInput = (e, index) => {
     const value = e.target.value;
     if (value.length > 0 && index < inputRef.current.length - 1) {
@@ -61,8 +66,8 @@ const userId = searchParams.get("userId");
     setSubmitLoading(true);
 
     try {
-      const { data } = await axios.post(`${backendUrl}/api/auth/verify-account`, {
-        userId: userData._id,
+      const { data } = await axios.post(`${backendUrl}/api/auth/verify-email`, {
+        userId,
         otp,
       });
 
@@ -87,7 +92,7 @@ const userId = searchParams.get("userId");
     try {
       setResendLoading(true);
       const { data } = await axios.post(`${backendUrl}/api/auth/send-verify-otp`, {
-        userId: userData._id,
+        userId,
       });
 
       if (data.success) {
@@ -101,18 +106,6 @@ const userId = searchParams.get("userId");
       setResendLoading(false);
     }
   };
-
-  useEffect(() => {
-    // Clear OTP boxes on load or user change
-    inputRef.current.forEach(input => {
-      if (input) input.value = "";
-    });
-
-    // Redirect if already verified
-    if (isLoggedin && userData?.isAccountVerified) {
-      navigate('/');
-    }
-  }, [isLoggedin, userData, navigate]);
 
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', p: 3 }}>
@@ -182,4 +175,3 @@ const userId = searchParams.get("userId");
 };
 
 export default EmailVerify;
-

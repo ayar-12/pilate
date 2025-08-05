@@ -64,12 +64,22 @@ const register = async (req, res) => {
     const token = createToken(user._id);
     res.cookie('token', token, cookieOptions);
 
-    await transporter.sendMail({
-      from: process.env.SENDER_EMAIL,
-      to: email,
-      subject: 'Welcome to Yoga Courses! 🧘‍♀️',
-      html: WELCOME_EMAIL_TEMPLATE(name, email, phone)
-    });
+ // 1. Send welcome email
+await transporter.sendMail({
+  from: process.env.SENDER_EMAIL,
+  to: email,
+  subject: 'Welcome to Yoga Courses! 🧘‍♀️',
+  html: WELCOME_EMAIL_TEMPLATE(name, email, phone)
+});
+
+// 2. Send OTP verification email
+await transporter.sendMail({
+  from: process.env.SENDER_EMAIL,
+  to: email,
+  subject: 'Account Verification OTP',
+  html: EMAIL_VERIFY_TEMPLATE.replace('{{otp}}', otp).replace('{{email}}', email)
+});
+
 
     return res.json({ success: true, userId: user._id });
   } catch (error) {

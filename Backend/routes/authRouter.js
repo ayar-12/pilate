@@ -22,7 +22,7 @@ router.post('/login', loginlimiter, login);
 router.post('/logout', logout);
 router.post('/send-verify-otp', userAuth, otpLimiter, sendVerifyOtp);
 router.post('/send-reset-otp', otpLimiter, sendResertOtp);
-router.post('/verify-account', userAuth, verifyEmail);
+router.post('/verify-account', verifyEmail); 
 router.get('/is-auth', userAuth, isAuthenticated);
 router.post('/reset-password', resetPassword);
 

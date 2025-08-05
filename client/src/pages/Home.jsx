@@ -225,7 +225,7 @@ const getImageUrl = (path) => {
       }}
     >
       <video
-    src={homeData.video}
+   src={`${backendUrl}/${homeData.video.startsWith('/') ? homeData.video.slice(1) : homeData.video}`}
         autoPlay
         muted
         loop
@@ -234,7 +234,8 @@ const getImageUrl = (path) => {
   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
       >
 
-<source src={homeData.video} type="video/mp4" />
+<source src={`${backendUrl}/${homeData.video.startsWith('/') ? homeData.video.slice(1) : homeData.video}`} type="video/mp4" />
+
 
 
         Your browser does not support the video tag.

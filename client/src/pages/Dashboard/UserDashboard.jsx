@@ -19,7 +19,7 @@ import axios from 'axios'
 import MyBookingWidgetDashboatd from "../../compontent/MyBookingWidgetDashboard";
 import TodoWidget from "../../compontent/ToDoWidgetDetails";
 import FavoriteBlogsWidget from "../../compontent/FavoriteBlogsWidget";
-import defaultAvatar from '../assets/5.jpeg';
+import defaultAvatar from '../../assets/5.jpeg';
 
 
 const data = [

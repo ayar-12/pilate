@@ -66,7 +66,8 @@ const EmailVerify = () => {
     setSubmitLoading(true);
 
     try {
-      const { data } = await axios.post(`${backendUrl}/api/auth/verify-email`, {
+      const { data } = await axios.post(`${backendUrl}/api/auth/verify-account`, {
+
         userId,
         otp,
       });

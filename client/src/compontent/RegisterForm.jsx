@@ -74,7 +74,7 @@ const RegisterForm = () => {
       );
 
       if (data.success) {
-        navigate(`/send-verify-otp/${data.userId}`);
+        navigate(`/ navigate('/email-verify')`);
 
       } else {
         setError(data.message || "Registration failed");

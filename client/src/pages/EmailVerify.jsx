@@ -10,6 +10,9 @@ import axios from 'axios';
 import { AppContext } from "../context/AppContext";
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { useSearchParams } from "react-router-dom";
+
+
 
 const EmailVerify = () => {
   const navigate = useNavigate();
@@ -17,7 +20,9 @@ const EmailVerify = () => {
   const inputRef = useRef([]);
   const [resendLoading, setResendLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
-
+const [searchParams] = useSearchParams();
+const userId = searchParams.get("userId");
+  
   const handleInput = (e, index) => {
     const value = e.target.value;
     if (value.length > 0 && index < inputRef.current.length - 1) {

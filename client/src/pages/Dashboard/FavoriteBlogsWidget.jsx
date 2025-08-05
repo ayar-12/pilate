@@ -43,7 +43,7 @@ const FavoriteBlogsWidget = () => {
   return (
     <Grid item xs={12} sm={6} md={6} lg={4} xl={3}>
       {loading ? (
-        <Box display="flex" justifyContent="center" p={2}>
+        <Box display="flex" p={2}>
           <CircularProgress size={24} />
         </Box>
       ) : favorites.length === 0 ? (

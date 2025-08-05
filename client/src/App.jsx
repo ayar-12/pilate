@@ -73,6 +73,14 @@ function App() {
           <AdminDashboard />
         </AdminRouter>
       }/>
+
+    <Route path="/user-dashboard" element={
+      <
+        <ProtectedRouter>
+        <UserDashboard />
+        </ProtectedRouter>
+          }/>
+
   
         <Route path='/admin/booking-state' element={
         <AdminRouter>

@@ -238,7 +238,7 @@ const getImageUrl = (path) => {
 
               <video
               src={homeData.video}
-              controls
+             
              
      
   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
@@ -274,7 +274,7 @@ const getImageUrl = (path) => {
           <p style={{color: 'gray', fontSize: '14px'}}>{homeData?.videoDocumantion?.trim() || 'No description available'}</p>
           <video
               src={homeData.video}
-              controls
+              
              
      
   style={{ width: '100%', height: '100%', objectFit: 'cover' }}

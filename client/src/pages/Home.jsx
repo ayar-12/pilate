@@ -72,10 +72,9 @@ function Home() {
   }, [latestCourses.length]);
 
     
-const fullVideoUrl = homeData?.video
-  ? `${backendUrl}/${homeData.video.startsWith('/') ? homeData.video.slice(1) : homeData.video}`
-  : '';
-
+const videoUrl = homeData.video.startsWith('http')
+  ? homeData.video
+  : `${backendUrl}/${homeData.video.startsWith('/') ? homeData.video.slice(1) : homeData.video}`;
 
 
 const getImageUrl = (path) => {
@@ -235,17 +234,16 @@ const getImageUrl = (path) => {
       }}
     >
 
-
-        <video
+<video
   ref={videoRef}
-  src={homeData.video}
+  src={videoUrl}
   autoPlay
   muted
   loop
   playsInline
   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
 >
-  <source src={homeData.video} type="video/mp4" />
+  <source src={videoUrl} type="video/mp4" />
   Your browser does not support the video tag.
 </video>
 
@@ -272,18 +270,19 @@ const getImageUrl = (path) => {
         </Modal.Header>
         <Modal.Body>
           <p style={{color: 'gray', fontSize: '14px'}}>{homeData?.videoDocumantion?.trim() || 'No description available'}</p>
-    <video
+<video
   ref={videoRef}
-  src={homeData.video}
+  src={videoUrl}
   autoPlay
   muted
   loop
   playsInline
   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
 >
-  <source src={homeData.video} type="video/mp4" />
+  <source src={videoUrl} type="video/mp4" />
   Your browser does not support the video tag.
 </video>
+
 
         </Modal.Body>
         <Modal.Footer>

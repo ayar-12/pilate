@@ -24,6 +24,9 @@ function Home() {
     const [showModal, setShowModal] = useState(false);
     const [modalData, setModalData] = useState(null);
 
+      const fullVideoUrl = homeData?.video
+    ? `${backendUrl}/${homeData.video.startsWith('/') ? homeData.video.slice(1) : homeData.video}`
+    : '';
   
     useEffect(() => {
       const interval = setInterval(() => {

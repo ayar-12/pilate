@@ -31,8 +31,7 @@ function Home() {
         setFlashRed(prev => !prev);
       }, 1000);
     
-      return () => clearInterval(interval);
-    }, []);
+ 
 
     useEffect(() => {
       console.log("homeData in Home.jsx:", homeData);

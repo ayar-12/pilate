@@ -234,17 +234,17 @@ const getImageUrl = (path) => {
         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.23)',
       }}
     >
-      <video
-   src={`${backendUrl}/${homeData.video.startsWith('/') ? homeData.video.slice(1) : homeData.video}`}
-        autoPlay
-        muted
-        loop
-        playsInline
-  onError={e => console.error('Video failed to load:', e.target.src)}
+
+
+              <video
+              src={homeData.video}
+              controls
+             
+     
   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
       >
 
-<source src={`${backendUrl}/${homeData.video.startsWith('/') ? homeData.video.slice(1) : homeData.video}`} type="video/mp4" />
+<source src={homeData.video} type="video/mp4" />
 
 
         Your browser does not support the video tag.

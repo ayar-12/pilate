@@ -223,49 +223,39 @@ const getImageUrl = (path) => {
 
 <Col xs={12} md={6} lg={4} style={{ marginBottom: 0, paddingBottom: 0 }}>
 
+{homeData?.video && (
+    <div
+      style={{
+        position: 'relative',
+        top: 0,
+        left: 0,
+        height: '100%',
+        width: '100%',
+        height: '300px',
+        border: 'none',
+        borderRadius: '20px',
+        overflow: 'hidden',
+       
+        zIndex: 2,
+        padding: 0,
+        margin: 0,
+        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.23)',
+      }}
+    >
+      <video
+    src={homeData.video}
+        autoPlay
+        muted
+        loop
+        playsInline
+  onError={e => console.error('Video failed to load:', e.target.src)}
+  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+      >
+<source src={homeData.video} type="video/mp4" />
 
 
- {videoUrl ? (
-  <video
-    ref={videoRef}
-    autoPlay
-    muted
-    loop
-    playsInline
-    preload="auto"
-    style={{
-      width: '100%',
-      height: '100%',
-      objectFit: 'cover',
-      display: 'block'
-    }}
-    onCanPlay={() => console.log("✅ Video is ready to play")}
-    onError={(e) => {
-      console.error("❌ Video error:", e);
-      console.error("❌ Video src failed:", videoUrl);
-    }}
-  >
-    <source src={videoUrl} type="video/mp4" />
-    Your browser does not support the video tag.
-  </video>
-) : (
-  <div
-    style={{
-      width: '100%',
-      height: '100%',
-      backgroundColor: '#eee',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      color: '#888',
-      fontStyle: 'italic',
-      fontSize: '14px',
-    }}
-  >
-    Video loading or not available
-  </div>
-)}
-
+        Your browser does not support the video tag.
+      </video>
 
       <div
         style={{
@@ -283,36 +273,25 @@ const getImageUrl = (path) => {
         </div>
       </div>
 
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered size="lg">
+        <Modal show={showModal} onHide={() => setShowModal(false)} centered size="lg">
         <Modal.Header closeButton>
           <Modal.Title style={{color: '#8d1f58'}}>{homeData?.videoTitle || 'Program Overview'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <p style={{color: 'gray', fontSize: '14px'}}>{homeData?.videoDocumantion?.trim() || 'No description available'}</p>
-<video
-  ref={videoRef}
-  autoPlay
-  muted
-  loop
-  playsInline
-  preload="auto"
-  style={{
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    display: 'block'
-  }}
-  onCanPlay={() => console.log("✅ Video is ready to play")}
-  onError={(e) => console.error("❌ Video error:", e)}
->
-  <source src={videoUrl} type="video/mp4" />
-  Your browser does not support the video tag.
-</video>
 
+          <video
+            controls
+            style={{ width: '100%', maxHeight: '400px', borderRadius: '12px', marginTop: '20px' }}
+            onError={(e) => {
+              console.error('Modal video failed to load:', e);
+            }}
+          >
+            <source src={homeData.video} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
 
-
-
-        </Modal.Body>
+  </Modal.Body>
         <Modal.Footer>
           <Button
             style={{ borderRadius: '20px', background: '#8d1f58', width: '150px' }}

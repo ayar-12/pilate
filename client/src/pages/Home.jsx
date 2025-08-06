@@ -243,25 +243,25 @@ const getImageUrl = (path) => {
     >
 
 
-  <video
-    ref={videoRef}
-    src={videoUrl}
-    autoPlay
-    muted
-    loop
-    playsInline
-    preload="auto"
-    style={{
-      width: '100%',
-      height: '100%',
-      objectFit: 'cover',
-      display: 'block'
-    }}
-    onCanPlay={() => console.log("✅ Video is ready to play")}
-    onError={(e) => console.error("❌ Video error:", e)}
-  />
-
-
+<video
+  ref={videoRef}
+  autoPlay
+  muted
+  loop
+  playsInline
+  preload="auto"
+  style={{
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    display: 'block'
+  }}
+  onCanPlay={() => console.log("✅ Video is ready to play")}
+  onError={(e) => console.error("❌ Video error:", e)}
+>
+  <source src={videoUrl} type="video/mp4" />
+  Your browser does not support the video tag.
+</video>
 
       <div
         style={{
@@ -286,24 +286,25 @@ const getImageUrl = (path) => {
         <Modal.Body>
           <p style={{color: 'gray', fontSize: '14px'}}>{homeData?.videoDocumantion?.trim() || 'No description available'}</p>
 <video
-  src={getMediaUrl(homeData.video, 'videos')}
-
-    autoPlay
-    muted
-    loop
-    playsInline
+  ref={videoRef}
+  autoPlay
+  muted
+  loop
+  playsInline
+  preload="auto"
   style={{
     width: '100%',
     height: '100%',
     objectFit: 'cover',
     display: 'block'
   }}
-  
+  onCanPlay={() => console.log("✅ Video is ready to play")}
   onError={(e) => console.error("❌ Video error:", e)}
 >
   <source src={videoUrl} type="video/mp4" />
   Your browser does not support the video tag.
 </video>
+
 
 
 

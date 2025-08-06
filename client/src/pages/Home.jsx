@@ -239,12 +239,19 @@ const getImageUrl = (path) => {
 <video
   ref={videoRef}
   src={videoUrl}
-   autoPlay
+  autoPlay
   muted
   loop
   playsInline
   preload="auto"
-  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+  style={{
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    display: 'block'
+  }}
+  onCanPlay={() => console.log("✅ Video is ready to play")}
+  onError={(e) => console.error("❌ Video error:", e)}
 >
   <source src={videoUrl} type="video/mp4" />
   Your browser does not support the video tag.
@@ -276,12 +283,19 @@ const getImageUrl = (path) => {
 <video
   ref={videoRef}
   src={videoUrl}
-    autoPlay
+  autoPlay
   muted
   loop
   playsInline
   preload="auto"
-  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+  style={{
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    display: 'block'
+  }}
+  onCanPlay={() => console.log("✅ Video is ready to play")}
+  onError={(e) => console.error("❌ Video error:", e)}
 >
   <source src={videoUrl} type="video/mp4" />
   Your browser does not support the video tag.

@@ -24,9 +24,7 @@ function Home() {
     const [showModal, setShowModal] = useState(false);
     const [modalData, setModalData] = useState(null);
 
-      const fullVideoUrl = homeData?.video
-    ? `${backendUrl}/${homeData.video.startsWith('/') ? homeData.video.slice(1) : homeData.video}`
-    : '';
+ 
   
     useEffect(() => {
       const interval = setInterval(() => {
@@ -65,10 +63,13 @@ function Home() {
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Make sure they're sorted
     .slice(0, 3); 
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % latestCourses.length);
-    }, 3000); 
+useEffect(() => {
+  setCurrentIndex((prev) => (prev + 1) % latestCourses.length);
+}, [latestCourses.length]);
+
+const fullVideoUrl = homeData?.video
+  ? `${backendUrl}/${homeData.video.startsWith('/') ? homeData.video.slice(1) : homeData.video}`
+  : '';
 
     return () => clearInterval(interval);
   }, [latestCourses.length]);
@@ -84,7 +85,9 @@ const getImageUrl = (path) => {
   const course = latestCourses[currentIndex];
 
   const latestBlog = blogs && blogs.length > 0 ? blogs[0] : null;
+
   
+    
   return (
    <Container fluid  style={{marginTop: '10px'}}>
 

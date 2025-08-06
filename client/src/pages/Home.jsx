@@ -217,7 +217,7 @@ const getImageUrl = (path) => {
 
 
 <Col xs={12} md={6} lg={4} style={{ marginBottom: 0, paddingBottom: 0 }}>
-{videoUrl && (
+{homeData && (
     <div
       style={{
         position: 'relative',
@@ -238,20 +238,19 @@ const getImageUrl = (path) => {
     >
 
 <video
-  ref={videoRef}
-  src={videoUrl}
-  autoPlay
-  muted
-  loop
-  playsInline
-  preload="auto"
+  src={getMediaUrl(homeData.video, 'videos')}
+
+    autoPlay
+    muted
+    loop
+    playsInline
   style={{
     width: '100%',
     height: '100%',
     objectFit: 'cover',
     display: 'block'
   }}
-  onCanPlay={() => console.log("✅ Video is ready to play")}
+  
   onError={(e) => console.error("❌ Video error:", e)}
 >
   <source src={videoUrl} type="video/mp4" />
@@ -282,25 +281,25 @@ const getImageUrl = (path) => {
         <Modal.Body>
           <p style={{color: 'gray', fontSize: '14px'}}>{homeData?.videoDocumantion?.trim() || 'No description available'}</p>
 <video
-  ref={videoRef}
-  src={videoUrl}
-  autoPlay
-  muted
-  loop
-  playsInline
-  preload="auto"
+  src={getMediaUrl(homeData.video, 'videos')}
+
+    autoPlay
+    muted
+    loop
+    playsInline
   style={{
     width: '100%',
     height: '100%',
     objectFit: 'cover',
     display: 'block'
   }}
-  onCanPlay={() => console.log("✅ Video is ready to play")}
+  
   onError={(e) => console.error("❌ Video error:", e)}
 >
   <source src={videoUrl} type="video/mp4" />
   Your browser does not support the video tag.
 </video>
+
 
 
         </Modal.Body>

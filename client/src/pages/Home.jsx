@@ -78,7 +78,7 @@ const videoUrl = homeData?.video
       : `${backendUrl}/${homeData.video.startsWith('/') ? homeData.video.slice(1) : homeData.video}`)
   : '';
 
-console.log("✅ FULL videoUrl:", videoUrl);
+
 
 const getImageUrl = (path) => {
   if (!path) return '';

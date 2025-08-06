@@ -72,9 +72,11 @@ function Home() {
   }, [latestCourses.length]);
 
     
-const videoUrl = homeData.video.startsWith('http')
-  ? homeData.video
-  : `${backendUrl}/${homeData.video.startsWith('/') ? homeData.video.slice(1) : homeData.video}`;
+const videoUrl = homeData?.video
+  ? (homeData.video.startsWith('http')
+      ? homeData.video
+      : `${backendUrl}/${homeData.video.startsWith('/') ? homeData.video.slice(1) : homeData.video}`)
+  : '';
 
 
 const getImageUrl = (path) => {
@@ -214,7 +216,7 @@ const getImageUrl = (path) => {
 
 
 <Col xs={12} md={6} lg={4} style={{ marginBottom: 0, paddingBottom: 0 }}>
-{homeData?.video && (
+{videoUrl && (
     <div
       style={{
         position: 'relative',

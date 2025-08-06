@@ -72,12 +72,13 @@ function Home() {
   }, [latestCourses.length]);
 
     
-const videoUrl = homeData?.video
-  ? (homeData.video.startsWith('http')
-      ? homeData.video
-      : `${backendUrl}/${homeData.video.startsWith('/') ? homeData.video.slice(1) : homeData.video}`)
-  : '';
+let videoUrl = '';
 
+if (homeData?.video) {
+  videoUrl = homeData.video.startsWith('http')
+    ? homeData.video
+    : `${backendUrl}/${homeData.video.replace(/^\/+/, '')}`;
+}
 
 
 const getImageUrl = (path) => {
@@ -92,7 +93,11 @@ const getImageUrl = (path) => {
 
   const latestBlog = blogs && blogs.length > 0 ? blogs[0] : null;
 
-  
+  useEffect(() => {
+  if (videoUrl) console.log("✅ Final video URL:", videoUrl);
+  else console.warn("⚠️ No video URL — check homeData or backendUrl");
+}, [videoUrl]);
+
     
   return (
    <Container fluid  style={{marginTop: '10px'}}>
@@ -217,7 +222,7 @@ const getImageUrl = (path) => {
 
 
 <Col xs={12} md={6} lg={4} style={{ marginBottom: 0, paddingBottom: 0 }}>
-{homeData && (
+{videoUrl && (
     <div
       style={{
         position: 'relative',
@@ -237,25 +242,25 @@ const getImageUrl = (path) => {
       }}
     >
 
-<video
-  src={getMediaUrl(homeData.video, 'videos')}
 
+  <video
+    ref={videoRef}
+    src={videoUrl}
     autoPlay
     muted
     loop
     playsInline
-  style={{
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    display: 'block'
-  }}
-  
-  onError={(e) => console.error("❌ Video error:", e)}
->
-  <source src={videoUrl} type="video/mp4" />
-  Your browser does not support the video tag.
-</video>
+    preload="auto"
+    style={{
+      width: '100%',
+      height: '100%',
+      objectFit: 'cover',
+      display: 'block'
+    }}
+    onCanPlay={() => console.log("✅ Video is ready to play")}
+    onError={(e) => console.error("❌ Video error:", e)}
+  />
+
 
 
       <div

@@ -272,15 +272,19 @@ const getImageUrl = (path) => {
         </Modal.Header>
         <Modal.Body>
           <p style={{color: 'gray', fontSize: '14px'}}>{homeData?.videoDocumantion?.trim() || 'No description available'}</p>
+          <video
+              src={homeData.video}
+              controls
+             
+     
+  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+      >
 
-   <video
-                          controls
-                          style={{ width: '100%', maxHeight: '400px', borderRadius: '12px', marginTop: '20px' }}
-                          onError={(e) => console.error('Modal video failed to load:', e)}
-                        >
-                          <source src={fullVideoUrl} type="video/mp4" />
-                          Your browser does not support the video tag.
-                        </video>
+<source src={homeData.video} type="video/mp4" />
+
+
+        Your browser does not support the video tag.
+      </video>
         </Modal.Body>
         <Modal.Footer>
           <Button

@@ -63,13 +63,17 @@ function Home() {
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // Make sure they're sorted
     .slice(0, 3); 
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % latestCourses.length);
-    }, 3000); 
 
-    return () => clearInterval(interval);
-  }, [latestCourses.length]);
+
+    useEffect(() => {
+  if (latestCourses.length === 0) return;
+  
+  const interval = setInterval(() => {
+    setCurrentIndex((prev) => (prev + 1) % latestCourses.length);
+  }, 3000);
+
+  return () => clearInterval(interval);
+}, [latestCourses.length]);
 
     
 let videoUrl = '';

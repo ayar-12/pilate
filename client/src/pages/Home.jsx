@@ -116,11 +116,6 @@ const getImageUrl = (path) => {
           <Intro key="intro" />
         ) : (
           <>
-          <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-            >
  <Grid container spacing={0} sx={{ px: 0, mx: 0 }}>
                                     <Grid item xs={12} md={6} lg={4} sx={{ mb: 2 }}>
     
@@ -179,7 +174,7 @@ const getImageUrl = (path) => {
                      </div>
                    </div>
 
-                   </motion.div>
+               
  )}
    </Grid>
  <Grid item xs={12} md={6} lg={4}>

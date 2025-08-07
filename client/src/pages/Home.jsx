@@ -176,7 +176,7 @@ const getImageUrl = (path) => {
 
                
  )}
-   </Grid>
+  
  <Grid item xs={12} md={6} lg={4}>
                    <motion.div
     initial={{ opacity: 0, y: 40 }}

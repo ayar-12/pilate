@@ -2,7 +2,6 @@ import React, { useRef, useState, useEffect, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Container, Row, Col } from 'react-bootstrap';
 import { useMediaQuery } from 'react-responsive';
 import CallMadeIcon from '@mui/icons-material/CallMade';
 import './home.css';
@@ -10,8 +9,8 @@ import './home.css';
 import FlowerImage from '../assets/Flowers2.png';
 import Intro from "./Intro.jsx";
 import { AppContext } from "../context/AppContext.jsx";
-import { Typography, Box } from "@mui/material";
-import { Modal, Button } from 'react-bootstrap';
+import { Typography, Box, Grid, Button, Modal, Container } from "@mui/material";
+
 
 
 function Home() {
@@ -104,7 +103,7 @@ const getImageUrl = (path) => {
 
     
   return (
-   <Container fluid  style={{marginTop: '10px'}}>
+   <Container maxWidth="xl" sx={{ mt: 2 }}>
 
     <motion.div
       variants={staggerContainer}
@@ -122,11 +121,11 @@ const getImageUrl = (path) => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-    <Row>
+    <Grid>
 
 
 
- <Col xs={12} md={6} lg={4} style={{marginBottom: '15px'}}>
+ <Grid xs={12} md={6} lg={4} style={{marginBottom: '15px'}}>
     
  {homeData && (
     <motion.div
@@ -185,13 +184,13 @@ const getImageUrl = (path) => {
 
                    </motion.div>
  )}
-      </Col>
+      </Grid>
 
 
            
 
     
-               <Col xs={12} md={6} lg={4} >
+               < Grid xs={12} md={6} lg={4} >
                    <motion.div
     initial={{ opacity: 0, y: 40 }}
     whileInView={{ opacity: 1, y: 0 }}
@@ -222,10 +221,10 @@ const getImageUrl = (path) => {
     </div>
   </div>
   </motion.div>
-</Col>
+</Grid>
 
 
-<Col xs={12} md={6} lg={4} style={{ marginBottom: 0, paddingBottom: 0 }}>
+<Grid xs={12} md={6} lg={4} style={{ marginBottom: 0, paddingBottom: 0 }}>
 
 {homeData?.video && (
     <div
@@ -307,19 +306,19 @@ const getImageUrl = (path) => {
       </Modal>
     </div>
   )}
-</Col>
+</Grid>
 
 
 
-    </Row>
+    </Grid>
     </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}>
-    <Row style={{ marginTop: '20px'}}>
-    <Col xs={12} md={6} lg={4} className="p-0 m-0">
+    <Grid style={{ marginTop: '20px'}}>
+    <Grid xs={12} md={6} lg={4} className="p-0 m-0">
   <div
     style={{
       width: {sx: 100, md: '100%'},
@@ -501,10 +500,10 @@ const getImageUrl = (path) => {
       ))}
     </div>
   </div>
-</Col>
+</Grid>
 
 
-<Col xs={12} md={6} lg={4} >
+<Grid xs={12} md={6} lg={4} >
 <Box
   sx={{
     position: 'relative',
@@ -561,7 +560,7 @@ const getImageUrl = (path) => {
                    </Box>
 
    
-  </Col>
+  </Grid>
 
 {latestBlog && (
   <Col xs={12} md={6} lg={4} className="p-0 m-0">
@@ -659,11 +658,11 @@ const getImageUrl = (path) => {
 
                      </div>
                    </Box>
-      </Col>
+      </Grid>
 )}
 
 
-    </Row>
+    </Grid>
     </motion.div>
     </>
             )}

@@ -103,7 +103,7 @@ const getImageUrl = (path) => {
 
     
   return (
-   <Container maxWidth="xl" sx={{ mt: 2 }}>
+   <Box sx={{ width: '100%', minHeight: '100vh', backgroundColor: '#fff', m: 0 }}>
 
     <motion.div
       variants={staggerContainer}
@@ -121,11 +121,8 @@ const getImageUrl = (path) => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-    <Grid>
-
-
-
- <Grid xs={12} md={6} lg={4} style={{marginBottom: '15px'}}>
+ <Grid container spacing={0} sx={{ px: 0, mx: 0 }}>
+                                    <Grid item xs={12} md={6} lg={4} sx={{ mb: 2 }}>
     
  {homeData && (
     <motion.div
@@ -184,13 +181,8 @@ const getImageUrl = (path) => {
 
                    </motion.div>
  )}
-      </Grid>
-
-
-           
-
-    
-               < Grid xs={12} md={6} lg={4} >
+   </Grid>
+ <Grid item xs={12} md={6} lg={4}>
                    <motion.div
     initial={{ opacity: 0, y: 40 }}
     whileInView={{ opacity: 1, y: 0 }}
@@ -221,10 +213,8 @@ const getImageUrl = (path) => {
     </div>
   </div>
   </motion.div>
-</Grid>
-
-
-<Grid xs={12} md={6} lg={4} style={{ marginBottom: 0, paddingBottom: 0 }}>
+          </Grid>
+ <Grid item xs={12} md={6} lg={4}>
 
 {homeData?.video && (
     <div
@@ -317,8 +307,8 @@ const getImageUrl = (path) => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}>
-    <Grid style={{ marginTop: '20px'}}>
-    <Grid xs={12} md={6} lg={4} className="p-0 m-0">
+   <Grid container spacing={0} sx={{ mt: 2, px: 0, mx: 0 }}>
+                                    <Grid item xs={12} md={6} lg={4}>
   <div
     style={{
       width: {sx: 100, md: '100%'},
@@ -500,10 +490,8 @@ const getImageUrl = (path) => {
       ))}
     </div>
   </div>
-</Grid>
-
-
-<Grid xs={12} md={6} lg={4} >
+  </Grid>
+  <Grid item xs={12} md={6} lg={4}>
 <Box
   sx={{
     position: 'relative',
@@ -563,7 +551,7 @@ const getImageUrl = (path) => {
   </Grid>
 
 {latestBlog && (
-  <Col xs={12} md={6} lg={4} className="p-0 m-0">
+   <Grid item xs={12} md={6} lg={4}>
     <Box
       style={{
         position: 'relative',
@@ -668,7 +656,7 @@ const getImageUrl = (path) => {
             )}
           </AnimatePresence>
   </motion.div>
-   </Container>
+   </Box>
   )
 }
 

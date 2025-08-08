@@ -43,11 +43,11 @@ const FavoriteBlogsWidget = () => {
   return (
     <Grid item xs={12} sm={6} md={6} lg={4} xl={3}>
       {loading ? (
-        <Box display="flex" p={2}>
+        <Box display="flex" >
           <CircularProgress size={24} />
         </Box>
       ) : favorites.length === 0 ? (
-        <Box textAlign="center" p={2}>
+        <Box textAlign="center">
           <img
             src="/assets/no-favorites.png"
             alt="No favorites"

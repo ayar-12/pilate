@@ -38,30 +38,30 @@ const MyBookingWidgetDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchUserBookings = async () => {
-      try {
-        const token = localStorage.getItem('token'); 
-     const res = await axios.get(`${backendUrl}/api/booking/user-booked`, {
-  headers: {
-    Authorization: `Bearer ${token}`
-  }
-});
-
-        if (res.data.success) {
-          setBookings(res.data.data.slice(0, 3)); // show only 3 latest
-        } else {
-          setError(res.data.message);
+    useEffect(() => {
+  const fetchUserBookings = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get(`${backendUrl}/api/booking/user-booked`, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      } catch (err) {
-        setError('Failed to load bookings.');
-      } finally {
-        setLoading(false);
+      });
+      if (res.data.success) {
+        setBookings(res.data.data.slice(0, 3));
+      } else {
+        setError(res.data.message);
       }
-    };
+    } catch (err) {
+      setError('Failed to load bookings.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchUserBookings();
-  }, [backendUrl]);
+  fetchUserBookings();
+}, [backendUrl]);
+
 
   return (
     <Grid item xs={12} md={3} >

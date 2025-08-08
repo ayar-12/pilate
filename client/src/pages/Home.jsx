@@ -247,7 +247,7 @@ function Home() {
                                                 }}
                                             >
                                                 <video
-                                                    src={homeData.video}
+                                                    src={videoUrl}
                                                     autoPlay
                                                     muted
                                                     loop
@@ -255,7 +255,7 @@ function Home() {
                                                     onError={e => console.error('Video failed to load:', e.target.src)}
                                                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                                 >
-                                                    <source src={homeData.video} type="video/mp4" />
+                                                   <source src={videoUrl} type="video/mp4" />
                                                     Your browser does not support the video tag.
                                                 </video>
 
@@ -286,13 +286,14 @@ function Home() {
                                                     <Modal.Body>
                                                         <p style={{color: 'gray', fontSize: '14px'}}>{homeData?.videoDocumantion?.trim() || 'No description available'}</p>
                                                         <video
+                                                               src={videoUrl}
                                                             controls
                                                             style={{ width: '100%', maxHeight: '400px', borderRadius: '12px', marginTop: '20px' }}
                                                             onError={(e) => {
                                                                 console.error('Modal video failed to load:', e);
                                                             }}
                                                         >
-                                                            <source src={homeData.video} type="video/mp4" />
+                                                         <source src={videoUrl} type="video/mp4" />
                                                             Your browser does not support the video tag.
                                                         </video>
                                                     </Modal.Body>

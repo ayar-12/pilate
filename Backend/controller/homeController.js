@@ -19,9 +19,14 @@ exports.getHome = async (req, res) => {
 
 exports.updateHome = async (req, res) => {
   let home = (await Home.findOne()) || new Home();
-  Object.assign(home, req.body);
+ Object.assign(home, req.body);
 
-  if (req.files.video?.[0]) home.videoHome = req.files.video[0].filename;
+if (req.files.video?.[0]) {
+  home.videoHome = req.files.video[0].filename;
+} else if (req.body.video && typeof req.body.video === 'string') {
+  home.videoHome = req.body.video; // fallback to filename if it's a string
+}
+
   if (req.files.image?.[0]) home.image     = req.files.image[0].filename;
 
   await home.save();

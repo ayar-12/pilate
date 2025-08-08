@@ -72,33 +72,23 @@ const getSingleCourse = async (req, res) => {
   }
 };
 
+
+
 const createCourse = async (req, res) => {
   try {
     const { title, description, price, couchName, timing } = req.body;
 
     if (!title || !description || !price || !couchName || !req.files?.image || !req.files?.video) {
-      return res.status(400).json({
-        success: false,
-        message: 'All fields including image and video are required'
-      });
+      return res.status(400).json({ success: false, message: 'All fields including image and video are required' });
     }
 
-    if (isNaN(Number(price)) || Number(price) < 0) {
-      return res.status(400).json({ success: false, message: 'Invalid price' });
-    }
+    const timingData = JSON.parse(timing);
 
-    let timingData;
-    try {
-      timingData = JSON.parse(timing);
-      if (!Array.isArray(timingData) || timingData.length === 0) {
-        throw new Error();
-      }
-    } catch {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid timing format. Expected JSON array of objects'
-      });
-    }
+    // Upload image
+    const imageUpload = await uploadBufferToCloudinary(req.files.image[0].buffer, 'courses/images', 'image');
+
+    // Upload video
+    const videoUpload = await uploadBufferToCloudinary(req.files.video[0].buffer, 'courses/videos', 'video');
 
     const newCourse = new Course({
       title,
@@ -106,102 +96,54 @@ const createCourse = async (req, res) => {
       price,
       couchName,
       timing: timingData,
-     image: req.files.image[0].path.replace(/\\/g, '/').replace(/^.*uploads\//, 'uploads/'),
-video: req.files.video[0].path.replace(/\\/g, '/').replace(/^.*uploads\//, 'uploads/')
-
+      image: imageUpload.secure_url,
+      video: videoUpload.secure_url,
+      cloudinary_id_image: imageUpload.public_id,
+      cloudinary_id_video: videoUpload.public_id
     });
 
     const savedCourse = await newCourse.save();
-
- res.status(201).json({
-  success: true,
-  message: 'Course created successfully',
-  data: {
-    ...savedCourse.toObject(),
-    image: formatUrl(savedCourse.image),
-    video: formatUrl(savedCourse.video)
-  }
-});
-
+    res.status(201).json({ success: true, message: 'Course created', data: savedCourse });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Failed to create course',
-      error: error.message
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
 const updateCourse = async (req, res) => {
   try {
     const { id } = req.params;
-    const updateData = { ...req.body };
+    const course = await Course.findById(id);
+    if (!course) return res.status(404).json({ success: false, message: 'Course not found' });
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ success: false, message: 'Invalid course ID' });
-    }
-
-    if (req.body.price && (isNaN(Number(req.body.price)) || Number(req.body.price) < 0)) {
-      return res.status(400).json({ success: false, message: 'Invalid price' });
-    }
-
-    if (req.body.timing) {
-      try {
-        const timingData = JSON.parse(req.body.timing);
-        if (!Array.isArray(timingData)) {
-          throw new Error();
-        }
-        updateData.timing = timingData;
-      } catch {
-        return res.status(400).json({
-          success: false,
-          message: 'Invalid timing format. Expected JSON array of objects'
-        });
+    if (req.files?.image) {
+      if (course.cloudinary_id_image) {
+        await cloudinary.uploader.destroy(course.cloudinary_id_image, { resource_type: 'image' });
       }
+      const img = await uploadBufferToCloudinary(req.files.image[0].buffer, 'courses/images', 'image');
+      course.image = img.secure_url;
+      course.cloudinary_id_image = img.public_id;
     }
 
-if (req.files?.image) {
-  updateData.image = req.files.image[0].path;
-} else {
-  const existing = await Course.findById(id);
-  if (existing) updateData.image = existing.image;
-}
+    if (req.files?.video) {
+      if (course.cloudinary_id_video) {
+        await cloudinary.uploader.destroy(course.cloudinary_id_video, { resource_type: 'video' });
+      }
+      const vid = await uploadBufferToCloudinary(req.files.video[0].buffer, 'courses/videos', 'video');
+      course.video = vid.secure_url;
+      course.cloudinary_id_video = vid.public_id;
+    }
 
-if (req.files?.video) {
-  updateData.video = req.files.video[0].path;
-} else {
-  const existing = await Course.findById(id);
-  if (existing) updateData.video = existing.video;
-}
-
-
-    const updatedCourse = await Course.findByIdAndUpdate(id, { $set: updateData }, {
-      new: true,
-      runValidators: true
+    Object.keys(req.body).forEach(key => {
+      if (key !== 'image' && key !== 'video') course[key] = req.body[key];
     });
 
-    if (!updatedCourse) {
-      return res.status(404).json({ success: false, message: 'Course not found' });
-    }
-
-res.status(200).json({
-  success: true,
-  message: 'Course updated successfully',
-  data: {
-    ...updatedCourse.toObject(),
-    image: formatUrl(updatedCourse.image),
-    video: formatUrl(updatedCourse.video)
-  }
-});
-
+    await course.save();
+    res.status(200).json({ success: true, message: 'Course updated', data: course });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Failed to update course',
-      error: error.message
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 const deleteCourse = async (req, res) => {
   try {

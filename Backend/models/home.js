@@ -76,10 +76,11 @@ const homeSchema = new mongoose.Schema({
     trim: true,
   },
 
-  videoHome: {
-    type: String,
-    required: [true, 'home video is required']
-  },
+videoHome: {
+  type: String,
+  default: '',
+  trim: true
+},
   cloudinary_id_image: {
     type: String
   },

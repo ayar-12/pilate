@@ -100,12 +100,15 @@ const createCourse = async (req, res) => {
     }
 
     const timingData = JSON.parse(timing);
+    
+const imageUpload = await uploadBufferToCloudinary(req.files.image[0], 'courses/images', 'image');
+const videoUpload = await uploadBufferToCloudinary(req.files.video[0], 'courses/videos', 'video');
 
-    // Upload image
-    const imageUpload = await uploadBufferToCloudinary(req.files.image[0].buffer, 'courses/images', 'image');
+image: imageUpload.secure_url,
+video: videoUpload.secure_url,
+cloudinary_id_image: imageUpload.public_id,
+cloudinary_id_video: videoUpload.public_id
 
-    // Upload video
-    const videoUpload = await uploadBufferToCloudinary(req.files.video[0].buffer, 'courses/videos', 'video');
 
     const newCourse = new Course({
       title,
@@ -132,23 +135,20 @@ const updateCourse = async (req, res) => {
     const course = await Course.findById(id);
     if (!course) return res.status(404).json({ success: false, message: 'Course not found' });
 
-    if (req.files?.image) {
-      if (course.cloudinary_id_image) {
-        await cloudinary.uploader.destroy(course.cloudinary_id_image, { resource_type: 'image' });
-      }
-      const img = await uploadBufferToCloudinary(req.files.image[0].buffer, 'courses/images', 'image');
-      course.image = img.secure_url;
-      course.cloudinary_id_image = img.public_id;
-    }
+if (req.files?.image?.[0]) {
+  if (course.cloudinary_id_image) await cloudinary.uploader.destroy(course.cloudinary_id_image, { resource_type: 'image' });
+  const img = await uploadBufferToCloudinary(req.files.image[0], 'courses/images', 'image');
+  course.image = img.secure_url;
+  course.cloudinary_id_image = img.public_id;
+}
 
-    if (req.files?.video) {
-      if (course.cloudinary_id_video) {
-        await cloudinary.uploader.destroy(course.cloudinary_id_video, { resource_type: 'video' });
-      }
-      const vid = await uploadBufferToCloudinary(req.files.video[0].buffer, 'courses/videos', 'video');
-      course.video = vid.secure_url;
-      course.cloudinary_id_video = vid.public_id;
-    }
+if (req.files?.video?.[0]) {
+  if (course.cloudinary_id_video) await cloudinary.uploader.destroy(course.cloudinary_id_video, { resource_type: 'video' });
+  const vid = await uploadBufferToCloudinary(req.files.video[0], 'courses/videos', 'video');
+  course.video = vid.secure_url;
+  course.cloudinary_id_video = vid.public_id;
+}
+
 
     Object.keys(req.body).forEach(key => {
       if (key !== 'image' && key !== 'video') course[key] = req.body[key];

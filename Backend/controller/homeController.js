@@ -24,8 +24,9 @@ exports.updateHome = async (req, res) => {
 if (req.files.video?.[0]) {
   home.videoHome = req.files.video[0].filename;
 } else if (req.body.video && typeof req.body.video === 'string') {
-  home.videoHome = req.body.video; // fallback to filename if it's a string
+  home.videoHome = req.body.video;
 }
+
 
   if (req.files.image?.[0]) home.image     = req.files.image[0].filename;
 

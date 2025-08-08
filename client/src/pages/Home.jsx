@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Container, Row, Col , Modal, Button } from 'react-bootstrap';
 import { useMediaQuery } from 'react-responsive';
 import CallMadeIcon from '@mui/icons-material/CallMade';
 import './home.css';
@@ -9,7 +10,7 @@ import './home.css';
 import FlowerImage from '../assets/Flowers2.png';
 import Intro from "./Intro.jsx";
 import { AppContext } from "../context/AppContext.jsx";
-import { Typography, Box, Grid, Button, Modal, Container } from "@mui/material";
+import { Typography, Box } from "@mui/material";
 
 
 
@@ -103,7 +104,7 @@ const getImageUrl = (path) => {
 
     
   return (
-   <Box sx={{ width: '100%', minHeight: '100vh', backgroundColor: '#fff', m: 0 }}>
+   <Container fluid  style={{marginTop: '10px'}}>
 
     <motion.div
       variants={staggerContainer}
@@ -116,8 +117,16 @@ const getImageUrl = (path) => {
           <Intro key="intro" />
         ) : (
           <>
- <Grid container spacing={0} sx={{ px: 0, mx: 0 }}>
-                                    <Grid item xs={12} md={6} lg={4} sx={{ mb: 2 }}>
+          <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+    <Row>
+
+
+
+ <Col xs={12} md={6} lg={4} style={{marginBottom: '15px'}}>
     
  {homeData && (
     <motion.div
@@ -174,10 +183,15 @@ const getImageUrl = (path) => {
                      </div>
                    </div>
 
-               
+                   </motion.div>
  )}
-  
- <Grid item xs={12} md={6} lg={4}>
+      </Col>
+
+
+           
+
+    
+               <Col xs={12} md={6} lg={4} >
                    <motion.div
     initial={{ opacity: 0, y: 40 }}
     whileInView={{ opacity: 1, y: 0 }}
@@ -208,8 +222,10 @@ const getImageUrl = (path) => {
     </div>
   </div>
   </motion.div>
-          </Grid>
- <Grid item xs={12} md={6} lg={4}>
+</Col>
+
+
+<Col xs={12} md={6} lg={4} style={{ marginBottom: 0, paddingBottom: 0 }}>
 
 {homeData?.video && (
     <div
@@ -291,19 +307,19 @@ const getImageUrl = (path) => {
       </Modal>
     </div>
   )}
-</Grid>
+</Col>
 
 
 
-    </Grid>
+    </Row>
     </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}>
-   <Grid container spacing={0} sx={{ mt: 2, px: 0, mx: 0 }}>
-                                    <Grid item xs={12} md={6} lg={4}>
+    <Row style={{ marginTop: '20px'}}>
+    <Col xs={12} md={6} lg={4} className="p-0 m-0">
   <div
     style={{
       width: {sx: 100, md: '100%'},
@@ -485,8 +501,10 @@ const getImageUrl = (path) => {
       ))}
     </div>
   </div>
-  </Grid>
-  <Grid item xs={12} md={6} lg={4}>
+</Col>
+
+
+<Col xs={12} md={6} lg={4} >
 <Box
   sx={{
     position: 'relative',
@@ -543,10 +561,10 @@ const getImageUrl = (path) => {
                    </Box>
 
    
-  </Grid>
+  </Col>
 
 {latestBlog && (
-   <Grid item xs={12} md={6} lg={4}>
+  <Col xs={12} md={6} lg={4} className="p-0 m-0">
     <Box
       style={{
         position: 'relative',
@@ -641,17 +659,17 @@ const getImageUrl = (path) => {
 
                      </div>
                    </Box>
-      </Grid>
+      </Col>
 )}
 
 
-    </Grid>
+    </Row>
     </motion.div>
     </>
             )}
           </AnimatePresence>
   </motion.div>
-   </Box>
+   </Container>
   )
 }
 

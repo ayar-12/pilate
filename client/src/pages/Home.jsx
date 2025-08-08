@@ -499,7 +499,7 @@ function Home() {
                                             sx={{
                                                 position: 'relative',
                                                 right: { xs: 1, md: 5 },
-                                                width: { xs: '90%', md: '80%' },
+                                                width: { xs: '60%', md: '60%' },
                                                 marginBottom: { xs: 3, md: 0 },
                                                 borderRadius: '16px',
                                                 overflow: 'hidden',

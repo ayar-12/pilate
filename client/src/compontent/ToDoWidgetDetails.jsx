@@ -302,7 +302,7 @@ const TodoWidget = () => {
   };
 
   return (
-    <Grid item xs={12} md={4} sx={{height: '350px'}}>
+    <Grid item xs={12} md={3} sx={{height: '350px'}}>
       <DashboardWidget title="My To-Do List" sx={{width: {xs: 400, md: 300}}}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
         <button

@@ -351,17 +351,12 @@ useEffect(() => {
       </Box>
     </DashboardWidget>,
 
- <Grid container spacing={2}>
-  <Grid item xs={12} sm={6} md={4}>
-    <MyBookingWidgetDashboatd />
-  </Grid>
-  <Grid item xs={12} sm={6} md={4}>
-    <TodoWidget />
-  </Grid>
-  <Grid item xs={12} sm={6} md={4}>
-    <FavoriteBlogsWidget />
-  </Grid>
+<Grid container spacing={2}>
+  <Grid item xs={12} sm={4}><MyBookingWidgetDashboard /></Grid>
+  <Grid item xs={12} sm={4}><TodoWidget /></Grid>
+  <Grid item xs={12} sm={4}><FavoriteBlogsWidget /></Grid>
 </Grid>
+
 
   ];
 

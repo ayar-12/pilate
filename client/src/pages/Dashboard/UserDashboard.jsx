@@ -193,7 +193,7 @@ useEffect(() => {
         <img 
           src={getAvatarUrl(userData?.avatar)} 
           style={{ 
-            width: 200, 
+            width: 100%, 
             height: '130px', 
             borderRadius: '10px',
             '@media (max-width: 600px)': {
@@ -235,7 +235,7 @@ useEffect(() => {
     background: '#8d1f58',
     color: '#fff',
     borderRadius: '20px',
-  width: '100%',            
+  width: '250px',            
     px: 3,
     py: 1,
     marginTop: 2,

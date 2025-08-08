@@ -93,9 +93,22 @@ const login = async (req, res) => {
     return res.json({ success: false, message: 'Email and password are required' });
 
   try {
-    const user = await userModel.findOne({ email });
-    if (!user || !(await bcrypt.compare(password, user.password)))
-      return res.json({ success: false, message: 'Invalid credentials' });
+  const user = await userModel.findOne({ email });
+
+if (!user) {
+  return res.status(401).json({ success: false, message: 'Email not found' });
+}
+
+const isPasswordValid = await bcrypt.compare(password, user.password);
+
+if (!isPasswordValid) {
+  return res.status(401).json({ success: false, message: 'Incorrect password' });
+}
+
+if (!user.isAccountVerified) {
+  return res.status(403).json({ success: false, message: 'Please verify your email before logging in' });
+}
+
 
     if (!user.isAccountVerified)
       return res.json({ success: false, message: 'Please verify your email before logging in' });

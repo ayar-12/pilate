@@ -41,9 +41,13 @@ const MyBookingWidgetDashboard = () => {
   useEffect(() => {
     const fetchUserBookings = async () => {
       try {
-        const res = await axios.get(`${backendUrl}/api/booking/user-booked`, {
-          withCredentials: true
-        });
+        const token = localStorage.getItem('token'); 
+     const res = await axios.get(`${backendUrl}/api/booking/user-booked`, {
+  headers: {
+    Authorization: `Bearer ${token}`
+  }
+});
+
         if (res.data.success) {
           setBookings(res.data.data.slice(0, 3)); // show only 3 latest
         } else {

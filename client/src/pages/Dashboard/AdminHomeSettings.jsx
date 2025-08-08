@@ -27,39 +27,40 @@ function AdminHomeSettings() {
 
   const [preview, setPreview] = useState({  video: '' });
 
-
-  useEffect(() => {
-    axios.get(`${backendUrl}/api/home`)
-      .then(res => {
-        if (res.data.success && Array.isArray(res.data.data)) {
-          const home = res.data.data[0];
-          const videoFilename = home.video
-          ? home.video.split('/').pop()
-          : null;
-          setForm({
-            title:        home.title        || '',
-            subTitle:     home.subTitle     || '',
-            description:  home.description  || '',
-            button1:      home.button1      || '',
-            button2:      home.button2      || '',
-            button3:      home.button3      || '',
-            hTitle1:      home.hTitle1      || '',
-            hSubTitle1:   home.hSubTitle1   || '',
-            hTitle2:      home.hTitle2      || '',
-            hSubTitle2:   home.hSubTitle2   || '',
-            videoDocumantion: home.videoDocumantion || '',
-            videoTitle:   home.videoTitle   || '',
-            video: videoFilename,  
-         
-          });
-          setPreview({
-            video: home.video || '',
-     
-          });
-        }
-      })
-      .catch(() => setError('Could not load home settings.'));
-  }, [backendUrl]);
+useEffect(() => {
+  (async () => {
+    try {
+      const { data } = await axios.get(`${backendUrl}/api/home`);
+      if (data.success && Array.isArray(data.data)) {
+        const home = data.data[0] || {};
+        setForm(f => ({
+          ...f,
+          title: home.title || '',
+          subTitle: home.subTitle || '',
+          description: home.description || '',
+          button1: home.button1 || '',
+          button2: home.button2 || '',
+          button3: home.button3 || '',
+          hTitle1: home.hTitle1 || '',
+          hSubTitle1: home.hSubTitle1 || '',
+          hTitle2: home.hTitle2 || '',
+          hSubTitle2: home.hSubTitle2 || '',
+          videoDocumantion: home.videoDocumantion || '',
+          videoTitle: home.videoTitle || '',
+          // IMPORTANT: don't convert to filename; keep file null until user uploads
+          video: null,
+        }));
+        setPreview(p => ({
+          ...p,
+          // this should already be a Cloudinary https URL returned by your API
+          video: home.video || '',
+        }));
+      }
+    } catch (e) {
+      setError('Could not load home settings.');
+    }
+  })();
+}, [backendUrl]);
 
   
 

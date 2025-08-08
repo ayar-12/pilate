@@ -115,6 +115,15 @@ if (!user.isAccountVerified) {
 
     const token = createToken(user._id);
 
+     res.cookie('token', token, {
+      httpOnly: true,
+      secure: true,        // must be true for cross-site HTTPS
+      sameSite: 'none',    // allow cookies between pilate-1 and pilate-2
+      // domain: '.onrender.com', // uncomment if you want it shared across subdomains
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+    
+
     // don't use cookie, send token in JSON
     return res.json({ success: true, token });
   } catch (error) {

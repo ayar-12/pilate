@@ -53,7 +53,7 @@ useEffect(() => {
         setPreview(p => ({
           ...p,
           // this should already be a Cloudinary https URL returned by your API
-          video: home.video || '',
+          video: home.videoHome || '', 
         }));
       }
     } catch (e) {

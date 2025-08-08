@@ -352,7 +352,7 @@ useEffect(() => {
     </DashboardWidget>,
 
 
-  <MyBookingWidgetDashboard />،
+  <MyBookingWidgetDashboard />,
   <TodoWidget />,
     <FavoriteBlogsWidget />
 

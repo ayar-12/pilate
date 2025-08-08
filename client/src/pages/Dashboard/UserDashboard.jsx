@@ -352,8 +352,8 @@ useEffect(() => {
     </DashboardWidget>,
 
 <Grid container spacing={2}>
-  <Grid item xs={12} sm={4}><MyBookingWidgetDashboard /></Grid>
-  <Grid item xs={12} sm={4}><TodoWidget /></Grid>
+  <Grid item xs={12} sm={4}><MyBookingWidgetDashboard /></Grid>,
+  <Grid item xs={12} sm={4}><TodoWidget /></Grid>,
   <Grid item xs={12} sm={4}><FavoriteBlogsWidget /></Grid>
 </Grid>
 

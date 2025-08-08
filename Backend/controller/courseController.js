@@ -78,7 +78,8 @@ const getSingleCourse = async (req, res) => {
 
 
 
-const createCourse = async (req, res) => {
+
+    const createCourse = async (req, res) => {
   try {
     const { title, description, price, couchName, timing } = req.body;
 
@@ -87,15 +88,10 @@ const createCourse = async (req, res) => {
     }
 
     const timingData = JSON.parse(timing);
-    
-const imageUpload = await uploadBufferToCloudinary(req.files.image[0], 'courses/images', 'image');
-const videoUpload = await uploadBufferToCloudinary(req.files.video[0], 'courses/videos', 'video');
 
-image: imageUpload.secure_url,
-video: videoUpload.secure_url,
-cloudinary_id_image: imageUpload.public_id,
-cloudinary_id_video: videoUpload.public_id
-
+    // Upload to Cloudinary (needs memoryStorage so .buffer exists)
+    const imageUpload = await uploadBufferToCloudinary(req.files.image[0], 'courses/images', 'image');
+    const videoUpload = await uploadBufferToCloudinary(req.files.video[0], 'courses/videos', 'video');
 
     const newCourse = new Course({
       title,
@@ -110,9 +106,9 @@ cloudinary_id_video: videoUpload.public_id
     });
 
     const savedCourse = await newCourse.save();
-    res.status(201).json({ success: true, message: 'Course created', data: savedCourse });
+    return res.status(201).json({ success: true, message: 'Course created', data: savedCourse });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 

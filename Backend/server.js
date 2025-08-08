@@ -12,25 +12,29 @@ const port = process.env.PORT || 3000;
 app.use(express.static('public'));
 connectDB();
 
-const allowed = (process.env.CORS_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean);
+
+const allowed = [
+  'https://pilate-1.onrender.com', // your API domain
+  'https://pilate-2.onrender.com', // your admin dashboard domain
+  'http://localhost:5173'          // local dev
+];
+
 app.use(cors({
   origin: (origin, cb) => {
-    if (!origin) return cb(null, true); // Postman/curl
-    return allowed.includes(origin) ? cb(null, true) : cb(new Error('Not allowed by CORS'));
+    if (!origin) return cb(null, true);
+    if (allowed.includes(origin)) return cb(null, true);
+    return cb(new Error('Not allowed by CORS'));
   },
   credentials: true,
   methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
   allowedHeaders: ['Content-Type','Authorization']
 }));
 
-// Handle preflight explicitly
 app.options('*', cors({
-  origin: (origin, cb) => {
-    if (!origin) return cb(null, true);
-    return allowed.includes(origin) ? cb(null, true) : cb(new Error('Not allowed by CORS'));
-  },
+  origin: allowed,
   credentials: true
 }));
+
 
 app.use(express.json());
 app.use(cookieParser());

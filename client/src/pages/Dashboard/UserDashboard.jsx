@@ -229,9 +229,9 @@ useEffect(() => {
         }}>Phone: {userData?.phone || "N/A"}</Typography>
        </div>
         <Link to="/edit-profile" style={{ textDecoration: 'none' }}>
-         <Button
-  variant="contained"
-  sx={{
+         <button
+
+  style={{
     background: '#8d1f58',
     color: '#fff',
     borderRadius: '20px',
@@ -241,7 +241,7 @@ useEffect(() => {
     marginTop: 2,
     '&:hover': { background: '#a5326d' },
   }}
->Edit Profile</Button>
+>Edit Profile</button>
         </Link>
       </Box>
     </DashboardWidget>,
@@ -278,11 +278,11 @@ useEffect(() => {
         </ResponsiveContainer>
       </Box>
       <Box mt={2}>
-<Button
-  variant="contained"
+<button
+
   onClick={() => setShowStepDialog(true)}
   disableElevation
-  sx={{
+  style={{
       width: { xs: 40, sm: 40 },
     height: { xs: 40, sm: 40 },
     minWidth: '0',
@@ -300,7 +300,7 @@ useEffect(() => {
   }}
 >
   <AddIcon sx={{ fontSize: 24 }} />
-</Button>
+</button>
 
       </Box>
       <Dialog open={showStepDialog} onClose={() => setShowStepDialog(false)}>

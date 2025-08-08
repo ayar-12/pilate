@@ -93,9 +93,7 @@ const FavoriteBlogsWidget = () => {
             }}
           />
           <CardContent sx={{ position: 'relative', zIndex: 2 }}>
-            <Typography variant="caption" sx={{ opacity: 0.8 }}>
-              Favorite Blog
-            </Typography>
+          
             <Typography variant="h6" fontWeight="bold" mt={0.5}>
               {favorites[0].title}
             </Typography>

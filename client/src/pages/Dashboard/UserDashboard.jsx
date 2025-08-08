@@ -283,8 +283,8 @@ useEffect(() => {
   onClick={() => setShowStepDialog(true)}
   disableElevation
   style={{
-      width: { xs: 40, sm: 40 },
-    height: { xs: 40, sm: 40 },
+      width: { xs: 40, sm: 40, md: 80 },
+    height: { xs: 40, sm: 40, md: 80 },
     minWidth: '0',
     borderRadius: '50%',
     backgroundColor: '#8d1f58',
@@ -344,9 +344,9 @@ useEffect(() => {
       </Typography>
       <Box display="flex" gap={1} mt={2}>
         {[250, 500, 750].map((amount) => (
-          <Button key={amount} variant="contained" onClick={() => handleAddWater(amount)} sx={{ backgroundColor: '#8d1f58', borderRadius: '20px', fontSize: '12px', px: 2, py: 0.5, textTransform: 'none' }}>
+          <button key={amount} variant="contained" onClick={() => handleAddWater(amount)} style={{ backgroundColor: '#8d1f58', borderRadius: '20px', fontSize: '12px', px: 2, py: 0.5, textTransform: 'none' }}>
             +{amount}ml
-          </Button>
+          </button>
         ))}
       </Box>
     </DashboardWidget>,

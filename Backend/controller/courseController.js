@@ -2,6 +2,8 @@ const Course = require('../models/course');
 const mongoose = require('mongoose');
 const path = require('path');
 
+const cloudinary = require('../utils/cloudinary'); // your config file
+const streamifier = require('streamifier');
 
 
 

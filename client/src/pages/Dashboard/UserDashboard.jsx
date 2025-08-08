@@ -235,7 +235,7 @@ useEffect(() => {
     background: '#8d1f58',
     color: '#fff',
     borderRadius: '20px',
-    fontWeight: '600',
+  width: '100%',            
     px: 3,
     py: 1,
     marginTop: 2,
@@ -284,7 +284,7 @@ useEffect(() => {
   disableElevation
   sx={{
     width: '48px',
-    height: '48px',
+    height: '100%',
     minWidth: '0px',
     borderRadius: '50%',
     backgroundColor: '#8d1f58',

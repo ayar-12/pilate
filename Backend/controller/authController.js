@@ -62,7 +62,13 @@ const register = async (req, res) => {
 
     await user.save();
     const token = createToken(user._id);
-    res.cookie('token', token, cookieOptions);
+     res.cookie('token', token, {
+      httpOnly: true,
+      secure: true,        // must be true for cross-site HTTPS
+      sameSite: 'none',    // allow cookies between pilate-1 and pilate-2
+      // domain: '.onrender.com', // uncomment if you want it shared across subdomains
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
 
  // 1. Send welcome email
 await transporter.sendMail({
@@ -87,6 +93,8 @@ await transporter.sendMail({
     return res.json({ success: false, message: error.message });
   }
 };
+
+
 const login = async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password)

@@ -394,7 +394,7 @@ useEffect(() => {
         '@media (max-width: 600px)': {
           width: '100%',
           maxWidth: '100%',
-          padding: '4px',
+          padding: '2px',
           margin: '0',
         }
       })

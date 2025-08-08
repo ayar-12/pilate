@@ -305,21 +305,21 @@ const TodoWidget = () => {
     <Grid item xs={12} md={4} sx={{height: '350px'}}>
       <DashboardWidget title="My To-Do List" sx={{width: {xs: 400, md: 300}}}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={1}>
-        <Button
+        <button
           variant="contained"
           onClick={() => setShowDialog(true)}
           sx={{
             borderRadius: '50%',
             minWidth: '40px',
-            width: '40px',
-            height: '40px',
+          width: { xs: 40, sm: 40, md: 80 },
+    height: { xs: 40, sm: 40, md: 80 },
             backgroundColor: '#8d1f58',
             color: '#fff',
             p: 0
           }}
         >
           <AddIcon />
-        </Button>
+        </button>
         <Button
     variant="text"
     size="small"

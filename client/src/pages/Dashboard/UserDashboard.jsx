@@ -283,9 +283,9 @@ useEffect(() => {
   onClick={() => setShowStepDialog(true)}
   disableElevation
   sx={{
-    width: '48px',
-    height: '100%',
-    minWidth: '0px',
+      width: { xs: 10, sm: 40 },
+    height: { xs: 10, sm: 40 },
+    minWidth: '0',
     borderRadius: '50%',
     backgroundColor: '#8d1f58',
     color: '#fff',

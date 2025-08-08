@@ -65,7 +65,7 @@ const res = await axios.get(`${backendUrl}/api/booking/user-booked`, {
 
 
   return (
-    <Grid item xs={12} md={3} >
+    <Grid item xs={12} sm={6} md={4} lg={4} xl={4}>
       <DashboardWidget title="MY BOOKING" sx={{
   height: 'auto',
   width: { xs: 400, md: 400 }

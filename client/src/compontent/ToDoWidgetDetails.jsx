@@ -308,7 +308,7 @@ const TodoWidget = () => {
         <button
           variant="contained"
           onClick={() => setShowDialog(true)}
-          sx={{
+          style={{
             borderRadius: '50%',
             minWidth: '40px',
           width: { xs: 40, sm: 40, md: 80 },

@@ -60,7 +60,7 @@ const MyBookingWidgetDashboard = () => {
   }, [backendUrl]);
 
   return (
-    <Grid item xs={12} md={4} >
+    <Grid item xs={12} md={3} >
       <DashboardWidget title="MY BOOKING" sx={{
   height: 'auto',
   width: { xs: 400, md: 400 }

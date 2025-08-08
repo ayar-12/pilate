@@ -1,6 +1,6 @@
-// controllers/homeController.js
+
 const Home = require('../models/home');
-const cloudinary = require('../ultis/cloudinary'); // you already have this
+const cloudinary = require('../utils/cloudinary'); 
 
 const uploadToCloudinary = (file, { folder, resource_type }) =>
   new Promise((resolve, reject) => {

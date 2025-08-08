@@ -41,12 +41,13 @@ const MyBookingWidgetDashboard = () => {
     useEffect(() => {
   const fetchUserBookings = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const res = await axios.get(`${backendUrl}/api/booking/user-booked`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+  const token = localStorage.getItem('token');
+const res = await axios.get(`${backendUrl}/api/booking/user-booked`, {
+  headers: {
+    Authorization: `Bearer ${token}`,
+  }
+});
+
       if (res.data.success) {
         setBookings(res.data.data.slice(0, 3));
       } else {

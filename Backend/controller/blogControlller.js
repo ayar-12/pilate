@@ -181,24 +181,34 @@ const searchBlogs = async (req, res) => {
 
 const toggleFavorite = async (req, res) => {
   try {
-    const { id: blogId } = req.params;
-    const userId = req.user._id;
+    console.log("User:", req.user);
+    console.log("Blog ID:", req.params.id);
 
-    const blog = await Blog.findById(blogId);
-    if (!blog) return res.status(404).json({ success: false, message: 'Blog not found' });
-
-    const existing = await Favorite.findOne({ user: userId, blog: blogId });
-    if (existing) {
-      await existing.deleteOne();
-      return res.json({ success: true, favorited: false });
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) {
+      return res.status(404).json({ success: false, message: "Blog not found" });
     }
 
-    await Favorite.create({ user: userId, blog: blogId });
-    res.json({ success: true, favorited: true });
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    const index = user.favorites.indexOf(blog._id);
+    if (index > -1) {
+      user.favorites.splice(index, 1);
+    } else {
+      user.favorites.push(blog._id);
+    }
+
+    await user.save();
+    res.json({ success: true, data: user.favorites });
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
+    console.error("toggleFavorite error:", err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 
 const getMyFavorites = async (req, res) => {
   try {

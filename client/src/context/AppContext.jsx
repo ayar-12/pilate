@@ -322,6 +322,7 @@ const getCalorieProfile = useCallback(async () => {
         updateBlog,
         deleteBlog,
         getAllBlogs,
+        toggleFavorite,
         toggleFavoriteBlog,
     // calorie profile
     calorieProfile,

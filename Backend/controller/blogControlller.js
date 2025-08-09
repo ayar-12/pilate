@@ -14,11 +14,20 @@ const formatUrl = (filePath) => {
 // GET /blogs
 const getAllBlogs = async (req, res) => {
   try {
+    const userId = req.user?._id; 
     const blogs = await Blog.find({});
+
+        let favoriteIds = [];
+    if (userId) {
+      const favs = await Favorite.find({ user: userId }).select('blog');
+      favoriteIds = favs.map(f => f.blog.toString());
+    }
+
     const processedBlogs = blogs.map(b => ({
       ...b.toObject(),
       image: formatUrl(b.image),
-      video: formatUrl(b.video)
+      video: formatUrl(b.video),
+      isFavorite: favoriteIds.includes(b._id.toString())
     }));
     return res.status(200).json({
       success: true,

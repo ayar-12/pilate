@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { AppContext } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
-
+import {blogimage} from '../assets/-12.jpg'
 const FavoriteBlogsWidget = () => {
   const { backendUrl } = useContext(AppContext);
   const [favorites, setFavorites] = useState(null); // null = loading
@@ -62,7 +62,7 @@ const FavoriteBlogsWidget = () => {
       <Grid item xs={12} sm={6} md={4} lg={4} xl={4}>
         <Box textAlign="center">
           <img
-            src="/assets/no-favorites.png"
+            src={blogimage}
             alt="No favorites"
             style={{ width: '100%', maxHeight: 200, objectFit: 'contain' }}
           />

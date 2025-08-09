@@ -9,7 +9,7 @@ import {
   IconButton,
   Button
 } from "@mui/material";
-import { ChevronRight, ArrowUpRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { AppContext } from "../context/AppContext";
 import { Link } from "react-router-dom";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -26,28 +26,17 @@ const Blog = () => {
     return `${backendUrl}/${cleanPath}`;
   };
 
-  const toggleFavorite = async (blogId) => {
-  try {
-    const token = localStorage.getItem('token');
-    const headers = token ? { Authorization: `Bearer ${token}` } : {};
-
-    // optimistic UI
-    toggleFavoriteBlog(blogId);
-
-    await axios.post(
-      `${backendUrl}/api/blog/blogs/favorite/${blogId}`,
-      {},
-      { headers, withCredentials: true }
-    );
-  } catch (err) {
-    // rollback if failed
-    toggleFavoriteBlog(blogId);
-    console.error('Failed to toggle favorite', err);
-  }
-};
-
   return (
-    <Box sx={{ minHeight: "100vh", py: 6 }}>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        width: "100%",
+        py: 6,
+        px: { xs: 2, sm: 4, md: 8 }, // responsive padding
+        backgroundColor: "#fafafa",
+      }}
+    >
+      {/* Page Heading */}
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -64,6 +53,7 @@ const Blog = () => {
         </Box>
       </motion.div>
 
+      {/* Blog Cards */}
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -80,122 +70,118 @@ const Blog = () => {
                   xs={12}
                   sm={6}
                   md={4}
+                  lg={3}
                   key={blog._id}
                   display="flex"
                   justifyContent="center"
                 >
-                  <Box sx={{ width: 400 }}>
-                    <Card
+                  <Card
+                    sx={{
+                      width: "100%",
+                      height: 380,
+                      borderRadius: "16px",
+                      overflow: "hidden",
+                      position: "relative",
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                      boxShadow: "0 10px 30px rgba(0, 0, 0, 0.15)",
+                    }}
+                  >
+                    <CardMedia
+                      component="img"
+                      image={imageUrl}
+                      alt={blog.title}
                       sx={{
-                        height: "360px",
-                        borderRadius: "16px",
-                        overflow: "hidden",
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        zIndex: 0,
+                      }}
+                    />
+
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        height: "100%",
+                        background: "rgba(0, 0, 0, 0.08)",
+                        backdropFilter: "blur(6px)",
+                        WebkitBackdropFilter: "blur(6px)",
+                        zIndex: 1,
+                      }}
+                    />
+
+                    <CardContent
+                      sx={{
                         position: "relative",
+                        zIndex: 2,
+                        p: 3,
+                        height: "100%",
                         display: "flex",
                         flexDirection: "column",
                         justifyContent: "space-between",
-                        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.15)"
+                        color: "white",
                       }}
                     >
-                      <CardMedia
-                        component="img"
-                        image={imageUrl}
-                        alt={blog.title}
+                      <IconButton
+                        onClick={() => toggleFavorite(blog._id)}
                         sx={{
+                          color: blog.isFavorite ? "#ff4081" : "white",
                           position: "absolute",
-                          top: 0,
-                          left: 0,
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                          zIndex: 0
-                        }}
-                      />
-
-                      <Box
-                        sx={{
-                          position: "absolute",
-                          left: 0,
-                          right: 0,
-                          bottom: 0,
-                          height: "100%",
-                          background: "rgba(0, 0, 0, 0.08)",
-                          backdropFilter: "blur(6px)",
-                          WebkitBackdropFilter: "blur(6px)",
-                          zIndex: 1
-                        }}
-                      />
-
-                      <CardContent
-                        sx={{
-                          position: "relative",
+                          top: 12,
+                          right: 12,
                           zIndex: 2,
-                          p: 3,
-                          height: "100%",
-                          display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "space-between",
-                          color: "white"
                         }}
                       >
-                        <IconButton
-                          onClick={() => toggleFavorite(blog._id)}
+                        {blog.isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                      </IconButton>
+
+                      <Box>
+                        <Typography
+                          variant="caption"
                           sx={{
-                            color: blog.isFavorite ? "#ff4081" : "white",
-                            position: "absolute",
-                            top: 12,
-                            right: 12,
-                            zIndex: 2
+                            backgroundColor: "rgba(255, 255, 255, 0.2)",
+                            color: "rgba(255,255,255,0.8)",
+                            px: 1.5,
+                            py: 0.5,
+                            borderRadius: "20px",
+                            backdropFilter: "blur(4px)",
+                            display: "inline-block",
+                            mb: 1,
                           }}
                         >
-                          {blog.isFavorite ? (
-                            <FavoriteIcon />
-                          ) : (
-                            <FavoriteBorderIcon />
-                          )}
-                        </IconButton>
+                          Blog Article
+                        </Typography>
 
-                        <Box>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              backgroundColor: "rgba(255, 255, 255, 0.2)",
-                              color: "rgba(255,255,255,0.8)",
-                              px: 1.5,
-                              py: 0.5,
-                              borderRadius: "20px",
-                              backdropFilter: "blur(4px)",
-                              display: "inline-block",
-                              mb: 1
-                            }}
-                          >
-                            Blog Article
-                          </Typography>
+                        <Typography variant="h6" fontWeight="bold">
+                          {blog.title}
+                        </Typography>
 
-                          <Typography variant="h6" fontWeight="bold">
-                            {blog.title}
-                          </Typography>
-
-                          <Button
-                            variant="contained"
-                            size="small"
-                            sx={{
-                              mt: 2,
-                              backgroundColor: "#8d1f58",
-                              borderRadius: 999,
-                              fontWeight: "bold",
-                              textTransform: "none"
-                            }}
-                            endIcon={<ChevronRight size={16} />}
-                            component={Link}
-                            to={`/blog-details/${blog._id}`}
-                          >
-                            Read More
-                          </Button>
-                        </Box>
-                      </CardContent>
-                    </Card>
-                  </Box>
+                        <Button
+                          variant="contained"
+                          size="small"
+                          sx={{
+                            mt: 2,
+                            backgroundColor: "#8d1f58",
+                            borderRadius: 999,
+                            fontWeight: "bold",
+                            textTransform: "none",
+                          }}
+                          endIcon={<ChevronRight size={16} />}
+                          component={Link}
+                          to={`/blog-details/${blog._id}`}
+                        >
+                          Read More
+                        </Button>
+                      </Box>
+                    </CardContent>
+                  </Card>
                 </Grid>
               );
             })

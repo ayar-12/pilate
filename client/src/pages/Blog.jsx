@@ -26,6 +26,26 @@ const Blog = () => {
     return `${backendUrl}/${cleanPath}`;
   };
 
+  const toggleFavorite = async (blogId) => {
+  try {
+    const token = localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+    // optimistic UI
+    toggleFavoriteBlog(blogId);
+
+    await axios.post(
+      `${backendUrl}/api/blog/blogs/favorite/${blogId}`,
+      {},
+      { headers, withCredentials: true }
+    );
+  } catch (err) {
+    // rollback if failed
+    toggleFavoriteBlog(blogId);
+    console.error('Failed to toggle favorite', err);
+  }
+};
+
   return (
     <Box sx={{ minHeight: "100vh", py: 6 }}>
       <motion.div

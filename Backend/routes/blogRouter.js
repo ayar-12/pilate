@@ -20,13 +20,23 @@ router.get('/blogs/:id', getSingleBlog);         // ✅ Dynamic route comes afte
 router.post('/blogs/favorite/:id', userAuth, async (req, res) => {
   try {
     const blogId = req.params.id;
+    const userId = req.user._id; // comes from userAuth middleware
+
     const blog = await Blog.findById(blogId);
     if (!blog) {
       return res.status(404).json({ success: false, message: "Blog not found" });
     }
-    blog.isFavorite = !blog.isFavorite;
-    await blog.save();
-    res.json({ success: true, message: "Favorite status toggled", blog });
+
+    const existing = await Favorite.findOne({ user: userId, blog: blogId });
+
+    if (existing) {
+      await existing.deleteOne();
+      return res.json({ success: true, favorited: false });
+    } else {
+      await Favorite.create({ user: userId, blog: blogId });
+      return res.json({ success: true, favorited: true });
+    }
+
   } catch (err) {
     console.error('Error toggling favorite:', err);
     res.status(500).json({ success: false, message: "Internal Server Error" });

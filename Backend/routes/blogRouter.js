@@ -1,5 +1,6 @@
 const express = require('express');
 const Blog = require('../models/blog');
+const Favorite = require('../models/favorite'); 
 const router = express.Router();
 const { userAuth, verifyAdmin } = require('../middleware/userAuth');
 const upload = require('../middleware/upload');
@@ -9,18 +10,21 @@ const {
   createBlog,
   updateBlog,
   deleteBlog,
-  searchBlogs,
-  favoriteBlog
+  searchBlogs
 } = require('../controller/blogControlller');
 
+// ===== Blog public routes =====
 router.get('/blogs', getAllBlogs);
-router.get('/blogs/search', searchBlogs);        // ✅ Move this BEFORE the dynamic route
-router.get('/blogs/:id', getSingleBlog);         // ✅ Dynamic route comes after specific routes
+router.get('/blogs/search', searchBlogs); 
+router.get('/blogs/:id', getSingleBlog);
 
+// ===== Favorites =====
+
+// Toggle favorite for the logged-in user
 router.post('/blogs/favorite/:id', userAuth, async (req, res) => {
   try {
     const blogId = req.params.id;
-    const userId = req.user._id; // comes from userAuth middleware
+    const userId = req.user._id;
 
     const blog = await Blog.findById(blogId);
     if (!blog) {
@@ -43,7 +47,19 @@ router.post('/blogs/favorite/:id', userAuth, async (req, res) => {
   }
 });
 
-// Rest of your routes stay the same...
+// Get all favorites for the logged-in user
+router.get('/blogs/favorites', userAuth, async (req, res) => {
+  try {
+    const favorites = await Favorite.find({ user: req.user._id }).populate('blog');
+    const blogs = favorites.map(f => f.blog).filter(Boolean); // remove nulls if any blog is deleted
+    res.json({ success: true, data: blogs, count: blogs.length });
+  } catch (err) {
+    console.error('Error fetching favorites:', err);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+});
+
+// ===== Admin-only blog management =====
 router.post(
   '/blogs',
   userAuth,

@@ -170,17 +170,34 @@ const searchBlogs = async (req, res) => {
   }
 };
 
-exports.getMyFavorites = async (req, res) => {
+const toggleFavorite = async (req, res) => {
   try {
+    const { id: blogId } = req.params;
     const userId = req.user._id;
-    const favs = await Favorite.find({ user: userId }).populate('blog');
-    const data = favs
-      .map(f => f.blog)
-      .filter(Boolean); // in case a blog was deleted
 
-    return res.json({ success: true, count: data.length, data });
+    const blog = await Blog.findById(blogId);
+    if (!blog) return res.status(404).json({ success: false, message: 'Blog not found' });
+
+    const existing = await Favorite.findOne({ user: userId, blog: blogId });
+    if (existing) {
+      await existing.deleteOne();
+      return res.json({ success: true, favorited: false });
+    }
+
+    await Favorite.create({ user: userId, blog: blogId });
+    res.json({ success: true, favorited: true });
   } catch (err) {
-    return res.status(500).json({ success: false, message: 'Failed to fetch favorites' });
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+const getMyFavorites = async (req, res) => {
+  try {
+    const favs = await Favorite.find({ user: req.user._id }).populate('blog');
+    const blogs = favs.map(f => f.blog).filter(Boolean);
+    res.json({ success: true, count: blogs.length, data: blogs });
+  } catch {
+    res.status(500).json({ success: false, message: 'Failed to fetch favorites' });
   }
 };
 
@@ -192,5 +209,6 @@ module.exports = {
   updateBlog,
   deleteBlog,
   searchBlogs,
-  favoriteBlog
+  toggleFavorite,
+  getMyFavorites
 };

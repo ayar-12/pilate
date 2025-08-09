@@ -62,15 +62,39 @@ if (data.success) {
     }
   }, [backendUrl]);
 
-  const getAllBlogs = useCallback(async () => {
+const getAllBlogs = useCallback(async () => {
+  try {
+    // 1) Fetch all blogs
+    const { data } = await axios.get(`${backendUrl}/api/blog/blogs`);
+    let allBlogs = data.success ? data.data : [];
+
+    // 2) If logged in, fetch favorites
     try {
-      const { data } = await axios.get(`${backendUrl}/api/blog/blogs`);
-      setBlogs(data.success ? data.data : []);
-    } catch (err) {
-      console.error(err);
-      toast.error("Could not load blogs.");
+      const token = localStorage.getItem("token");
+      if (token) {
+        const favRes = await axios.get(`${backendUrl}/api/blog/blogs/favorites`, {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        const favIds = new Set((favRes.data?.data || []).map(f => f._id));
+        allBlogs = allBlogs.map(b => ({
+          ...b,
+          isFavorite: favIds.has(b._id)
+        }));
+      }
+    } catch (favErr) {
+      console.warn("Failed to fetch favorites:", favErr);
     }
-  }, [backendUrl]);
+
+    // 3) Save merged list
+    setBlogs(allBlogs);
+
+  } catch (err) {
+    console.error(err);
+    toast.error("Could not load blogs.");
+  }
+}, [backendUrl]);
 
   const getHomeData = useCallback(async () => {
     try {

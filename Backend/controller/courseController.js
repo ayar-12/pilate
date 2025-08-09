@@ -77,19 +77,28 @@ const getSingleCourse = async (req, res) => {
 };
 
 
-
-
-    const createCourse = async (req, res) => {
+const createCourse = async (req, res) => {
   try {
-    const { title, description, price, couchName, timing } = req.body;
+    const { title, description, price, couchName } = req.body;
+
+    // 🔧 Parse timing if it came as a JSON string
+    let timingData = req.body.timing;
+    if (typeof timingData === 'string') {
+      try {
+        timingData = JSON.parse(timingData);
+      } catch {
+        return res.status(400).json({ success: false, message: 'Invalid timing format (must be JSON array)' });
+      }
+    }
+    if (!Array.isArray(timingData) || timingData.length === 0) {
+      return res.status(400).json({ success: false, message: 'Timing must be a non-empty array' });
+    }
 
     if (!title || !description || !price || !couchName || !req.files?.image || !req.files?.video) {
       return res.status(400).json({ success: false, message: 'All fields including image and video are required' });
     }
 
-    const timingData = JSON.parse(timing);
-
-    // Upload to Cloudinary (needs memoryStorage so .buffer exists)
+    // Uploads
     const imageUpload = await uploadBufferToCloudinary(req.files.image[0], 'courses/images', 'image');
     const videoUpload = await uploadBufferToCloudinary(req.files.video[0], 'courses/videos', 'video');
 
@@ -98,7 +107,7 @@ const getSingleCourse = async (req, res) => {
       description,
       price,
       couchName,
-      timing: timingData,
+      timing: timingData, // ✅ now an array
       image: imageUpload.secure_url,
       video: videoUpload.secure_url,
       cloudinary_id_image: imageUpload.public_id,
@@ -112,37 +121,61 @@ const getSingleCourse = async (req, res) => {
   }
 };
 
+
 const updateCourse = async (req, res) => {
   try {
     const { id } = req.params;
     const course = await Course.findById(id);
     if (!course) return res.status(404).json({ success: false, message: 'Course not found' });
 
-if (req.files?.image?.[0]) {
-  if (course.cloudinary_id_image) await cloudinary.uploader.destroy(course.cloudinary_id_image, { resource_type: 'image' });
-  const img = await uploadBufferToCloudinary(req.files.image[0], 'courses/images', 'image');
-  course.image = img.secure_url;
-  course.cloudinary_id_image = img.public_id;
-}
+    // 🔧 If timing is present, parse it from JSON string to array
+    if (req.body.timing !== undefined) {
+      let timingData = req.body.timing;
+      if (typeof timingData === 'string') {
+        try {
+          timingData = JSON.parse(timingData);
+        } catch {
+          return res.status(400).json({ success: false, message: 'Invalid timing format (must be JSON array)' });
+        }
+      }
+      if (!Array.isArray(timingData)) {
+        return res.status(400).json({ success: false, message: 'Timing must be an array' });
+      }
+      course.timing = timingData; // ✅ set parsed array
+    }
 
-if (req.files?.video?.[0]) {
-  if (course.cloudinary_id_video) await cloudinary.uploader.destroy(course.cloudinary_id_video, { resource_type: 'video' });
-  const vid = await uploadBufferToCloudinary(req.files.video[0], 'courses/videos', 'video');
-  course.video = vid.secure_url;
-  course.cloudinary_id_video = vid.public_id;
-}
+    // Uploads (unchanged)
+    if (req.files?.image?.[0]) {
+      if (course.cloudinary_id_image) {
+        await cloudinary.uploader.destroy(course.cloudinary_id_image, { resource_type: 'image' });
+      }
+      const img = await uploadBufferToCloudinary(req.files.image[0], 'courses/images', 'image');
+      course.image = img.secure_url;
+      course.cloudinary_id_image = img.public_id;
+    }
 
+    if (req.files?.video?.[0]) {
+      if (course.cloudinary_id_video) {
+        await cloudinary.uploader.destroy(course.cloudinary_id_video, { resource_type: 'video' });
+      }
+      const vid = await uploadBufferToCloudinary(req.files.video[0], 'courses/videos', 'video');
+      course.video = vid.secure_url;
+      course.cloudinary_id_video = vid.public_id;
+    }
 
+    // Copy the rest of fields except image/video/timing
     Object.keys(req.body).forEach(key => {
-      if (key !== 'image' && key !== 'video') course[key] = req.body[key];
+      if (['image', 'video', 'timing'].includes(key)) return;
+      course[key] = req.body[key];
     });
 
     await course.save();
-    res.status(200).json({ success: true, message: 'Course updated', data: course });
+    return res.status(200).json({ success: true, message: 'Course updated', data: course });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
 
 const deleteCourse = async (req, res) => {

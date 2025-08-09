@@ -24,37 +24,6 @@ const Class = () => {
   const { backendUrl, courses , classData} = useContext(AppContext);
 const [loading, setLoading] = useState('true')
 
-const fullSection = {
-  hidden: { opacity: 5, y: 30 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      duration: 0.7,
-      ease: [0.25, 0.1, 0.25, 1],
-    },
-  },
-};
-
-const staggerContainer = {
-  hidden: {},
-  show: {
-    transition: {
-      staggerChildren: 0.15,
-      delayChildren: 0.2,
-    },
-  },
-};
-
-const itemMotion = {
-  hidden: { opacity: 5, y: 20, scale: 0.98 },
-  show: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { duration: 0.5, ease: [0.25, 0.1, 0.25, 1] },
-  },
-};
 
 
   const dailyQuotes = [
@@ -98,10 +67,8 @@ const getImageUrl = (file) => {
 
   if (!courses || !Array.isArray(courses)) {
     return (
-      <Box sx={{ minHeight: "100vh", py: 6, mt: 6 }}>
-        <Typography variant="h6" color="textSecondary" textAlign="center">
-          Loading courses...
-        </Typography>
+    <Box sx={{ minHeight: "60vh", display: "grid", placeItems: "center" }}>
+        <Typography color="text.secondary">Loading courses…</Typography>
       </Box>
     );
   }
@@ -147,155 +114,115 @@ const getMediaUrl = (file) => {
 
   return (
 
-<motion.div
-  initial={{ opacity: 0, y: 50 }}
-  whileInView={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.6, ease: 'easeOut' }}
-  viewport={{ once: false, amount: 0.3 }}
->
-    <Box sx={{ minHeight: "100vh", py:6, padding: { xs: 1, sm: 1, md: 1 },}}>
+  <Box sx={{ minHeight: "100vh", py: { xs: 2, sm: 4 }, px: { xs: 1.5, sm: 3 } }}>
+    <Box
+        sx={{
+          position: "relative",
+          height: { xs: 280, sm: 360, md: 420 },
+          borderRadius: 3,
+          overflow: "hidden",
+          boxShadow: "0 10px 30px rgba(0,0,0,0.18)",
+          mb: { xs: 3, md: 4 },
+        }}
+      >
 
-
-<motion.div
-  variants={staggerContainer}
-  initial="hidden"
-  whileInView="show"
-  viewport={{ once: false, amount: 0.3 }}
->
-<Box
-  sx={{
-    position: 'relative',
-    height: '400px',
-    mx: 2.5,
-    mt: 0,
-    borderRadius: '16px',
-    overflow: 'hidden',
-    backgroundPosition: 'center',
-    boxShadow: '0 10px 30px rgba(0, 0, 0, 0.18)',
-    backgroundSize: 'cover',
-
-  }}
->
-
-  <Box
-    sx={{
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(247, 207, 216, 0.25)', 
-      backdropFilter: 'blur(12px)', 
-
-      zIndex: 1,
-    }}
-  />
-
-  <Box
-    sx={{
-      position: 'relative',
-      zIndex: 2,
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      height: '100%',
-      px: { xs: 2, sm: 3, md: 4 }
-
-    }}
-  >
- 
-    <Box sx={{ maxWidth: '500px' }}>
+     <Box
+          sx={{
+            position: "absolute",
+            inset: 0,
+            bgcolor: "rgba(247, 207, 216, 0.25)",
+            backdropFilter: "blur(12px)",
+            zIndex: 1,
+          }}
+        />
 
     <Box
-  sx={{
-    display: 'inline-block',
-    px: 2,
-    py: 1,
-    backgroundColor: '#670D2F',
-    color: '#cbc9cb',
-    borderRadius: '20px',
-    fontSize: '14px',
-    mb: 13,
-    backdropFilter: 'blur(4px)',
-  }}
->
+          sx={{
+            position: "relative",
+            zIndex: 2,
+            height: "100%",
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", md: "1.1fr 1fr" },
+            gap: { xs: 2, md: 3 },
+            alignItems: "center",
+            px: { xs: 2, sm: 3, md: 4 },
+          }}
+        >
+ 
+     <Box>
+            <Box
+              sx={{
+                display: "inline-block",
+                px: 1.5,
+                py: 0.75,
+                bgcolor: "#670D2F",
+                color: "#cbc9cb",
+                borderRadius: "20px",
+                fontSize: { xs: 12, sm: 13 },
+                mb: { xs: 1.5, md: 2 },
+              }}
+            >
   {classData?.span || 'Join Us Today'}
 </Box>
 
 
-   <Typography      mb='3' text-shadow= '1px 1px 2px rgba(0, 0, 0, 0.05)' fontFamily='Poppins' size='lg' color='#8d1f58' fontSize='40px' fontWeight='bold' >
+    <Typography
+              sx={{
+                color: "#8d1f58",
+                fontWeight: 800,
+                fontFamily: "Poppins, system-ui, -apple-system, Segoe UI, Roboto",
+                fontSize: { xs: 24, sm: 32, md: 40 },
+                lineHeight: 1.1,
+                mb: 1,
+              }}
+            >
          {classData?.headTitle || 'Achieve balance in mind, body, and soul.'} 
       </Typography>
-      <Typography
-        sx={{
-          color: '#393E46',
-          fontSize: '14px',
-          mb: 3,
-        }}
-      >
+            <Typography sx={{ color: "#393E46", fontSize: { xs: 13, sm: 14 } }}>
+
       {classData?.subHeadTitle || '' }
       </Typography>
     </Box>
 
     {courses.length > 0 && (
       
-  <Card
-    sx={{
-      position: 'relative',
-      width: '100%',
-      height: { xs: 240, sm: 300, md: 360 },
-      borderRadius: '16px',
-      overflow: 'hidden',
-      cursor: 'pointer',
-      boxShadow: '0 12px 32px rgba(0, 0, 0, 0.21)',
-      '&:hover .arrow-icon': {
-        opacity: 1,
-      },
-    }}
-  >
-    <CardMedia
-      component="img"
-      image={getImageUrl(courses[0].image)}
-      alt={courses[0].title}
-      sx={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        objectFit: 'cover',
-        zIndex: 0,
-      }}
-      onError={(e) => {
-        e.target.src = "/placeholder-image.png";
-      }}
-    />
+<Card
+              sx={{
+                position: "relative",
+                width: "100%",
+                height: { xs: 200, sm: 260, md: 320 },
+                borderRadius: 2,
+                overflow: "hidden",
+                boxShadow: "0 12px 32px rgba(0,0,0,0.21)",
+              }}
+            >
+              <CardMedia
+                component="img"
+                loading="lazy"
+                decoding="async"
+                image={getImageUrl(courses[0].image)}
+                alt={courses[0].title}
+                sx={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+                onError={(e) => (e.currentTarget.src = "/placeholder-image.png")}
+              />
 
-    <Box
-      sx={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: 'linear-gradient(to top, rgba(0,0,0,0.45), rgba(0,0,0,0.15))',
-        backdropFilter: 'blur(3px)',
-        zIndex: 1,
-      }}
-    />
-
-    <CardContent
-      sx={{
-        position: 'relative',
-        zIndex: 2,
-        p: 3,
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        color: 'white',
-      }}
-    >
+<Box
+                sx={{
+                  position: "absolute",
+                  inset: 0,
+                  background: "linear-gradient(to top, rgba(0,0,0,0.45), rgba(0,0,0,0.15))",
+                }}
+              />
+              <CardContent
+                sx={{
+                  position: "relative",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  color: "white",
+                }}
+              >
       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <IconButton
           sx={{
@@ -313,73 +240,61 @@ const getMediaUrl = (file) => {
         />
       </Box>
 
-      <Box>
-        <Typography
-          variant="caption"
-          sx={{
-            backgroundColor: 'rgba(255, 255, 255, 0.2)',
-            color: 'rgba(255,255,255,0.8)',
-            px: 1.5,
-            py: 0.5,
-            borderRadius: '20px',
-            backdropFilter: 'blur(4px)',
-            display: 'inline-block',
-            mb: 1,
-          }}
-        >
+   <Box>
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      bgcolor: "rgba(255,255,255,.2)",
+                      color: "rgba(255,255,255,.9)",
+                      px: 1,
+                      py: 0.25,
+                      borderRadius: "16px",
+                      display: "inline-block",
+                      mb: 0.75,
+                    }}
+                  >
           Newest Class
         </Typography>
 
-        <Typography variant="h6" fontWeight="bold" sx={{fontFamily: 'Magical Childhood, cursive', fontSize: '14px'}}>
-          {courses[0].title}
-        </Typography>
+        <Typography sx={{ fontWeight: 700, fontSize: { xs: 16, sm: 18 } }}>
+                    {courses[0].title}
+                  </Typography>
 
-        <Typography sx={{ fontSize: '13px', mt: 1 }}>
-          {courses[0].description?.slice(0, 100)}...
-        </Typography>
+                  <Typography sx={{ fontSize: { xs: 11.5, sm: 12.5 }, mt: 0.75 }}>
+                    {courses[0].description?.slice(0, 100)}…
+                  </Typography>
 
-        <Typography sx={{ fontSize: '12px', mt: 1, color: '#f5f5f5' }}>
-          🕒{" "}
-          {Array.isArray(courses[0].timing)
-            ? courses[0].timing.map((slot) => `${slot.date} ${slot.time}`).join(" | ")
-            : "No schedule"}
-        </Typography>
+                  <Typography sx={{ fontSize: 11.5, mt: 0.5, opacity: 0.9 }}>
+                    🕒{" "}
+                    {Array.isArray(courses[0].timing)
+                      ? courses[0].timing.map((s) => `${s.date} ${s.time}`).join(" | ")
+                      : "No schedule"}
+                  </Typography>
 
-   <Button
-  variant="contained"
-  size="small"
-  sx={{
-    mt: 2,
-    backgroundColor: "#670D2F",
-    borderRadius: 999,
-    fontWeight: "bold",
-    textTransform: "none",
-    px: 3,
-    py: 1,
-    fontSize: "14px"
-  }}
-  endIcon={<ChevronRight size={16} />}
-  component={Link}
-  to={`/booking-details/${courses[0]._id}`}
->
-  Book Now
-</Button>
-
+                  <Button
+                    variant="contained"
+                    size="small"
+                    sx={{
+                      mt: 1.25,
+                      bgcolor: "#670D2F",
+                      borderRadius: 999,
+                      textTransform: "none",
+                      px: 2.25,
+                      py: 0.5,
+                      fontSize: 13,
+                    }}
+                    endIcon={<ChevronRight size={16} />}
+                    component={Link}
+                    to={`/booking-details/${courses[0]._id}`}
+                  >
+                    Book Now
+                  </Button>
+                </Box>
+              </CardContent>
+            </Card>
+          )}
+        </Box>
       </Box>
-    </CardContent>
-  </Card>
-  
-
-)}
-
-
-
-  </Box>
-
-</Box>
-</motion.div>
-
-
 
       <Grid container spacing={3} sx={{ px: 2.5, mt: 4 }} alignItems="stretch">
 
@@ -791,7 +706,7 @@ const getMediaUrl = (file) => {
 
 
     </Box>
-</motion.div>
+
 
   
   );

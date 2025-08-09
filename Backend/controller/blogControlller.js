@@ -178,7 +178,8 @@ const searchBlogs = async (req, res) => {
     return res.status(500).json({ success: false, message: 'Something went wrong. Try again.' });
   }
 };
-exports.toggleFavorite = async (req, res) => {
+
+const toggleFavorite = async (req, res) => {
   try {
     const blogId = req.params.id;
     if (!mongoose.Types.ObjectId.isValid(blogId)) {
@@ -202,7 +203,7 @@ exports.toggleFavorite = async (req, res) => {
   }
 };
 
-exports.getMyFavorites = async (req, res) => {
+const getMyFavorites = async (req, res) => {
   try {
     const favs = await Favorite.find({ user: req.user._id }).populate('blog');
     const blogs = favs

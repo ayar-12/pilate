@@ -96,6 +96,41 @@ const getAllBlogs = useCallback(async () => {
   }
 }, [backendUrl]);
 
+  const toggleFavorite = async (blogId) => {
+  try {
+    if (!blogId) {
+      console.error('toggleFavorite: missing blogId');
+      return;
+    }
+
+    const token = localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+    // Optimistic update
+    toggleFavoriteBlog(blogId);
+
+    await axios.post(
+      `${backendUrl}/api/blog/blogs/favorite/${blogId}`,
+      {},
+      { headers, withCredentials: true }
+    );
+
+    // Refresh from server
+    const favRes = await axios.get(
+      `${backendUrl}/api/blog/blogs/favorites`,
+      { headers, withCredentials: true }
+    );
+    const favIds = (favRes.data?.data || []).map(b => b._id);
+    setBlogs(prev => prev.map(b => ({ ...b, isFavorite: favIds.includes(b._id) })));
+
+  } catch (err) {
+    // Rollback optimistic update
+    toggleFavoriteBlog(blogId);
+    console.error('Failed to toggle favorite', err.response?.data || err.message);
+  }
+};
+
+
   const getHomeData = useCallback(async () => {
     try {
       const { data } = await axios.get(`${backendUrl}/api/home`);

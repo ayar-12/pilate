@@ -183,6 +183,7 @@ useEffect(() => {
       height: 360,
       width: {sx: 150 , md: 300},
       maxWidth: '100%',
+      marginBottom: {{sx: 5}}
     
     }}>
       <Box display="flex" flexDirection="column" alignItems="center" textAlign="center" sx={{

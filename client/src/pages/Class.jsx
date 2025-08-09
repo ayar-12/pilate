@@ -296,7 +296,7 @@ const getMediaUrl = (file) => {
         </Box>
       </Box>
 
-      <Grid container spacing={3} sx={{ px: 2.5, mt: 4 }} alignItems="stretch">
+     <Grid container spacing={2.5} alignItems="stretch">
 
       {classData && (
   <Grid item xs={12} md={4}>
@@ -314,249 +314,85 @@ const getMediaUrl = (file) => {
       }}
     >
 
-{classData?.video && (
-  <video
-  src={getMediaUrl(classData.video, 'videos')}
+         {classData?.video && (
+          <Grid item xs={12} md={4}>
+            <Card sx={{ position: "relative", borderRadius: 2.5, overflow: "hidden", height: { xs: 220, md: 320 } }}>
+              <Box component="video"
+                   src={getMediaUrl(classData.video)}
+                   autoPlay muted loop playsInline
+                   sx={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+              />
+              <Box sx={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,.4), rgba(0,0,0,.15))" }} />
+              <CardContent sx={{ position: "relative", color: "white", height: "100%", display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
+                <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1, mb: 1.5 }}>
+                  <IconButton size="small" sx={{ bgcolor: "rgba(255,255,255,.25)", color: "white" }}>
+                    <Play size={16} />
+                  </IconButton>
+                  <Typography variant="caption" sx={{ bgcolor: "rgba(255,255,255,.2)", px: 1, py: 0.25, borderRadius: 999 }}>
+                    View video
+                  </Typography>
+                </Box>
+                <Typography sx={{ fontWeight: 700 }}>{classData.title}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        )}
 
-    autoPlay
-    muted
-    loop
-    playsInline
-    style={{
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      objectFit: 'cover',
-      zIndex: 0,
-    }}
-    onError={() => console.error("Video failed to load")}
-  />
-)}
-
-      <Box
-        sx={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'linear-gradient(to top, rgba(0,0,0,0.4), rgba(0,0,0,0.15))',
-          backdropFilter: 'blur(2px)',
-          zIndex: 1,
-        }}
-      />
-
-
-      <CardContent
-        sx={{
-          position: 'relative',
-          zIndex: 2,
-          p: 3,
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          color: 'white',
-        }}
-      >
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <IconButton
-          sx={{
-  position: 'absolute',
-  top: 12,
-  left: 12,
-  zIndex: 10,
-  backgroundColor: 'rgba(255,255,255,0.2)',
-  backdropFilter: 'blur(6px)',
-}}
-          >
-            <Play size={20} />
-          </IconButton>
-          <ArrowUpRight
-            className="arrow-icon"
-            size={24}
-            style={{
-              opacity: 0,
-              transition: 'opacity 0.3s',
-            }}
-          />
-        </Box>
-
-        <Box>
-          <Box
-            sx={{
-              display: 'inline-block',
-              fontSize: '12px',
-              color: 'rgba(255, 255, 255, 0.8)',
-              backgroundColor: 'rgba(255, 255, 255, 0.2)',
-              px: 1.5,
-              py: 0.5,
-              borderRadius: '20px',
-              backdropFilter: 'blur(4px)',
-              mb: 2,
-            }}
-          >
-            View video
-          </Box>
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: 'bold',
-              lineHeight: 1.7,
-              fontFamily: 'Magical Childhood, cursive',
-            }}
-          >
-    {classData.title}
-          </Typography>
-        </Box>
-      </CardContent>
-    </Card>
-  </Grid>
-      )}
       
    {classData?.image && (
-  <Grid item xs={12} md={4}>
-    <Card
-      sx={{
-        position: 'relative',
-      width: '115%',
-      height: { xs: 240, sm: 300, md: 360 },
-        borderRadius: '16px',
-        overflow: 'hidden',
-        backgroundImage: `url(${getImageUrl(classData.image) })`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
-    >
-      <Box
-        sx={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'linear-gradient(to top, rgba(0,0,0,0.3), transparent)',
-          zIndex: 1,
-        }}
-      />
-      <CardContent
-        sx={{
-          position: 'relative',
-          zIndex: 2,
-          p: 3,
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'flex-end',
-          color: 'white',
-        }}
-      >
-        <Typography variant="h6" fontWeight="bold" sx={{ fontFamily: 'Magical Childhood, cursive' }}>
-          {classData.subTitle}
-        </Typography>
-      </CardContent>
-    </Card>
-    
-  </Grid>
+<Grid item xs={12} md={4}>
+            <Card sx={{
+              position: "relative",
+              borderRadius: 2.5,
+              overflow: "hidden",
+              height: { xs: 220, md: 320 },
+              backgroundImage: `url(${getImageUrl(classData.image)})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}>
+     <Box sx={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,.3), transparent)" }} />
+              <CardContent sx={{ position: "relative", color: "white", height: "100%", display: "flex", alignItems: "flex-end" }}>
+                <Typography sx={{ fontWeight: 700 }}>{classData.subTitle}</Typography>
+              </CardContent>
+            </Card>
+          </Grid>
 )}
-
-        <Grid item xs={12} md={4}>
-        <Card
-  sx={{
-    position: 'relative',
-    marginLeft: { xs: 0, sm: 5, md: 6.5 },
-      width: '109%',
-      height: { xs: 240, sm: 300, md: 360 },
-    borderRadius: '24px',
-    overflow: 'hidden',
-    background: '#670D2F',
-    backdropFilter: 'blur(16px)',
-    WebkitBackdropFilter: 'blur(16px)',
-    boxShadow: '0 12px 32px rgba(0, 0, 0, 0.08)',
-    border: '1px solid rgba(255,255,255,0.2)',
-    p: 3,
-  }}
->
-  <CardContent
-    sx={{
-      position: 'relative',
-      zIndex: 2,
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'space-between',
-      color: '#111827',
-    }}
-  >
-    <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-      <ArrowUpRight size={22} color="#f0f0f0ff" />
-    </Box>
-
-    <Box
-  sx={{
-    position: 'absolute',
-    top: '16px',
-    left: '16px',
-    fontSize: '12px',
-    color: '#670D2F',
-    backgroundColor: 'rgba(255, 255, 255, 0.89)',
-    px: 1.5,
-    py: 0.6,
-    borderRadius: '999px',
-    backdropFilter: 'blur(4px)',
-    fontWeight: 500,
-    boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
-    zIndex: 3,
-  }}
->
-  {new Date().toLocaleDateString('en-US', { weekday: 'long' })}
-</Box>
-
-
-    <Box>
-      <Typography
-        variant="h5"
-        sx={{
-          fontWeight: 700,
-          mb: 1.5,
-          lineHeight: 1.4,
-          fontFamily: 'Playfair Display',
-          color: '#e9e2e5ff',
-        }}
-      >
-        {quote}
-      </Typography>
-
-      <Typography
-        variant="body2"
-        sx={{ color: '#e8dfe3ff', mb: 2 }}
-      >
-          {action}
-      </Typography>
-    </Box>
-  </CardContent>
-</Card>
-
-
-</Grid>
-
+<Grid item xs={12} md={4}>
+          <Card sx={{
+            position: "relative",
+            borderRadius: 3,
+            overflow: "hidden",
+            height: { xs: 220, md: 320 },
+            bgcolor: "#670D2F",
+            color: "#fff",
+            p: 0,
+          }}>
+            <CardContent sx={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+                <ArrowUpRight size={20} />
+              </Box>
+              <Box>
+                <Typography variant="body1" sx={{ fontWeight: 800, mb: 1.25, lineHeight: 1.35 }}>
+                  {quote}
+                </Typography>
+                <Typography variant="body2" sx={{ opacity: 0.95 }}>{action}</Typography>
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
       </Grid>
 
 
 <br />
 
-<Box sx={{textAlign: 'center',  padding: 5, }}>
-  
-       <Typography variant="h4" sx={{ fontFamily: 'Poppins' , fontWeight: 'bold', color: '#670D2F', textAlign: 'center', mb: 1 }}>
-  Book Your Session Now ✨
-</Typography>
-<Typography variant="body2" sx={{ textAlign: 'center', fontStyle: 'italic' }}>
-  Let’s move with intention and joy 💖
-</Typography>
-
- </Box>   
+      <Box sx={{ textAlign: "center", py: { xs: 3, md: 4 } }}>
+        <Typography variant="h5" sx={{ fontWeight: 800, color: "#670D2F" }}>
+          Book Your Session Now ✨
+        </Typography>
+        <Typography variant="body2" sx={{ fontStyle: "italic" }}>
+          Let’s move with intention and joy 💖
+        </Typography>
+      </Box>
  
 <Grid container spacing={4} justifyContent="center" alignItems="stretch">
 

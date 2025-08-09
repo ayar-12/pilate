@@ -33,7 +33,7 @@ const Blog = () => {
         width: "100%",
         py: 6,
         px: { xs: 2, sm: 4, md: 8 }, // responsive padding
-        backgroundColor: "#fafafa",
+
       }}
     >
       {/* Page Heading */}

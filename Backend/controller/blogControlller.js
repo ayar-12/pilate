@@ -178,48 +178,43 @@ const searchBlogs = async (req, res) => {
     return res.status(500).json({ success: false, message: 'Something went wrong. Try again.' });
   }
 };
-
-const toggleFavorite = async (req, res) => {
+exports.toggleFavorite = async (req, res) => {
   try {
-    console.log("User:", req.user);
-    console.log("Blog ID:", req.params.id);
-
-    const blog = await Blog.findById(req.params.id);
-    if (!blog) {
-      return res.status(404).json({ success: false, message: "Blog not found" });
+    const blogId = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(blogId)) {
+      return res.status(400).json({ success: false, message: 'Invalid blog id' });
     }
 
-    const user = await User.findById(req.user._id);
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+    const blog = await Blog.findById(blogId);
+    if (!blog) return res.status(404).json({ success: false, message: 'Blog not found' });
+
+    const existing = await Favorite.findOne({ user: req.user._id, blog: blogId });
+    if (existing) {
+      await existing.deleteOne();
+      return res.json({ success: true, favorited: false });
     }
 
-    const index = user.favorites.indexOf(blog._id);
-    if (index > -1) {
-      user.favorites.splice(index, 1);
-    } else {
-      user.favorites.push(blog._id);
-    }
-
-    await user.save();
-    res.json({ success: true, data: user.favorites });
+    await Favorite.create({ user: req.user._id, blog: blogId });
+    return res.json({ success: true, favorited: true });
   } catch (err) {
-    console.error("toggleFavorite error:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error('toggleFavorite error:', err);
+    return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
 
-
-const getMyFavorites = async (req, res) => {
+exports.getMyFavorites = async (req, res) => {
   try {
     const favs = await Favorite.find({ user: req.user._id }).populate('blog');
-    const blogs = favs.map(f => f.blog).filter(Boolean);
-    res.json({ success: true, count: blogs.length, data: blogs });
-  } catch {
-    res.status(500).json({ success: false, message: 'Failed to fetch favorites' });
+    const blogs = favs
+      .map(f => f.blog)
+      .filter(Boolean)
+      .map(b => ({ ...b.toObject(), image: formatUrl(b.image), video: formatUrl(b.video) }));
+    return res.json({ success: true, count: blogs.length, data: blogs });
+  } catch (err) {
+    console.error('getMyFavorites error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to fetch favorites' });
   }
 };
-
 
 module.exports = {
   getAllBlogs,

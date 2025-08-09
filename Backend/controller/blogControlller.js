@@ -170,24 +170,20 @@ const searchBlogs = async (req, res) => {
   }
 };
 
-const favoriteBlog = async (req, res) => {
+exports.getMyFavorites = async (req, res) => {
   try {
-    const { id } = req.params;
-    const blog = await Blog.findById(id);
-    if (!blog) return res.status(404).json({ success: false, message: 'Blog not found' });
+    const userId = req.user._id;
+    const favs = await Favorite.find({ user: userId }).populate('blog');
+    const data = favs
+      .map(f => f.blog)
+      .filter(Boolean); // in case a blog was deleted
 
-    blog.isFavorite = !blog.isFavorite;
-    await blog.save();
-
-    return res.status(200).json({
-      success: true,
-      message: `Blog ${blog.isFavorite ? 'added to' : 'removed from'} favorites`,
-      data: blog
-    });
-  } catch {
-    return res.status(500).json({ success: false, message: 'Something went wrong. Try again.' });
+    return res.json({ success: true, count: data.length, data });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: 'Failed to fetch favorites' });
   }
 };
+
 
 module.exports = {
   getAllBlogs,

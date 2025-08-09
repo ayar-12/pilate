@@ -1,180 +1,155 @@
 const mongoose = require('mongoose');
 const Blog = require('../models/blog');
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+const uploadBufferToCloudinary = require('../utils/cloudinaryUpload');
+const { v2: cloudinary } = require('cloudinary');
 
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 const formatUrl = (filePath) => {
   if (!filePath) return null;
   if (filePath.startsWith('http')) return filePath;
   return `${BASE_URL.replace(/\/+$/, '')}/${filePath.replace(/^\/+/, '')}`;
 };
 
+// GET /blogs
 const getAllBlogs = async (req, res) => {
   try {
     const blogs = await Blog.find({});
-    const processedBlogs = blogs.map(blog => ({
-      ...blog.toObject(),
-      image: formatUrl(blog.image),
-      video: formatUrl(blog.video)
+    const processedBlogs = blogs.map(b => ({
+      ...b.toObject(),
+      image: formatUrl(b.image),
+      video: formatUrl(b.video)
     }));
-
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       count: processedBlogs.length,
       message: 'Blogs fetched successfully',
       data: processedBlogs
     });
   } catch (error) {
-    return res.json({ success: false, message: 'Something went wrong. Try again.' });
+    return res.status(500).json({ success: false, message: 'Something went wrong. Try again.' });
   }
 };
 
+// GET /blogs/:id
 const getSingleBlog = async (req, res) => {
   try {
     const { id } = req.params;
-
     if (!id || !mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid blog ID'
-      });
+      return res.status(400).json({ success: false, message: 'Invalid blog ID' });
     }
-
     const blog = await Blog.findById(id);
-    if (!blog) {
-      return res.status(404).json({
-        success: false,
-        message: 'Blog not found'
-      });
-    }
+    if (!blog) return res.status(404).json({ success: false, message: 'Blog not found' });
 
     const processedBlog = {
       ...blog.toObject(),
       image: formatUrl(blog.image),
       video: formatUrl(blog.video)
     };
-
-    res.status(200).json({
-      success: true,
-      message: 'Blog retrieved successfully',
-      data: processedBlog
-    });
+    return res.status(200).json({ success: true, message: 'Blog retrieved successfully', data: processedBlog });
   } catch (error) {
-    return res.json({ success: false, message: 'Something went wrong. Try again.' });
+    return res.status(500).json({ success: false, message: 'Something went wrong. Try again.' });
   }
 };
 
+// POST /blogs
 const createBlog = async (req, res) => {
   try {
     const { title, description } = req.body;
-    if (!title || !description || !req.files || !req.files.image || !req.files.video) {
-      return res.status(400).json({
-        success: false,
-        message: 'Title, description, image and video are required'
-      });
+    if (!title || !description || !req.files?.image?.[0] || !req.files?.video?.[0]) {
+      return res.status(400).json({ success: false, message: 'Title, description, image and video are required' });
     }
 
-    const newBlog = new Blog({
+    // Upload to Cloudinary (multer must be memoryStorage)
+    const img = await uploadBufferToCloudinary(req.files.image[0], 'blogs/images', 'image');
+    const vid = await uploadBufferToCloudinary(req.files.video[0], 'blogs/videos', 'video');
+
+    const blog = new Blog({
       title,
       description,
-      image: `uploads/images/${req.files.image[0].filename}`,
-      video: `uploads/videos/${req.files.video[0].filename}`,
+      image: img.secure_url,
+      video: vid.secure_url,
+      cloudinary_id_image: img.public_id,
+      cloudinary_id_video: vid.public_id
     });
 
-    const savedBlog = await newBlog.save();
-    res.status(201).json({
-      success: true,
-      message: 'Blog created successfully',
-      data: savedBlog
-    });
+    const saved = await blog.save();
+    return res.status(201).json({ success: true, message: 'Blog created successfully', data: saved });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Failed to create blog',
-      error: error.message
-    });
+    return res.status(500).json({ success: false, message: error.message || 'Failed to create blog' });
   }
 };
 
+// PUT /blogs/:id
 const updateBlog = async (req, res) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid blog ID'
-      });
+      return res.status(400).json({ success: false, message: 'Invalid blog ID' });
     }
 
     const blog = await Blog.findById(id);
-    if (!blog) {
-      return res.status(404).json({
-        success: false,
-        message: 'Blog not found'
-      });
+    if (!blog) return res.status(404).json({ success: false, message: 'Blog not found' });
+
+    // Replace image if provided
+    if (req.files?.image?.[0]) {
+      if (blog.cloudinary_id_image) {
+        try { await cloudinary.uploader.destroy(blog.cloudinary_id_image, { resource_type: 'image' }); } catch {}
+      }
+      const img = await uploadBufferToCloudinary(req.files.image[0], 'blogs/images', 'image');
+      blog.image = img.secure_url;
+      blog.cloudinary_id_image = img.public_id;
     }
 
-    const updateData = { ...req.body };
-
-    if (req.files && req.files.image) {
-      updateData.image = `uploads/images/${req.files.image[0].filename}`;
+    // Replace video if provided
+    if (req.files?.video?.[0]) {
+      if (blog.cloudinary_id_video) {
+        try { await cloudinary.uploader.destroy(blog.cloudinary_id_video, { resource_type: 'video' }); } catch {}
+      }
+      const vid = await uploadBufferToCloudinary(req.files.video[0], 'blogs/videos', 'video');
+      blog.video = vid.secure_url;
+      blog.cloudinary_id_video = vid.public_id;
     }
-    if (req.files && req.files.video) {
-      updateData.video = `uploads/videos/${req.files.video[0].filename}`;
-    }
 
-    const updatedBlog = await Blog.findByIdAndUpdate(id, { $set: updateData }, { new: true });
+    // Update text fields
+    const allowed = ['title', 'description'];
+    allowed.forEach(k => { if (req.body[k] !== undefined) blog[k] = req.body[k]; });
 
-    res.status(200).json({
-      success: true,
-      message: 'Blog updated successfully',
-      data: updatedBlog
-    });
+    await blog.save();
+    return res.status(200).json({ success: true, message: 'Blog updated successfully', data: blog });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Failed to update blog',
-      error: error.message
-    });
+    return res.status(500).json({ success: false, message: error.message || 'Failed to update blog' });
   }
 };
 
+// DELETE /blogs/:id
 const deleteBlog = async (req, res) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid blog ID'
-      });
+      return res.status(400).json({ success: false, message: 'Invalid blog ID' });
     }
 
     const blog = await Blog.findByIdAndDelete(id);
-    if (!blog) {
-      return res.status(404).json({
-        success: false,
-        message: 'Blog not found'
-      });
-    }
+    if (!blog) return res.status(404).json({ success: false, message: 'Blog not found' });
 
-    res.status(200).json({
-      success: true,
-      message: 'Blog deleted successfully'
-    });
+    // Clean up Cloudinary
+    try {
+      if (blog.cloudinary_id_image) await cloudinary.uploader.destroy(blog.cloudinary_id_image, { resource_type: 'image' });
+      if (blog.cloudinary_id_video) await cloudinary.uploader.destroy(blog.cloudinary_id_video, { resource_type: 'video' });
+    } catch {}
+
+    return res.status(200).json({ success: true, message: 'Blog deleted successfully' });
   } catch (error) {
-    return res.json({ success: false, message: 'Something went wrong. Try again.' });
+    return res.status(500).json({ success: false, message: 'Something went wrong. Try again.' });
   }
 };
 
+// GET /blogs/search
 const searchBlogs = async (req, res) => {
   try {
     const { query } = req.query;
-    if (!query) {
-      return res.status(400).json({
-        success: false,
-        message: 'Search query is required'
-      });
-    }
+    if (!query) return res.status(400).json({ success: false, message: 'Search query is required' });
 
     const blogs = await Blog.find({
       $or: [
@@ -183,41 +158,34 @@ const searchBlogs = async (req, res) => {
       ]
     });
 
-    const processedBlogs = blogs.map(blog => ({
-      ...blog.toObject(),
-      image: formatUrl(blog.image),
-      video: formatUrl(blog.video)
+    const processed = blogs.map(b => ({
+      ...b.toObject(),
+      image: formatUrl(b.image),
+      video: formatUrl(b.video)
     }));
 
-    res.status(200).json({
-      success: true,
-      count: processedBlogs.length,
-      data: processedBlogs
-    });
+    return res.status(200).json({ success: true, count: processed.length, data: processed });
   } catch (error) {
-    return res.json({ success: false, message: 'Something went wrong. Try again.' });
+    return res.status(500).json({ success: false, message: 'Something went wrong. Try again.' });
   }
 };
 
 const favoriteBlog = async (req, res) => {
-  const { id } = req.params;
-
   try {
+    const { id } = req.params;
     const blog = await Blog.findById(id);
-    if (!blog) {
-      return res.status(404).json({ success: false, message: 'Blog not found' });
-    }
+    if (!blog) return res.status(404).json({ success: false, message: 'Blog not found' });
 
     blog.isFavorite = !blog.isFavorite;
     await blog.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: `Blog ${blog.isFavorite ? 'added to' : 'removed from'} favorites`,
       data: blog
     });
-  } catch (err) {
-    return res.json({ success: false, message: 'Something went wrong. Try again.' });
+  } catch {
+    return res.status(500).json({ success: false, message: 'Something went wrong. Try again.' });
   }
 };
 

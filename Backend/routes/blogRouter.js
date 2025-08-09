@@ -11,7 +11,7 @@ const {
   searchBlogs,
   toggleFavorite,
   getMyFavorites
-} = require('../controller/blogController');
+} = require('../controller/blogControlller');
 
 const router = express.Router();
 

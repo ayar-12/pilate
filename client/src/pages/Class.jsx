@@ -25,7 +25,7 @@ const Class = () => {
 const [loading, setLoading] = useState('true')
 
 const fullSection = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 5, y: 30 },
   show: {
     opacity: 1,
     y: 0,
@@ -47,7 +47,7 @@ const staggerContainer = {
 };
 
 const itemMotion = {
-  hidden: { opacity: 0, y: 20, scale: 0.98 },
+  hidden: { opacity: 5, y: 20, scale: 0.98 },
   show: {
     opacity: 1,
     y: 0,

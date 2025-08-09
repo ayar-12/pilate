@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { AppContext } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
-import blogimage from '../assets/ 12.jpg'
+import blogimage from '../assets/img2.jpg'
 const FavoriteBlogsWidget = () => {
   const { backendUrl } = useContext(AppContext);
   const [favorites, setFavorites] = useState(null); // null = loading

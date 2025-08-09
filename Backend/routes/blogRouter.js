@@ -1,7 +1,7 @@
+// routes/blogRouter.js
 const express = require('express');
 const { userAuth, verifyAdmin } = require('../middleware/userAuth');
 const upload = require('../middleware/upload');
-
 const {
   getAllBlogs,
   getSingleBlog,
@@ -11,7 +11,7 @@ const {
   searchBlogs,
   toggleFavorite,
   getMyFavorites
-} = require('../controller/blogControlller');
+} = require('../controller/blogControlller');  
 
 const router = express.Router();
 

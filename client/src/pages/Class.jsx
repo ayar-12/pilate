@@ -310,7 +310,7 @@ const getMediaUrl = (file) => {
                    autoPlay muted loop playsInline
                    sx={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
               />
-            
+              <Box sx={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,.4), rgba(0,0,0,.15))" }} />
               <CardContent sx={{ position: "relative", color: "white", height: "100%", display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
                 <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1, mb: 1.5 }}>
                   <IconButton size="small" sx={{ bgcolor: "rgba(255,255,255,.25)", color: "white" }}>

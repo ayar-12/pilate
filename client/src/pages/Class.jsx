@@ -298,7 +298,7 @@ const getMediaUrl = (file) => {
 
   
 <Grid container spacing={2.5} alignItems="stretch">
-  {/* Video tile */}
+
   {classData?.video && (
     <Grid item xs={12} md={4}>
       <Card
@@ -307,7 +307,7 @@ const getMediaUrl = (file) => {
           borderRadius: 2.5,
           overflow: "hidden",
           height: { xs: 220, md: 320 },
-          width: 500,
+          width: '100%',
         }}
       >
         <Box
@@ -387,6 +387,7 @@ const getMediaUrl = (file) => {
           backgroundImage: `url(${getImageUrl(classData.image)})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
+          width: '115%',
         }}
       >
         <Box

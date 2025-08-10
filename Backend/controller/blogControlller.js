@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Blog = require('../models/blog');
+const User = require('../models/user');
 
 const uploadBufferToCloudinary = require('../utils/cloudinaryUpload');
 const { v2: cloudinary } = require('cloudinary');
@@ -17,10 +18,10 @@ const getAllBlogs = async (req, res) => {
     const userId = req.user?._id; 
     const blogs = await Blog.find({});
 
-        let favoriteIds = [];
+    let favoriteIds = [];
     if (userId) {
-      const favs = await Favorite.find({ user: userId }).select('blog');
-      favoriteIds = favs.map(f => f.blog.toString());
+      const user = await User.findById(userId).select('favorites').lean();
+      favoriteIds = (user?.favorites || []).map(id => id.toString());
     }
 
     const processedBlogs = blogs.map(b => ({
@@ -179,47 +180,61 @@ const searchBlogs = async (req, res) => {
   }
 };
 
+// PUT /blogs/:id/favorite  (recommend PUT)
 const toggleFavorite = async (req, res) => {
- 
- try {
+  try {
     const userId = req.user._id;
     const blogId = req.params.id;
 
-    const blog = await Blog.findById(blogId);
-    if (!blog) {
-      return res.status(404).json({ success: false, message: "Blog not found" });
+    if (!mongoose.Types.ObjectId.isValid(blogId)) {
+      return res.status(400).json({ success: false, message: 'Invalid blog ID' });
     }
 
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
-    }
+    const blog = await Blog.findById(blogId).select('_id');
+    if (!blog) return res.status(404).json({ success: false, message: 'Blog not found' });
 
-    if (!user.favorites) user.favorites = []; // ensure array exists
+    const user = await User.findById(userId).select('favorites');
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
-    const index = user.favorites.indexOf(blogId);
-    if (index === -1) {
-      user.favorites.push(blogId);
+    const idx = user.favorites.findIndex(bid => bid.toString() === blogId);
+    let favorited;
+    if (idx === -1) {
+      user.favorites.push(blog._id);
+      favorited = true;
     } else {
-      user.favorites.splice(index, 1);
+      user.favorites.splice(idx, 1);
+      favorited = false;
     }
-
     await user.save();
-    res.json({ success: true, favorites: user.favorites });
+
+    return res.json({ success: true, favorited, favorites: user.favorites });
   } catch (err) {
-    console.error("Toggle favorite error:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error('Toggle favorite error:', err);
+    return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
 
+// GET /blogs/favorites
 const getMyFavorites = async (req, res) => {
   try {
-    const favs = await Favorite.find({ user: req.user._id }).populate('blog');
-    const blogs = favs
-      .map(f => f.blog)
-      .filter(Boolean)
-      .map(b => ({ ...b.toObject(), image: formatUrl(b.image), video: formatUrl(b.video) }));
-    return res.json({ success: true, count: blogs.length, data: blogs });
+    const user = await User.findById(req.user._id).select('favorites').lean();
+    const ids = user?.favorites || [];
+    if (!ids.length) return res.json({ success: true, count: 0, data: [] });
+
+    const blogs = await Blog.find({ _id: { $in: ids } }).lean();
+
+    // keep order (optional)
+    const order = new Map(ids.map((id, i) => [id.toString(), i]));
+    blogs.sort((a, b) => (order.get(a._id.toString()) ?? 0) - (order.get(b._id.toString()) ?? 0));
+
+    const processed = blogs.map(b => ({
+      ...b,
+      image: formatUrl(b.image),
+      video: formatUrl(b.video),
+      isFavorite: true
+    }));
+
+    return res.json({ success: true, count: processed.length, data: processed });
   } catch (err) {
     console.error('getMyFavorites error:', err);
     return res.status(500).json({ success: false, message: 'Failed to fetch favorites' });
@@ -236,3 +251,4 @@ module.exports = {
   toggleFavorite,
   getMyFavorites
 };
+

@@ -3,15 +3,9 @@ const express = require('express');
 const { userAuth, verifyAdmin } = require('../middleware/userAuth');
 const upload = require('../middleware/upload');
 const {
-  getAllBlogs,
-  getSingleBlog,
-  createBlog,
-  updateBlog,
-  deleteBlog,
-  searchBlogs,
-  toggleFavorite,
-  getMyFavorites
-} = require('../controller/blogControlller');  
+  getAllBlogs, getSingleBlog, createBlog, updateBlog, deleteBlog,
+  searchBlogs, toggleFavorite, getMyFavorites
+} = require('../controller/blogControlller');
 
 const router = express.Router();
 
@@ -20,8 +14,8 @@ router.get('/blogs', getAllBlogs);
 router.get('/blogs/search', searchBlogs);
 router.get('/blogs/:id', getSingleBlog);
 
-// Favorites
-router.post('/blogs/favorite/:id', userAuth, toggleFavorite);
+// Favorites (auth)
+router.put('/blogs/:id/favorite', userAuth, toggleFavorite); // <— changed to PUT and consistent
 router.get('/blogs/favorites', userAuth, getMyFavorites);
 
 // Admin
@@ -42,3 +36,4 @@ router.put(
 router.delete('/blogs/:id', userAuth, verifyAdmin, deleteBlog);
 
 module.exports = router;
+

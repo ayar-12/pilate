@@ -296,52 +296,93 @@ const getMediaUrl = (file) => {
         </Box>
       </Box>
 
-     <Grid container spacing={2.5} alignItems="stretch">
+  <Grid container spacing={2.5} alignItems="stretch">
+  {classData && (
+    <>
+      {classData?.video && (
+        <Grid item xs={12} md={4}>
+          <Card
+            sx={{
+              position: "relative",
+              borderRadius: 2.5,
+              overflow: "hidden",
+              height: { xs: 220, md: 320 },
+            }}
+          >
+            <Box
+              component="video"
+              src={getMediaUrl(classData.video)}
+              autoPlay
+              muted
+              loop
+              playsInline
+              sx={{
+                position: "absolute",
+                inset: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+              }}
+            />
+            <Box
+              sx={{
+                position: "absolute",
+                inset: 0,
+                background:
+                  "linear-gradient(to top, rgba(0,0,0,.4), rgba(0,0,0,.15))",
+              }}
+            />
+            <CardContent
+              sx={{
+                position: "relative",
+                color: "white",
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "flex-end",
+              }}
+            >
+              <Box
+                sx={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 1,
+                  mb: 1.5,
+                }}
+              >
+                <IconButton
+                  size="small"
+                  sx={{
+                    bgcolor: "rgba(255,255,255,.25)",
+                    color: "white",
+                  }}
+                >
+                  <Play size={16} />
+                </IconButton>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    bgcolor: "rgba(255,255,255,.2)",
+                    px: 1,
+                    py: 0.25,
+                    borderRadius: 999,
+                  }}
+                >
+                  View video
+                </Typography>
+              </Box>
+              <Typography sx={{ fontWeight: 700 }}>
+                {classData.title}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      )}
 
-      {classData && (
-  <Grid item xs={12} md={4}>
-    <Card
-      sx={{
-         position: 'relative',
-      width: '100%',
-      height: { xs: 240, sm: 300, md: 360 },
-        borderRadius: '16px',
-        overflow: 'hidden',
-        cursor: 'pointer',
-        '&:hover .arrow-icon': {
-          opacity: 1,
-        },
-      }}
-    >
-
-         {classData?.video && (
-          <Grid item xs={12} md={4}>
-            <Card sx={{ position: "relative", borderRadius: 2.5, overflow: "hidden", height: { xs: 220, md: 320 } }}>
-              <Box component="video"
-                   src={getMediaUrl(classData.video)}
-                   autoPlay muted loop playsInline
-                   sx={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
-              />
-              <Box sx={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,.4), rgba(0,0,0,.15))" }} />
-              <CardContent sx={{ position: "relative", color: "white", height: "100%", display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
-                <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1, mb: 1.5 }}>
-                  <IconButton size="small" sx={{ bgcolor: "rgba(255,255,255,.25)", color: "white" }}>
-                    <Play size={16} />
-                  </IconButton>
-                  <Typography variant="caption" sx={{ bgcolor: "rgba(255,255,255,.2)", px: 1, py: 0.25, borderRadius: 999 }}>
-                    View video
-                  </Typography>
-                </Box>
-                <Typography sx={{ fontWeight: 700 }}>{classData.title}</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-        )}
-
-      
-   {classData?.image && (
-<Grid item xs={12} md={4}>
-            <Card sx={{
+      {classData?.image && (
+        <Grid item xs={12} md={4}>
+          <Card
+            sx={{
               position: "relative",
               borderRadius: 2.5,
               overflow: "hidden",
@@ -349,16 +390,36 @@ const getMediaUrl = (file) => {
               backgroundImage: `url(${getImageUrl(classData.image)})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
-            }}>
-     <Box sx={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,.3), transparent)" }} />
-              <CardContent sx={{ position: "relative", color: "white", height: "100%", display: "flex", alignItems: "flex-end" }}>
-                <Typography sx={{ fontWeight: 700 }}>{classData.subTitle}</Typography>
-              </CardContent>
-            </Card>
-          </Grid>
-)}
-<Grid item xs={12} md={4}>
-          <Card sx={{
+            }}
+          >
+            <Box
+              sx={{
+                position: "absolute",
+                inset: 0,
+                background:
+                  "linear-gradient(to top, rgba(0,0,0,.3), transparent)",
+              }}
+            />
+            <CardContent
+              sx={{
+                position: "relative",
+                color: "white",
+                height: "100%",
+                display: "flex",
+                alignItems: "flex-end",
+              }}
+            >
+              <Typography sx={{ fontWeight: 700 }}>
+                {classData.subTitle}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      )}
+
+      <Grid item xs={12} md={4}>
+        <Card
+          sx={{
             position: "relative",
             borderRadius: 3,
             overflow: "hidden",
@@ -366,21 +427,36 @@ const getMediaUrl = (file) => {
             bgcolor: "#670D2F",
             color: "#fff",
             p: 0,
-          }}>
-            <CardContent sx={{ height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
-              <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-                <ArrowUpRight size={20} />
-              </Box>
-              <Box>
-                <Typography variant="body1" sx={{ fontWeight: 800, mb: 1.25, lineHeight: 1.35 }}>
-                  {quote}
-                </Typography>
-                <Typography variant="body2" sx={{ opacity: 0.95 }}>{action}</Typography>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
+          }}
+        >
+          <CardContent
+            sx={{
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+            }}
+          >
+            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+              <ArrowUpRight size={20} />
+            </Box>
+            <Box>
+              <Typography
+                variant="body1"
+                sx={{ fontWeight: 800, mb: 1.25, lineHeight: 1.35 }}
+              >
+                {quote}
+              </Typography>
+              <Typography variant="body2" sx={{ opacity: 0.95 }}>
+                {action}
+              </Typography>
+            </Box>
+          </CardContent>
+        </Card>
       </Grid>
+    </>
+  )}
+</Grid>
 
 
 <br />

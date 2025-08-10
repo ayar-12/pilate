@@ -26,7 +26,7 @@ const blogSchema = new mongoose.Schema({
   cloudinary_id_video: {
     type: String
   },
-  isFavorite: { type: Boolean, default: false }
+ 
 }, {
   timestamps: true
 });

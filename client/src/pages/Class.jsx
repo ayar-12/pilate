@@ -304,7 +304,7 @@ const getMediaUrl = (file) => {
         {/* Video tile */}
         {classData?.video && (
           <Grid item xs={12} md={4}>
-            <Card sx={{ position: "relative", borderRadius: 2.5, overflow: "hidden", height: { xs: 220, md: 320 }, width: {sx: 400, md: '600px' }}>
+            <Card sx={{ position: "relative", borderRadius: 2.5, overflow: "hidden", height: { xs: 220, md: 320 }, width: {xs: 400, md: 500 }}>
               <Box component="video"
                    src={getMediaUrl(classData.video)}
                    autoPlay muted loop playsInline

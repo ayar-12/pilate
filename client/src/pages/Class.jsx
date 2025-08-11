@@ -297,17 +297,19 @@ const getMediaUrl = (file) => {
       </Box>
 
   
-<Grid container spacing={2.5} alignItems="stretch">
 
-{classData?.video && (
-    <Grid item xs={12} md={4}>
+<Grid container spacing={3} alignItems="stretch">
+  {/* VIDEO */}
+  {classData?.video && (
+    <Grid item xs={12} sm={6} md={4}>
       <Card
         sx={{
           position: "relative",
-          borderRadius: 2.5,
+          borderRadius: 3,
           overflow: "hidden",
-          height: { xs: 260, sm: 300, md: 360 },
           width: "100%",
+          aspectRatio: { xs: "4 / 3", md: "16 / 12" }, // 👈 same box as others
+          boxShadow: "0 10px 30px rgba(0,0,0,.10)",
         }}
       >
         <Box
@@ -318,126 +320,146 @@ const getMediaUrl = (file) => {
           loop
           playsInline
           preload="metadata"
-          sx={{
-            position: "absolute",
-            inset: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-          }}
+          sx={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
         />
-        <Box
-          sx={{
-            position: "absolute",
-            inset: 0,
-            background:
-              "linear-gradient(to top, rgba(0,0,0,.4), rgba(0,0,0,.15))",
-          }}
-        />
+        <Box sx={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,.45), rgba(0,0,0,.15))" }} />
         <CardContent
           sx={{
-            position: "relative",
-            color: "white",
-            height: "100%",
+            position: "absolute",
+            inset: 0,
             display: "flex",
             flexDirection: "column",
             justifyContent: "flex-end",
             p: 2.5,
+            color: "#fff",
           }}
         >
-          <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1, mb: 1.25 }}>
-            <IconButton size="small" sx={{ bgcolor: "rgba(255,255,255,.25)", color: "white" }}>
+          <Box sx={{ display: "inline-flex", alignItems: "center", gap: 1, mb: 1 }}>
+            <IconButton size="small" sx={{ bgcolor: "rgba(255,255,255,.25)", color: "#fff" }}>
               <Play size={16} />
             </IconButton>
             <Typography variant="caption" sx={{ bgcolor: "rgba(255,255,255,.2)", px: 1, py: 0.25, borderRadius: 999 }}>
               View video
             </Typography>
           </Box>
-          <Typography sx={{ fontWeight: 700 }}>{classData.title}</Typography>
+
+          {/* Big title like screenshot */}
+          <Typography
+            sx={{
+              fontWeight: 800,
+              fontSize: { xs: 22, md: 28 },
+              letterSpacing: 0.2,
+              textShadow: "0 2px 8px rgba(0,0,0,.35)",
+            }}
+          >
+            {classData.title || "Improved Flexibility 2"}
+          </Typography>
         </CardContent>
       </Card>
     </Grid>
   )}
 
-
- {classData?.image && (
-    <Grid item xs={12} md={4}>
+  {/* IMAGE */}
+  {classData?.image && (
+    <Grid item xs={12} sm={6} md={4}>
       <Card
         sx={{
           position: "relative",
-          borderRadius: 2.5,
+          borderRadius: 3,
           overflow: "hidden",
-          height: { xs: 260, sm: 300, md: 360 },
           width: "100%",
+          aspectRatio: { xs: "4 / 3", md: "16 / 12" }, // 👈 same as video
+          boxShadow: "0 10px 30px rgba(0,0,0,.10)",
         }}
       >
         <CardMedia
           component="img"
           image={getImageUrl(classData.image)}
-          alt={classData?.subTitle || "Image"}
+          alt={classData?.subTitle || "Tile image"}
           loading="lazy"
           decoding="async"
           sx={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
           onError={(e) => (e.currentTarget.src = "/placeholder-image.png")}
         />
-        <Box sx={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,.3), transparent)" }} />
+        <Box sx={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,.45), rgba(0,0,0,.15))" }} />
         <CardContent
           sx={{
-            position: "relative",
-            color: "white",
-            height: "100%",
+            position: "absolute",
+            inset: 0,
             display: "flex",
-            alignItems: "flex-end",
+            flexDirection: "column",
+            justifyContent: "flex-end",
             p: 2.5,
+            color: "#fff",
           }}
         >
-          <Typography sx={{ fontWeight: 700 }}>{classData.subTitle}</Typography>
+          <Typography
+            sx={{
+              fontWeight: 800,
+              fontSize: { xs: 22, md: 28 },
+              letterSpacing: 0.2,
+              textShadow: "0 2px 8px rgba(0,0,0,.35)",
+            }}
+          >
+            {classData.subTitle || "Stress Reduction"}
+          </Typography>
         </CardContent>
       </Card>
     </Grid>
   )}
-  
- <Grid item xs={12} md={4}>
+
+  {/* QUOTE */}
+  <Grid item xs={12} sm={6} md={4}>
     <Card
       sx={{
         position: "relative",
         borderRadius: 3,
         overflow: "hidden",
-        height: { xs: 260, sm: 300, md: 360 },
         width: "100%",
+        aspectRatio: { xs: "4 / 3", md: "16 / 12" }, // 👈 same as others
         bgcolor: "#670D2F",
         color: "#fff",
+        boxShadow: "0 10px 30px rgba(0,0,0,.10)",
       }}
     >
       <CardContent
         sx={{
-          height: "100%",
+          position: "absolute",
+          inset: 0,
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
           p: 3,
         }}
       >
-        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <ArrowUpRight size={22} />
+        <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Typography
+            sx={{
+              fontSize: 12,
+              color: "#670D2F",
+              bgcolor: "rgba(255,255,255,.9)",
+              px: 1.25,
+              py: 0.25,
+              borderRadius: 999,
+            }}
+          >
+            {new Date().toLocaleDateString("en-US", { weekday: "long" })}
+          </Typography>
+          <ArrowUpRight size={20} />
         </Box>
+
         <Box>
           <Typography
             sx={{
               fontWeight: 800,
+              fontSize: { xs: 22, md: 26 }, // bigger like your mock
               lineHeight: 1.35,
-              mb: 1.25,
-              fontSize: { xs: 20, sm: 22, md: 24 }, // bigger quote
+              mb: 1,
             }}
           >
             {quote}
           </Typography>
-          <Typography
-            sx={{
-              opacity: 0.95,
-              fontSize: { xs: 13.5, sm: 14 },
-            }}
-          >
+          <Typography sx={{ opacity: 0.95, fontSize: { xs: 13.5, md: 14 } }}>
             {action}
           </Typography>
         </Box>
@@ -445,6 +467,7 @@ const getMediaUrl = (file) => {
     </Card>
   </Grid>
 </Grid>
+
 
 <br />
 

@@ -307,7 +307,7 @@ const getMediaUrl = (file) => {
           borderRadius: 2.5,
           overflow: "hidden",
           height: { xs: 220, md: 320 },
-          width: '100%',
+          width: '600px',
         }}
       >
         <Box

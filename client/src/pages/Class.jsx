@@ -306,8 +306,8 @@ const getMediaUrl = (file) => {
           position: "relative",
           borderRadius: 2.5,
           overflow: "hidden",
-          height: { xs: 220, md: 320 },
-          width: '600px',
+              width: '100%',
+      height: { xs: 240, sm: 300, md: 360 },
         }}
       >
         <Box
@@ -320,8 +320,8 @@ const getMediaUrl = (file) => {
           sx={{
             position: "absolute",
             inset: 0,
-            width: "600px",
-            height: "100%",
+                 width: '100%',
+      height: '100%',
             objectFit: "cover",
           }}
         />
@@ -383,11 +383,12 @@ const getMediaUrl = (file) => {
           position: "relative",
           borderRadius: 2.5,
           overflow: "hidden",
-          height: { xs: 220, md: 320 },
+          
           backgroundImage: `url(${getImageUrl(classData.image)})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
-          width: '115%',
+                 width: '115%',
+      height: { xs: 240, sm: 300, md: 360 },
         }}
       >
         <Box
@@ -422,7 +423,8 @@ const getMediaUrl = (file) => {
         position: "relative",
         borderRadius: 3,
         overflow: "hidden",
-        height: { xs: 220, md: 320 },
+        width: '109%',
+      height: { xs: 240, sm: 300, md: 360 },
         bgcolor: "#670D2F",
         color: "#fff",
       }}

@@ -96,38 +96,75 @@ const getAllBlogs = useCallback(async () => {
   }
 }, [backendUrl]);
 
-  const toggleFavorite = async (blogId) => {
+const toggleFavorite = async (blogId) => {
   try {
     if (!blogId) {
       console.error('toggleFavorite: missing blogId');
       return;
     }
 
+    // Check if user is logged in
+    if (!isLoggedin) {
+      toast.error("Please log in to add favorites");
+      return;
+    }
+
     const token = localStorage.getItem('token');
-    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    if (!token) {
+      toast.error("Authentication required");
+      return;
+    }
+
+    const headers = { Authorization: `Bearer ${token}` };
 
     // Optimistic update
     toggleFavoriteBlog(blogId);
 
-    await axios.post(
+    const response = await axios.post(
       `${backendUrl}/api/blog/blogs/favorite/${blogId}`,
       {},
       { headers, withCredentials: true }
     );
 
-    // Refresh from server
-    const favRes = await axios.get(
-      `${backendUrl}/api/blog/blogs/favorites`,
-      { headers, withCredentials: true }
-    );
-    const favIds = (favRes.data?.data || []).map(b => b._id);
-    setBlogs(prev => prev.map(b => ({ ...b, isFavorite: favIds.includes(b._id) })));
+    // Check if the response is successful
+    if (response.data?.success) {
+      toast.success(response.data?.message || "Favorite updated successfully");
+    }
+
+    // Refresh favorites from server to ensure consistency
+    try {
+      const favRes = await axios.get(
+        `${backendUrl}/api/blog/blogs/favorites`,
+        { headers, withCredentials: true }
+      );
+      
+      if (favRes.data?.success) {
+        const favIds = (favRes.data?.data || []).map(b => b._id);
+        setBlogs(prev => prev.map(b => ({ 
+          ...b, 
+          isFavorite: favIds.includes(b._id) 
+        })));
+      }
+    } catch (refreshErr) {
+      console.warn('Failed to refresh favorites:', refreshErr);
+      // Don't rollback here as the main operation might have succeeded
+    }
 
   } catch (err) {
     // Rollback optimistic update
     toggleFavoriteBlog(blogId);
-    console.error('Failed to toggle favorite', err.response?.data || err.message);
+    
+    const errorMessage = err.response?.data?.message || 'Failed to toggle favorite';
+    console.error('Failed to toggle favorite:', errorMessage);
+    toast.error(errorMessage);
+    
+    // If it's an auth error, might want to redirect to login
+    if (err.response?.status === 401) {
+      setIsLoggedin(false);
+      setUserData(null);
+    }
   }
+};
 };
 
 

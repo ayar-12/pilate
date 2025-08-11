@@ -138,19 +138,27 @@ const Blog = () => {
                         color: "white",
                       }}
                     >
-                      <IconButton
-    onClick={() => handleFavoriteClick(blog._id)}
-    sx={{
-      color: blog.isFavorite ? "#ff4081" : "white",
-      position: "absolute",
-      top: 12,
-      right: 12,
-      zIndex: 2,
-      opacity: isLoggedin ? 1 : 0.6, // Visual hint for logged out users
-    }}
-  >
-    {blog.isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-  </IconButton>
+                       <IconButton
+                        onClick={() => handleFavoriteClick(blog._id, blog.title)}
+                        sx={{
+                          color: blog.isFavorite ? "#ff4081" : "white",
+                          position: "absolute",
+                          top: 12,
+                          right: 12,
+                          zIndex: 2,
+                          opacity: isLoggedin ? 1 : 0.6,
+                          '&:hover': {
+                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                          }
+                        }}
+                        title={isLoggedin ? 
+                          (blog.isFavorite ? "Remove from favorites" : "Add to favorites") : 
+                          "Login to add favorites"
+                        }
+                      >
+                        {blog.isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                      </IconButton>
+
 
                       <Box>
                         <Typography

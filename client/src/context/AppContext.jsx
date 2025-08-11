@@ -116,11 +116,11 @@ const toggleFavorite = async (blogId) => {
     // optimistic update
     toggleFavoriteBlog(blogId);
 
-    const response = await axios.post(
-      `${backendUrl}/api/blog/blogs/favorite/${blogId}`,
-      {},
-      { headers, withCredentials: true }
-    );
+    const response = await axios.put(
+  `${backendUrl}/api/blog/blogs/${blogId}/favorite`,
+  {},
+  { withCredentials: true }
+);
 
     if (response.data?.success) {
       toast.success(response.data?.message || "Favorite updated successfully");

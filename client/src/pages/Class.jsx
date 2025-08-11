@@ -301,14 +301,13 @@ const getMediaUrl = (file) => {
 <Grid container spacing={2.5} alignItems="stretch">
   {/* Video */}
   {classData?.video && (
-    <Grid item xs={12} md={4}>
+    <Grid item xs={12} md={3}>
       <Card
         sx={{
           position: 'relative',
           borderRadius: 2.5,
           overflow: 'hidden',
-          aspectRatio: { xs: '16/11', md: '4/3' },
-          minHeight: 260,     // fallback for older browsers
+          height: { xs: 260, sm: 300, md: 360 },
           width: '100%',
         }}
       >
@@ -325,8 +324,12 @@ const getMediaUrl = (file) => {
         <Box sx={{ position:'absolute', inset:0, background:'linear-gradient(to top, rgba(0,0,0,.4), rgba(0,0,0,.15))' }} />
         <CardContent sx={{ position:'relative', color:'#fff', height:'100%', display:'flex', flexDirection:'column', justifyContent:'flex-end', p:2.5 }}>
           <Box sx={{ display:'inline-flex', alignItems:'center', gap:1, mb:1.25 }}>
-            <IconButton size="small" sx={{ bgcolor:'rgba(255,255,255,.25)', color:'#fff' }}><Play size={16} /></IconButton>
-            <Typography variant="caption" sx={{ bgcolor:'rgba(255,255,255,.2)', px:1, py:.25, borderRadius:999 }}>View video</Typography>
+            <IconButton size="small" sx={{ bgcolor:'rgba(255,255,255,.25)', color:'#fff' }}>
+              <Play size={16} />
+            </IconButton>
+            <Typography variant="caption" sx={{ bgcolor:'rgba(255,255,255,.2)', px:1, py:.25, borderRadius:999 }}>
+              View video
+            </Typography>
           </Box>
           <Typography sx={{ fontWeight:700 }}>{classData.title}</Typography>
         </CardContent>
@@ -336,8 +339,16 @@ const getMediaUrl = (file) => {
 
   {/* Image */}
   {classData?.image && (
-    <Grid item xs={12} md={4}>
-      <Card sx={{ position:'relative', borderRadius:2.5, overflow:'hidden', aspectRatio:{ xs:'16/11', md:'4/3' }, minHeight:260, width:'100%' }}>
+    <Grid item xs={12} md={3}>
+      <Card
+        sx={{
+          position:'relative',
+          borderRadius:2.5,
+          overflow:'hidden',
+          height: { xs: 260, sm: 300, md: 360 },
+          width:'100%',
+        }}
+      >
         <CardMedia
           component="img"
           image={getImageUrl(classData.image)}
@@ -356,15 +367,29 @@ const getMediaUrl = (file) => {
   )}
 
   {/* Quote */}
-  <Grid item xs={12} md={4}>
-    <Card sx={{ position:'relative', borderRadius:3, overflow:'hidden', aspectRatio:{ xs:'16/11', md:'4/3' }, minHeight:260, width:'100%', bgcolor:'#670D2F', color:'#fff' }}>
+  <Grid item xs={12} md={6}>
+    <Card
+      sx={{
+        position:'relative',
+        borderRadius:3,
+        overflow:'hidden',
+        height: { xs: 260, sm: 300, md: 360 },
+        width:'100%',
+        bgcolor:'#670D2F',
+        color:'#fff',
+      }}
+    >
       <CardContent sx={{ height:'100%', display:'flex', flexDirection:'column', justifyContent:'space-between', p:3 }}>
-        <Box sx={{ display:'flex', justifyContent:'flex-end' }}><ArrowUpRight size={22} /></Box>
+        <Box sx={{ display:'flex', justifyContent:'flex-end' }}>
+          <ArrowUpRight size={22} />
+        </Box>
         <Box>
           <Typography sx={{ fontWeight:800, lineHeight:1.35, mb:1.25, fontSize:{ xs:22, sm:24, md:26 } }}>
             {quote}
           </Typography>
-          <Typography sx={{ opacity:.95, fontSize:{ xs:14, sm:15 } }}>{action}</Typography>
+          <Typography sx={{ opacity:.95, fontSize:{ xs:14, sm:15 } }}>
+            {action}
+          </Typography>
         </Box>
       </CardContent>
     </Card>

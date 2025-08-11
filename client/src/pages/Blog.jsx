@@ -17,13 +17,22 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { motion } from "framer-motion";
 
 const Blog = () => {
-  const { blogs, backendUrl, toggleFavorite } = useContext(AppContext);
+  const { blogs, backendUrl, toggleFavorite, isLoggedin } = useContext(AppContext);
+
 
   const getImageUrl = (imagePath) => {
     if (!imagePath) return null;
     if (imagePath.startsWith("http")) return imagePath;
     const cleanPath = imagePath.startsWith("/") ? imagePath.slice(1) : imagePath;
     return `${backendUrl}/${cleanPath}`;
+  };
+
+    const handleFavoriteClick = (blogId) => {
+    if (!isLoggedin) {
+      toast.info("Please log in to save favorites");
+      return;
+    }
+    toggleFavorite(blogId);
   };
 
   return (
@@ -130,17 +139,18 @@ const Blog = () => {
                       }}
                     >
                       <IconButton
-                        onClick={() => toggleFavorite(blog._id)}
-                        sx={{
-                          color: blog.isFavorite ? "#ff4081" : "white",
-                          position: "absolute",
-                          top: 12,
-                          right: 12,
-                          zIndex: 2,
-                        }}
-                      >
-                        {blog.isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-                      </IconButton>
+    onClick={() => handleFavoriteClick(blog._id)}
+    sx={{
+      color: blog.isFavorite ? "#ff4081" : "white",
+      position: "absolute",
+      top: 12,
+      right: 12,
+      zIndex: 2,
+      opacity: isLoggedin ? 1 : 0.6, // Visual hint for logged out users
+    }}
+  >
+    {blog.isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+  </IconButton>
 
                       <Box>
                         <Typography

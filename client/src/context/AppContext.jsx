@@ -98,12 +98,8 @@ const getAllBlogs = useCallback(async () => {
 
 const toggleFavorite = async (blogId) => {
   try {
-    if (!blogId) {
-      console.error('toggleFavorite: missing blogId');
-      return;
-    }
+    if (!blogId) return;
 
-    // Check if user is logged in
     if (!isLoggedin) {
       toast.error("Please log in to add favorites");
       return;
@@ -117,7 +113,7 @@ const toggleFavorite = async (blogId) => {
 
     const headers = { Authorization: `Bearer ${token}` };
 
-    // Optimistic update
+    // optimistic update
     toggleFavoriteBlog(blogId);
 
     const response = await axios.post(
@@ -126,46 +122,35 @@ const toggleFavorite = async (blogId) => {
       { headers, withCredentials: true }
     );
 
-    // Check if the response is successful
     if (response.data?.success) {
       toast.success(response.data?.message || "Favorite updated successfully");
     }
 
-    // Refresh favorites from server to ensure consistency
+    // refresh favorites
     try {
       const favRes = await axios.get(
         `${backendUrl}/api/blog/blogs/favorites`,
         { headers, withCredentials: true }
       );
-      
       if (favRes.data?.success) {
         const favIds = (favRes.data?.data || []).map(b => b._id);
-        setBlogs(prev => prev.map(b => ({ 
-          ...b, 
-          isFavorite: favIds.includes(b._id) 
-        })));
+        setBlogs(prev => prev.map(b => ({ ...b, isFavorite: favIds.includes(b._id) })));
       }
     } catch (refreshErr) {
       console.warn('Failed to refresh favorites:', refreshErr);
-      // Don't rollback here as the main operation might have succeeded
     }
 
   } catch (err) {
-    // Rollback optimistic update
+    // rollback
     toggleFavoriteBlog(blogId);
-    
-    const errorMessage = err.response?.data?.message || 'Failed to toggle favorite';
-    console.error('Failed to toggle favorite:', errorMessage);
-    toast.error(errorMessage);
-    
-    // If it's an auth error, might want to redirect to login
+    const msg = err.response?.data?.message || 'Failed to toggle favorite';
+    toast.error(msg);
     if (err.response?.status === 401) {
       setIsLoggedin(false);
       setUserData(null);
     }
   }
-};
-};
+}
 
 
   const getHomeData = useCallback(async () => {

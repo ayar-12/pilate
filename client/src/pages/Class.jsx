@@ -320,7 +320,7 @@ const getMediaUrl = (file) => {
           sx={{
             position: "absolute",
             inset: 0,
-            width: "100%",
+            width: "600px,
             height: "100%",
             objectFit: "cover",
           }}

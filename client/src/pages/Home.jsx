@@ -6,7 +6,7 @@ import { Container, Row, Col , Modal, Button } from 'react-bootstrap';
 import { useMediaQuery } from 'react-responsive';
 import CallMadeIcon from '@mui/icons-material/CallMade';
 import './home.css';
-
+import { Link as RouterLink } from 'react-router-dom';
 import FlowerImage from '../assets/Flowers2.png';
 import Intro from "./Intro.jsx";
 import { AppContext } from "../context/AppContext.jsx";
@@ -207,13 +207,28 @@ function Home() {
                                 {homeData.button1} <ChevronRight size={16} />
                               </Link>
                             </button>
-                            <Link className="btn gallery-btn" to="/book-consultation" style={{ olor: '#73155a',
-  textDecoration: 'none',
-  borderRadius: '50px',
-  border: '1px solid #73155a',
-  '&:hover': { backgroundColor: '#73155a', color: '#fff' },}}>
-                              {homeData.button2}
-                            </Link>
+                        <Button
+  component={RouterLink}
+  to="/book-consultation"
+  variant="outlined"
+  size="large"
+  sx={{
+    px: 2.5,
+    py: 1,
+    borderRadius: '999px',
+    textTransform: 'none',
+    fontWeight: 600,
+    borderColor: '#73155a',
+    color: '#73155a',
+    '&:hover': {
+      bgcolor: '#73155a',
+      color: '#fff',
+      borderColor: '#73155a',
+    },
+  }}
+>
+  {homeData.button2}
+</Button>
                           </div>
                         </div>
                       </motion.div>

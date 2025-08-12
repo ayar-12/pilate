@@ -352,6 +352,9 @@ useEffect(() => {
       </Box>
     </DashboardWidget>,
 
+<MyBookingWidgetDashboatd />,
+  <TodoWidget />,
+    <FavoriteBlogsWidget />
 
 
 

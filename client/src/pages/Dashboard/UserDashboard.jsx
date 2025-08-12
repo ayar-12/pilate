@@ -165,7 +165,7 @@ const FitnessDashboard = () => {
         <Grid item xs={12} sm={6} md={3} lg={3} xl={3}>
           <DashboardWidget
             title="Steps Highlights"
-            sx={{ backgroundColor: "#fff0f7", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)" }}
+            sx={{ backgroundColor: "#fff0f7", width: {sx: 350, md: 300}, backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)" }}
           >
             <Typography variant="h6" color="#6d1a3d">
               {stepData.steps.toLocaleString()} Steps

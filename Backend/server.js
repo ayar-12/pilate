@@ -1,24 +1,31 @@
+// server.js (or index.js)
+const path = require('path');
+const fs = require('fs');
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const connectDB = require('./config/mongoDB');
-const path = require('path');
-const fs = require('fs');
 
 const app = express();
-app.set('trust proxy', 1); // <- 🛠️ Add this here
+app.set('trust proxy', 1);
+
 const port = process.env.PORT || 3000;
+
+// --- Core middleware ---
 app.use(express.static('public'));
+app.use(express.json());
+app.use(cookieParser());
+
+// --- DB ---
 connectDB();
 
-
+// --- CORS ---
 const allowed = [
-  'https://pilate-1.onrender.com', // your API domain
-  'https://pilate-2.onrender.com', // your admin dashboard domain
-  'http://localhost:5173'          // local dev
+  'https://pilate-1.onrender.com', // API domain
+  'https://pilate-2.onrender.com', // client domain
+  'http://localhost:5173',         // local dev
 ];
-
 app.use(cors({
   origin: (origin, cb) => {
     if (!origin) return cb(null, true);
@@ -29,17 +36,9 @@ app.use(cors({
   methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
   allowedHeaders: ['Content-Type','Authorization']
 }));
+app.options('*', cors({ origin: allowed, credentials: true }));
 
-app.options('*', cors({
-  origin: allowed,
-  credentials: true
-}));
-
-
-app.use(express.json());
-app.use(cookieParser());
-
-// Static uploads route
+// --- Static uploads (keep outside SPA) ---
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
   setHeaders: (res) => {
     res.set('Cross-Origin-Resource-Policy', 'cross-origin');
@@ -47,7 +46,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
   }
 }));
 
-// ✅ Directly mount routes — remove buggy safeUse wrapper
+// --- API routes ---
 app.use('/api/auth', require('./routes/authRouter'));
 app.use('/api/user', require('./routes/userRoutes'));
 app.use('/api/course', require('./routes/courseRouter'));
@@ -65,42 +64,28 @@ app.use('/api/class-widget', require('./routes/classWidgetRouter'));
 app.use('/api/profile', require('./routes/profileRouter'));
 app.use('/api/steps', require('./routes/stepRouter'));
 
-// Serve static client files if exists
-const staticPath = path.join(__dirname, 'client', 'build');
-if (fs.existsSync(staticPath)) {
-  app.use(express.static(staticPath));
-}
-
-// Define valid static routes for SPA fallback
-const validStaticPaths = [
-  '/', '/class', '/contact', '/login', '/register', '/email-verify',
-  '/user-dashboard', '/admin-dashboard', '/my-booking',
-  '/all-tasks', '/calories-data', '/forgot-password', '/edit-profile',
-  '/blog', '/book-consultation', '/workout-meals'
-];
-
-const dynamicRegexRoutes = [
-  /^\/booking\/[a-zA-Z0-9]+$/,
-  /^\/booking-details\/[a-zA-Z0-9]+$/,
-  /^\/blog-details\/[a-zA-Z0-9]+$/,
-  /^\/admin\/user\/[a-zA-Z0-9]+$/
-];
-
-// Catch-all for SPA
-app.get('*', (req, res, next) => {
-  if (req.path.startsWith('/api/')) return next();
-  const matched = validStaticPaths.includes(req.path) || dynamicRegexRoutes.some(regex => regex.test(req.path));
-  if (matched && fs.existsSync(staticPath)) {
-    return res.sendFile(path.join(staticPath, 'index.html'));
-  }
-  next();
-});
-
-app.get('/', (req, res) => {
+// --- Health check that won't conflict with SPA ---
+app.get('/api/health', (req, res) => {
   res.send('Pilate API is running 🧘‍♀️');
 });
 
-// 404 fallback
+// --- Serve Vite build (AFTER your /api routes) ---
+const clientDist = path.join(__dirname, 'client', 'dist');
+
+if (fs.existsSync(clientDist)) {
+  // Serve static assets from Vite build
+  app.use(express.static(clientDist));
+
+  // SPA fallback for any non-API/non-uploads GET request
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
+    }
+    res.sendFile(path.join(clientDist, 'index.html'));
+  });
+}
+
+// --- 404 for unknown API routes or other methods ---
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -108,8 +93,7 @@ app.use((req, res) => {
   });
 });
 
-
-// Error handler
+// --- Error handler ---
 app.use((err, req, res, next) => {
   console.error('💥 Error:', err.stack);
   res.status(err.status || 500).json({

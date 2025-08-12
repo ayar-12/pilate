@@ -13,8 +13,6 @@ import Login from './compontent/Login';
 import BookingDetails from './pages/BookingDetails';
 import ResetPassword from './pages/ResetPassword';
 import EmailVerify from './pages/EmailVerify';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import HomePage from './pages/HomePage';
 import WorkoutMeals from './pages/FitnessTools/WorkoutMeals';
 import EditProfile from './pages/Dashboard/EditProfile';
@@ -25,7 +23,7 @@ import AllTasksPage from './compontent/AllTasks';
 import UserDetails from './pages/Dashboard/UserDetails';
 import {AnimatePresence} from  'framer-motion'
 import { useLocation } from 'react-router-dom';
-
+import { AlertProvider } from './components/AlertCenter';
 import BlogDetails from './pages/BlogDetails';
 import BookConsultation from './pages/BookConsultation';
 import AdminUserDetails from './pages/Dashboard/AdminUserDetails';
@@ -43,6 +41,7 @@ function App() {
 
   return (
     <>
+      <AlertProvider>
         <div
       style={{
      background: 'linear-gradient(135deg, rgb(252, 245, 248), rgb(234, 219, 229), rgb(230, 219, 226), rgb(237, 224, 233), rgb(239, 239, 246))',
@@ -115,17 +114,9 @@ function App() {
 
     </Routes>
 </AnimatePresence>
-    <ToastContainer
-    position="top-center"
-    autoClose={3000}
-    hideProgressBar={false}
-    newestOnTop
-    closeOnClick
-    pauseOnHover
-    theme="colored"
-    draggable
-  />
+
     </div>
+         </AlertProvider>
     </>
   );
 }

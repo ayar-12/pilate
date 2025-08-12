@@ -23,7 +23,7 @@ import AllTasksPage from './compontent/AllTasks';
 import UserDetails from './pages/Dashboard/UserDetails';
 import {AnimatePresence} from  'framer-motion'
 import { useLocation } from 'react-router-dom';
-import { AlertProvider } from './component/AlertCenter';
+import { AlertProvider } from './compontent/AlertProvider';
 import BlogDetails from './pages/BlogDetails';
 import BookConsultation from './pages/BookConsultation';
 import AdminUserDetails from './pages/Dashboard/AdminUserDetails';

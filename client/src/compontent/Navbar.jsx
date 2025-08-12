@@ -48,23 +48,21 @@ const Navbar = () => {
 const logout = async () => {
   try {
     await axios.post(`${backendUrl}/api/auth/logout`, {}, { withCredentials: true });
-  } catch (e) {
-   
+  } catch (_) {
+    // ignore
   }
 
-
-  delete axios.defaults.headers.common.Authorization; // <- this is the bug
+  // drop auth
   localStorage.removeItem('token');
-
-  // 🔄 reset app state
+  delete axios.defaults.headers.common.Authorization;
   setIsLoggedin(false);
   setUserData(null);
 
-  // ⛳ go home
-  navigate('/', { replace: true });
+  // close dropdown if open
+  setShowDropdown(false);
 
-  // Optional: if some components still cache userData, force a full reload:
-  // window.location.reload();
+  // go to LOGIN (not home)
+  navigate('/login', { replace: true, state: { fromLogout: true } });
 };
 
 

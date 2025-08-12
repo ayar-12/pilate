@@ -32,21 +32,16 @@ const data = [
   { name: 'Sun', points: 100 },
 ];
 
-const DashboardWidget = ({ title, children, sx }) => (
-  <Paper
-    sx={{
-      p: 2,
-      borderRadius: 4,
 
-      ...sx,
-    }}
-  >
-    <Typography fontWeight="bold" mb={1} color="#8d1f58" fontFamily= 'Poppins'>
+const DashboardWidget = ({ title, children, sx }) => (
+  <Paper sx={{ p: 2, borderRadius: 4, height: '100%', ...sx }}>
+    <Typography fontWeight="bold" mb={1} color="#8d1f58" fontFamily="Poppins">
       {title}
     </Typography>
     {children}
   </Paper>
 );
+
 
 const FitnessDashboard = () => {
   const [, forceRerender] = React.useState(0);
@@ -186,23 +181,19 @@ useEffect(() => {
       marginBottom: {xs: 5}
     
     }}>
+      <Grid container spacing={{ xs: 2, sm: 2, md: 3 }} alignItems="stretch">
+         <Grid item xs={12} sm={6} md={6} lg={3}>
       <Box display="flex" flexDirection="column" alignItems="center" textAlign="center" sx={{
         '@media (max-width: 600px)': {
           width: '100%',
         }
       }}>
-        <img 
-          src={getAvatarUrl(userData?.avatar)} 
-          style={{ 
-            width: '100%', 
-            height: '130px', 
-            borderRadius: '10px',
-            '@media (max-width: 600px)': {
-              width: '120px',
-              height: '150px',
-            }
-          }} 
-        />
+   <img
+  src={getAvatarUrl(userData?.avatar)}
+  alt="avatar"
+  style={{ width: '100%', height: 130, borderRadius: 10 }} // simple
+/>
+
   <div style={{ textAlign: 'left', paddingLeft: '0' , marginTop: 10}}>
          <Typography variant="h6" sx={{
           '@media (max-width: 600px)': {
@@ -246,9 +237,10 @@ useEffect(() => {
         </Link>
       </Box>
     </DashboardWidget>,
+        </Grid>
 
     <FoodTracker backendUrl={import.meta.env.VITE_BACKEND_URL} />,
-
+ <Grid item xs={12} sm={6} md={6} lg={3}>
     <DashboardWidget title="Steps Highlights" sx={{
       backgroundColor: '#fff0f7',
       height: { xs: "auto", sm: 360 },
@@ -323,7 +315,8 @@ useEffect(() => {
 
       </Dialog>
     </DashboardWidget>,
-
+</Grid>
+       <Grid item xs={12} sm={6} md={6} lg={3}>
     <DashboardWidget title="Water measurement" sx={{ height: { xs: "auto", sm: 360 }, width :{ xs: "auto", sm: 350 },    backdropFilter: "blur(14px)",
       WebkitBackdropFilter: "blur(14px)",
       boxShadow: "0 8px 32px 0 rgba(108, 39, 89, 0.37)",
@@ -351,7 +344,8 @@ useEffect(() => {
         ))}
       </Box>
     </DashboardWidget>,
-
+</Grid>
+      </Grid>
 <MyBookingWidgetDashboatd />,
   <TodoWidget />,
     <FavoriteBlogsWidget />

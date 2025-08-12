@@ -353,9 +353,6 @@ useEffect(() => {
     </DashboardWidget>,
 
 
-<MyBookingWidgetDashboatd />,
-  <TodoWidget />,
-    <FavoriteBlogsWidget />
 
 
   ];

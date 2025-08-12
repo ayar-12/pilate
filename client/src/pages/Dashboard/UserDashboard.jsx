@@ -248,6 +248,7 @@ const FitnessDashboard = () => {
       <Grid container spacing={{ xs: 2, sm: 2, md: 3 }} alignItems="stretch" sx={{ mt: { xs: 2, md: 3 } }}>
         <Grid item xs={12} sm={6} md={4} lg={4} xl={4}><MyBookingWidgetDashboatd /></Grid>
         <Grid item xs={12} sm={6} md={4} lg={4} xl={4}><TodoWidget /></Grid>
+        <br />
         <Grid item xs={12} sm={6} md={4} lg={4} xl={4}><FavoriteBlogsWidget /></Grid>
       </Grid>
     </Box>

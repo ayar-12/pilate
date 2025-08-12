@@ -151,7 +151,7 @@ const FitnessDashboard = () => {
       <Grid container spacing={{ xs: 2, sm: 2, md: 3 }} alignItems="stretch">
         {/* Profile */}
         <Grid item xs={12} sm={6} md={6} lg={3}>
-          <DashboardWidget title="User Profile" sx={{ background: "#FFFCFB" , width: {xs: 100, md: 150}}}>
+          <DashboardWidget title="User Profile" sx={{ background: "#FFFCFB" , width: {xs: 300, md: 350}}}>
             <Box display="flex" flexDirection="column" alignItems="center">
               <img
                 src={getAvatarUrl(userData?.avatar)}
@@ -196,7 +196,8 @@ const FitnessDashboard = () => {
             sx={{
               backgroundColor: "#fff0f7",
               backdropFilter: "blur(14px)",
-              WebkitBackdropFilter: "blur(14px)"
+              WebkitBackdropFilter: "blur(14px)",
+              width: {xs: 300, md: 350}
             }}
           >
             <Typography variant="h6" color="#6d1a3d">

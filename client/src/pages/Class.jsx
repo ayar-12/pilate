@@ -358,7 +358,7 @@ const getMediaUrl = (file) => {
   <Grid item xs={12} md={4}>
     <Card sx={{ position:'relative', borderRadius:3, overflow:'hidden', aspectRatio:{ xs:'16/11', md:'4/3' }, minHeight:280, width:'100%', bgcolor:'#670D2F', color:'#fff' }}>
       <CardContent sx={{ height:'100%', display:'flex', flexDirection:'column', justifyContent:'space-between', p:3 }}>
-        <Box sx={{ display:'flex', justifyContent:'flex-end' }}><ArrowUpRight size={22} /></Box>
+        <Box sx={{ display:'flex', justifyContent:'flex-end' }}>Just Do it!</Box>
         <Box>
           <Typography sx={{ fontWeight:800, lineHeight:1.35, mb:1.25, fontSize:{ xs:22, sm:24, md:26 } }}>
             {quote}

@@ -183,45 +183,39 @@ const searchBlogs = async (req, res) => {
 // PUT /blogs/:id/favorite
 const toggleFavorite = async (req, res) => {
   try {
-    const userId = req.user?._id || req.user?.id;
-    if (!userId) {
-      return res.status(401).json({ success: false, message: 'Not authenticated' });
-    }
-
+    const userId = req.user?._id;
     const blogId = req.params.id;
-    if (!mongoose.Types.ObjectId.isValid(blogId)) {
+
+    if (!userId) return res.status(401).json({ success: false, message: 'Not authenticated' });
+    if (!mongoose.Types.ObjectId.isValid(blogId))
       return res.status(400).json({ success: false, message: 'Invalid blog ID' });
+
+    const blogExists = await Blog.exists({ _id: blogId });
+    if (!blogExists) return res.status(404).json({ success: false, message: 'Blog not found' });
+
+    const has = await User.exists({ _id: userId, favorites: blogId });
+
+    let updated;
+    if (has) {
+      updated = await User.findByIdAndUpdate(
+        userId,
+        { $pull: { favorites: blogId } },
+        { new: true, select: 'favorites' }
+      );
+      return res.json({ success: true, favorited: false, favorites: updated.favorites });
+    } else {
+      updated = await User.findByIdAndUpdate(
+        userId,
+        { $addToSet: { favorites: blogId } },
+        { new: true, select: 'favorites' }
+      );
+      return res.json({ success: true, favorited: true, favorites: updated.favorites });
     }
-
-    const [blog, user] = await Promise.all([
-      Blog.findById(blogId).select('_id'),
-      User.findById(userId).select('favorites')
-    ]);
-    if (!blog) return res.status(404).json({ success: false, message: 'Blog not found' });
-    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
-
-    // ensure array
-    if (!Array.isArray(user.favorites)) user.favorites = [];
-
-    const idx = user.favorites.findIndex(bid => bid.toString() === blogId);
-    const favorited = idx === -1;
-
-    if (favorited) user.favorites.push(blog._id);
-    else user.favorites.splice(idx, 1);
-
-    await user.save();
-
-    return res.json({
-      success: true,
-      favorited,
-      favorites: user.favorites.map(id => id.toString())
-    });
   } catch (err) {
     console.error('Toggle favorite error:', err);
-    return res.status(500).json({ success: false, message: err.message || 'Server error' });
+    return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
-
 
 // GET /blogs/favorites
 const getMyFavorites = async (req, res) => {
@@ -231,17 +225,8 @@ const getMyFavorites = async (req, res) => {
     if (!ids.length) return res.json({ success: true, count: 0, data: [] });
 
     const blogs = await Blog.find({ _id: { $in: ids } }).lean();
-
-    // keep order (optional)
-    const order = new Map(ids.map((id, i) => [id.toString(), i]));
-    blogs.sort((a, b) => (order.get(a._id.toString()) ?? 0) - (order.get(b._id.toString()) ?? 0));
-
-    const processed = blogs.map(b => ({
-      ...b,
-      image: formatUrl(b.image),
-      video: formatUrl(b.video),
-      isFavorite: true
-    }));
+    const set = new Set(ids.map(String));
+    const processed = blogs.map(b => ({ ...b, isFavorite: set.has(String(b._id)) }));
 
     return res.json({ success: true, count: processed.length, data: processed });
   } catch (err) {
@@ -249,7 +234,6 @@ const getMyFavorites = async (req, res) => {
     return res.status(500).json({ success: false, message: 'Failed to fetch favorites' });
   }
 };
-
 module.exports = {
   getAllBlogs,
   getSingleBlog,

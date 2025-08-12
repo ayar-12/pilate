@@ -68,7 +68,7 @@ const res = await axios.get(`${backendUrl}/api/booking/user-booked`, {
     <Grid item xs={12} sm={6} md={4} lg={4} xl={4} >
       <DashboardWidget title="MY BOOKING" sx={{
   height: 'auto',
-  width: { xs: 300, md: 300 }
+  width: { xs: 400, sm: 350 }
 }}>
         {loading ? (
           <Box display="flex" justifyContent="center">

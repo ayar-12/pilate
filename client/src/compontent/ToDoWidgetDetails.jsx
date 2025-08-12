@@ -371,15 +371,14 @@ const TodoWidget = () => {
           >
             <AddIcon />
           </button>
-
-          <Button
-            variant="text"
-            size="small"
-            sx={{ textTransform: 'none', color: '#8d1f58', fontWeight: 'bold' }}
-            onClick={() => (window.location.href = '/all-tasks')}
-          >
-            Show More
-          </Button>
+   <Button
+        variant="text"
+        size="small"
+        sx={{ ml: 'auto', textTransform: 'none', color: '#8d1f58', fontWeight: 'bold' }}
+        onClick={() => navigate('/all-tasks')} // import { useNavigate } from 'react-router-dom'
+      >
+        Show More
+      </Button>
         </Box>
 
         {loading ? (

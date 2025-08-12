@@ -15,40 +15,57 @@ import {
 import axios from "axios";
 import { AppContext } from "../context/AppContext";
 import { useNavigate, Link } from "react-router-dom";
-import { toast } from "react-toastify";
 import loginImg from "../assets/5.jpeg";
 
 const RegisterForm = () => {
   const { backendUrl } = useContext(AppContext);
   const navigate = useNavigate();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [age, setAge] = useState("");
+  const [name, setName]         = useState("");
+  const [email, setEmail]       = useState("");
+  const [phone, setPhone]       = useState("");
+  const [age, setAge]           = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
-  const [error, setError] = useState("");
+  const [loading, setLoading]   = useState(false);
+  const [error, setError]       = useState("");
+
+  // Centered alert dialog
+  const [alert, setAlert] = useState({
+    open: false,
+    title: "",
+    message: "",
+    confirmText: "OK",
+    onConfirm: null,
+  });
+
+  const openAlert = ({ title, message, confirmText = "OK", onConfirm = null }) =>
+    setAlert({ open: true, title, message, confirmText, onConfirm });
+
+  const closeAlert = async () => {
+    const cb = alert.onConfirm;
+    setAlert((a) => ({ ...a, open: false }));
+    if (typeof cb === "function") await cb();
+  };
 
   const handleRegister = async () => {
     setError("");
+
     if (!name || !email || !password || !phone || !age) {
       setError("Please fill in all fields.");
-      toast.error("Please fill in all fields.");
+      openAlert({ title: "Missing fields", message: "Please fill in all fields." });
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setError("Please enter a valid email address.");
-      toast.error("Please enter a valid email address.");
+      openAlert({ title: "Invalid email", message: "Please enter a valid email address." });
       return;
     }
 
     if (password.length < 6) {
       setError("Password must be at least 6 characters long.");
-      toast.error("Password must be at least 6 characters long.");
+      openAlert({ title: "Weak password", message: "Password must be at least 6 characters long." });
       return;
     }
 
@@ -56,16 +73,13 @@ const RegisterForm = () => {
 
     try {
       const payload = {
-        name,
-        email,
+        name: name.trim(),
+        email: email.trim(),
         password,
-        phone,
-        age,
+        phone: phone.trim(),
+        age: String(age).trim(),
         photo: "", // optional
       };
-      
-      
-      
 
       const { data } = await axios.post(
         `${backendUrl}/api/auth/register`,
@@ -73,57 +87,48 @@ const RegisterForm = () => {
         { withCredentials: true }
       );
 
-      if (data.success) {
-navigate('/email-verify', { state: { userId: data.userId } });
-
-
-
-
+      if (data.success && data.userId) {
+        openAlert({
+          title: "Account created",
+          message: `We sent a verification code to ${email.trim()}.`,
+          confirmText: "Verify now",
+          onConfirm: () => navigate("/email-verify", { state: { userId: data.userId } }),
+        });
       } else {
-        setError(data.message || "Registration failed");
-        toast.error(data.message || "Registration failed");
+        const msg = data.message || "Registration failed.";
+        setError(msg);
+        openAlert({ title: "Registration failed", message: msg });
       }
     } catch (err) {
-   const message = err.response?.data?.message;
-
-if (message?.toLowerCase().includes('exists')) {
-  setError("This email is already registered.");
-} else {
-  setError("Something went wrong. Please try again.");
-}
-toast.error(error);
-
+      const message = err.response?.data?.message;
+      const friendly =
+        message?.toLowerCase().includes("exists")
+          ? "This email is already registered."
+          : (message || "Something went wrong. Please try again.");
+      setError(friendly);
+      openAlert({ title: "Error", message: friendly });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleSuccessDialogClose = () => {
-    setShowSuccessDialog(false);
-    navigate("/login");
-  };
-
   return (
     <Grid container sx={{ minHeight: "100vh" }}>
-         <Grid
-             item
-             xs={12}
-             md={6}
-             lg={6}
-             display="flex"
-             alignItems="center"
-             justifyContent="center"
-             sx={{ px: { xs: 3, md: 6 }, py: 6, marginTop: 10 }}
-           >
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          sx={{ height: "100%" }}
-        >
+      {/* Left column: form */}
+      <Grid
+        item
+        xs={12}
+        md={6}
+        lg={6}
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        sx={{ px: { xs: 3, md: 6 }, py: 6, marginTop: 10 }}
+      >
+        <Box display="flex" justifyContent="center" alignItems="center" sx={{ height: "100%" }}>
           <Paper
             elevation={0}
-      sx={{
+            sx={{
               width: "100%",
               maxWidth: 400,
               p: 6,
@@ -132,23 +137,15 @@ toast.error(error);
               backdropFilter: "blur(10px)",
             }}
           >
-            <Typography
-              variant="h5"
-              fontWeight="bold"
-              mb={1}
-              sx={{ color: "#8d1f58" }}
-            >
-          Create Account
-        </Typography>
-            <Typography variant="body2" color="textSecondary" mb={3}>
+            <Typography variant="h5" fontWeight="bold" mb={1} sx={{ color: "#8d1f58" }}>
+              Create Account
+            </Typography>
+            <Typography variant="body2" color="text.secondary" mb={3}>
               Let's get new life vibes ✨
             </Typography>
 
             {error && (
-              <Typography
-                color="error"
-                sx={{ mb: 2, textAlign: "center" }}
-              >
+              <Typography color="error" sx={{ mb: 2, textAlign: "center" }}>
                 {error}
               </Typography>
             )}
@@ -161,16 +158,16 @@ toast.error(error);
               value={name}
               disabled={loading}
             />
- <TextField
-  label="Email"
-  type="email"
-  fullWidth
-  margin="normal"
-  onChange={(e) => setEmail(e.target.value)}
-  onFocus={() => setError("")}
-  value={email}
-/>
-
+            <TextField
+              label="Email"
+              type="email"
+              fullWidth
+              margin="normal"
+              onChange={(e) => setEmail(e.target.value)}
+              onFocus={() => setError("")}
+              value={email}
+              disabled={loading}
+            />
             <TextField
               label="Phone"
               fullWidth
@@ -198,46 +195,40 @@ toast.error(error);
               disabled={loading}
             />
 
-        <Button
-          fullWidth
-          variant="contained"
-          sx={{
-            mt: 3,
-            borderRadius: 999,
+            <Button
+              fullWidth
+              variant="contained"
+              sx={{
+                mt: 3,
+                borderRadius: 999,
                 backgroundColor: "#8d1f58",
-            fontWeight: "bold",
+                fontWeight: "bold",
                 "&:hover": {
                   backgroundColor: "#F9F3EF",
                   color: "#8d1f58",
                 },
-          }}
-          onClick={handleRegister}
-          disabled={loading}
-        >
-              {loading ? (
-                <CircularProgress size={24} color="inherit" />
-              ) : (
-                "Register"
-              )}
-        </Button>
+              }}
+              onClick={handleRegister}
+              disabled={loading}
+            >
+              {loading ? <CircularProgress size={24} color="inherit" /> : "Register"}
+            </Button>
 
             <Box mt={3} textAlign="center">
               <Typography variant="body2">
                 I have an account already!{" "}
-                <Link
-                  to="/login"
-                  style={{ fontWeight: "bold", color: "#8d1f58" }}
-                >
+                <Link to="/login" style={{ fontWeight: "bold", color: "#8d1f58" }}>
                   Login
                 </Link>
               </Typography>
             </Box>
-      </Paper>
+          </Paper>
         </Box>
       </Grid>
 
-      <Grid item xs={12} md={6} sx={{ display: { xs: "none", md: "block" }, p: 0, m: 0,}}>
-       <Box
+      {/* Right column: hero image */}
+      <Grid item xs={12} md={6} sx={{ display: { xs: "none", md: "block" }, p: 0, m: 0 }}>
+        <Box
           sx={{
             height: "100vh",
             width: "850px",
@@ -251,12 +242,11 @@ toast.error(error);
             color: "white",
             p: 6,
             borderBottomLeftRadius: 20,
-            borderTopLeftRadius: '20px',
-            marginLeft: '90px',
-            marginTop: '80px'
-            
-      
-          }}>
+            borderTopLeftRadius: "20px",
+            marginLeft: "90px",
+            marginTop: "80px",
+          }}
+        >
           <Typography variant="h6" fontWeight="bold">
             Transform Your Mind & Body with Yoga and Pilates
           </Typography>
@@ -274,50 +264,39 @@ toast.error(error);
         </Box>
       </Grid>
 
+      {/* Centered alert dialog with blurred backdrop + 20px radius */}
       <Dialog
-        open={showSuccessDialog}
-        onClose={handleSuccessDialogClose}
-        maxWidth="sm"
-        fullWidth
+        open={alert.open}
+        onClose={closeAlert}
+        BackdropProps={{
+          sx: {
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+            backgroundColor: "rgba(0,0,0,0.25)",
+          },
+        }}
         PaperProps={{
           sx: {
-            borderRadius: 3,
+            borderRadius: "20px",
+            bgcolor: "rgba(255,255,255,0.9)",
+            backdropFilter: "blur(6px)",
+            WebkitBackdropFilter: "blur(6px)",
+            border: "1px solid rgba(255,255,255,0.5)",
+            boxShadow: "0 12px 40px rgba(0,0,0,0.2)",
             textAlign: "center",
-            p: 2,
+            p: 0,
           },
         }}
       >
-        <DialogTitle
-          sx={{
-            color: "#74512D",
-            fontWeight: "bold",
-            fontSize: "1.5rem",
-          }}
-        >
-          🎉 Registration Successful!
+        <DialogTitle sx={{ fontWeight: 700, color: "#8d1f58" }}>
+          {alert.title}
         </DialogTitle>
-        <DialogContent>
-          <Typography variant="body1" sx={{ mb: 2 }}>
-            Welcome to Yoga Courses! Your account has been created successfully.
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            A welcome email has been sent to <strong>{email}</strong>
-          </Typography>
+        <DialogContent sx={{ pt: 0 }}>
+          {alert.message}
         </DialogContent>
         <DialogActions sx={{ justifyContent: "center" }}>
-          <Button
-            onClick={handleSuccessDialogClose}
-            variant="contained"
-            sx={{
-              backgroundColor: "#74512D",
-              borderRadius: 999,
-              px: 4,
-              "&:hover": {
-                backgroundColor: "#5a3e23",
-              },
-            }}
-          >
-            Continue to Login
+          <Button onClick={closeAlert} autoFocus>
+            {alert.confirmText}
           </Button>
         </DialogActions>
       </Dialog>

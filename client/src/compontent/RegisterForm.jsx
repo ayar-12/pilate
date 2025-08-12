@@ -10,12 +10,10 @@ import {
   DialogContent,
   DialogActions,
   CircularProgress,
-  Grid,
 } from "@mui/material";
 import axios from "axios";
 import { AppContext } from "../context/AppContext";
 import { useNavigate, Link } from "react-router-dom";
-import loginImg from "../assets/5.jpeg";
 
 const RegisterForm = () => {
   const { backendUrl } = useContext(AppContext);
@@ -78,7 +76,7 @@ const RegisterForm = () => {
         password,
         phone: phone.trim(),
         age: String(age).trim(),
-        photo: "", // optional
+        photo: "",
       };
 
       const { data } = await axios.post(
@@ -113,156 +111,113 @@ const RegisterForm = () => {
   };
 
   return (
-    <Grid container sx={{ minHeight: "100vh" }}>
-      {/* Left column: form */}
-      <Grid
-        item
-        xs={12}
-        md={6}
-        lg={6}
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        sx={{ px: { xs: 3, md: 6 }, py: 6, marginTop: 10 }}
+    <>
+      {/* Centered full-screen form */}
+      <Box
+        sx={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          px: 2,
+          py: 6,
+        }}
       >
-        <Box display="flex" justifyContent="center" alignItems="center" sx={{ height: "100%" }}>
-          <Paper
-            elevation={0}
-            sx={{
-              width: "100%",
-              maxWidth: 400,
-              p: 6,
-              borderRadius: 4,
-              background: "#fff7f3a3",
-              backdropFilter: "blur(10px)",
-            }}
-          >
-            <Typography variant="h5" fontWeight="bold" mb={1} sx={{ color: "#8d1f58" }}>
-              Create Account
-            </Typography>
-            <Typography variant="body2" color="text.secondary" mb={3}>
-              Let's get new life vibes ✨
-            </Typography>
-
-            {error && (
-              <Typography color="error" sx={{ mb: 2, textAlign: "center" }}>
-                {error}
-              </Typography>
-            )}
-
-            <TextField
-              label="Name"
-              fullWidth
-              margin="normal"
-              onChange={(e) => setName(e.target.value)}
-              value={name}
-              disabled={loading}
-            />
-            <TextField
-              label="Email"
-              type="email"
-              fullWidth
-              margin="normal"
-              onChange={(e) => setEmail(e.target.value)}
-              onFocus={() => setError("")}
-              value={email}
-              disabled={loading}
-            />
-            <TextField
-              label="Phone"
-              fullWidth
-              margin="normal"
-              onChange={(e) => setPhone(e.target.value)}
-              value={phone}
-              disabled={loading}
-            />
-            <TextField
-              label="Age"
-              type="number"
-              fullWidth
-              margin="normal"
-              onChange={(e) => setAge(e.target.value)}
-              value={age}
-              disabled={loading}
-            />
-            <TextField
-              label="Password"
-              type="password"
-              fullWidth
-              margin="normal"
-              onChange={(e) => setPassword(e.target.value)}
-              value={password}
-              disabled={loading}
-            />
-
-            <Button
-              fullWidth
-              variant="contained"
-              sx={{
-                mt: 3,
-                borderRadius: 999,
-                backgroundColor: "#8d1f58",
-                fontWeight: "bold",
-                "&:hover": {
-                  backgroundColor: "#F9F3EF",
-                  color: "#8d1f58",
-                },
-              }}
-              onClick={handleRegister}
-              disabled={loading}
-            >
-              {loading ? <CircularProgress size={24} color="inherit" /> : "Register"}
-            </Button>
-
-            <Box mt={3} textAlign="center">
-              <Typography variant="body2">
-                I have an account already!{" "}
-                <Link to="/login" style={{ fontWeight: "bold", color: "#8d1f58" }}>
-                  Login
-                </Link>
-              </Typography>
-            </Box>
-          </Paper>
-        </Box>
-      </Grid>
-
-      {/* Right column: hero image */}
-      <Grid item xs={12} md={6} sx={{ display: { xs: "none", md: "block" }, p: 0, m: 0 }}>
-        <Box
+        <Paper
+          elevation={0}
           sx={{
-            height: "100vh",
-            width: "850px",
-            backgroundImage: `url(${loginImg})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "flex-end",
-            color: "white",
-            p: 6,
-            borderBottomLeftRadius: 20,
-            borderTopLeftRadius: "20px",
-            marginLeft: "90px",
-            marginTop: "80px",
+            width: "100%",
+            maxWidth: 420,
+            p: { xs: 4, sm: 5 },
+            borderRadius: 4,
+            background: "#fff7f3a3",
+            backdropFilter: "blur(10px)",
           }}
         >
-          <Typography variant="h6" fontWeight="bold">
-            Transform Your Mind & Body with Yoga and Pilates
+          <Typography variant="h5" fontWeight="bold" mb={1} sx={{ color: "#8d1f58" }}>
+            Create Account
           </Typography>
-          <Typography variant="body2" mt={1}>
-            Experience holistic workouts that build strength, flexibility, and peace of mind — anywhere, anytime.
+          <Typography variant="body2" color="text.secondary" mb={3}>
+            Let's get new life vibes ✨
           </Typography>
-          <Box display="flex" gap={2} mt={3} flexWrap="wrap">
-            <Button variant="outlined" sx={{ color: "#fff", borderColor: "#fff", borderRadius: 8 }}>
-              100% Healthy Life
-            </Button>
-            <Button variant="outlined" sx={{ color: "#fff", borderColor: "#fff", borderRadius: 8 }}>
-              Free trial for the first time
-            </Button>
+
+          {error && (
+            <Typography color="error" sx={{ mb: 2, textAlign: "center" }}>
+              {error}
+            </Typography>
+          )}
+
+          <TextField
+            label="Name"
+            fullWidth
+            margin="normal"
+            onChange={(e) => setName(e.target.value)}
+            value={name}
+            disabled={loading}
+          />
+          <TextField
+            label="Email"
+            type="email"
+            fullWidth
+            margin="normal"
+            onChange={(e) => setEmail(e.target.value)}
+            onFocus={() => setError("")}
+            value={email}
+            disabled={loading}
+          />
+          <TextField
+            label="Phone"
+            fullWidth
+            margin="normal"
+            onChange={(e) => setPhone(e.target.value)}
+            value={phone}
+            disabled={loading}
+          />
+          <TextField
+            label="Age"
+            type="number"
+            fullWidth
+            margin="normal"
+            onChange={(e) => setAge(e.target.value)}
+            value={age}
+            disabled={loading}
+          />
+          <TextField
+            label="Password"
+            type="password"
+            fullWidth
+            margin="normal"
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
+            disabled={loading}
+          />
+
+          <Button
+            fullWidth
+            variant="contained"
+            sx={{
+              mt: 3,
+              borderRadius: 999,
+              backgroundColor: "#8d1f58",
+              fontWeight: "bold",
+              "&:hover": { backgroundColor: "#F9F3EF", color: "#8d1f58" },
+            }}
+            onClick={handleRegister}
+            disabled={loading}
+          >
+            {loading ? <CircularProgress size={24} color="inherit" /> : "Register"}
+          </Button>
+
+          <Box mt={3} textAlign="center">
+            <Typography variant="body2">
+              I have an account already!{" "}
+              <Link to="/login" style={{ fontWeight: "bold", color: "#8d1f58" }}>
+                Login
+              </Link>
+            </Typography>
           </Box>
-        </Box>
-      </Grid>
+        </Paper>
+      </Box>
 
       {/* Centered alert dialog with blurred backdrop + 20px radius */}
       <Dialog
@@ -291,16 +246,14 @@ const RegisterForm = () => {
         <DialogTitle sx={{ fontWeight: 700, color: "#8d1f58" }}>
           {alert.title}
         </DialogTitle>
-        <DialogContent sx={{ pt: 0 }}>
-          {alert.message}
-        </DialogContent>
+        <DialogContent sx={{ pt: 0 }}>{alert.message}</DialogContent>
         <DialogActions sx={{ justifyContent: "center" }}>
           <Button onClick={closeAlert} autoFocus>
             {alert.confirmText}
           </Button>
         </DialogActions>
       </Dialog>
-    </Grid>
+    </>
   );
 };
 

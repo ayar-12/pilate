@@ -173,6 +173,8 @@ useEffect(() => {
 }, []);
 
   const widgets = [
+      <Grid container spacing={{ xs: 2, sm: 2, md: 3 }} alignItems="stretch">
+         <Grid item xs={12} sm={6} md={6} lg={3}>
     <DashboardWidget title="User Profile" sx={{ 
       background: "#FFFCFB", 
       height: 360,
@@ -181,8 +183,7 @@ useEffect(() => {
       marginBottom: {xs: 5}
     
     }}>
-      <Grid container spacing={{ xs: 2, sm: 2, md: 3 }} alignItems="stretch">
-         <Grid item xs={12} sm={6} md={6} lg={3}>
+    
       <Box display="flex" flexDirection="column" alignItems="center" textAlign="center" sx={{
         '@media (max-width: 600px)': {
           width: '100%',
@@ -345,7 +346,9 @@ useEffect(() => {
       </Box>
     </DashboardWidget>,
 </Grid>
-      </Grid>
+          </Grid>
+    
+
 <MyBookingWidgetDashboatd />,
   <TodoWidget />,
     <FavoriteBlogsWidget />

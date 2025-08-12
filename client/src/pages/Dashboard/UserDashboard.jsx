@@ -346,7 +346,7 @@ useEffect(() => {
       </Box>
     </DashboardWidget>,
 </Grid>
-          </Grid>
+          </Grid>,
     
 
 <MyBookingWidgetDashboatd />,

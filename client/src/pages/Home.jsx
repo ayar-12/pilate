@@ -18,6 +18,9 @@ function Home() {
 
   // ---- ONE-TIME INTRO FLAG ----
   const hasSeenIntro = useMemo(() => localStorage.getItem('homeIntroSeen') === '1', []);
+  const reduceMotion = useReducedMotion();
+const playAnims = !hasSeenIntro && !reduceMotion; // first visit only, and skip if user prefers reduced motion
+
   const [showIntro, setShowIntro] = useState(() => !hasSeenIntro);
   const playAnims = !hasSeenIntro; // if they've seen it, skip all animations
 
@@ -30,6 +33,24 @@ function Home() {
     }
   }, [showIntro]);
 
+
+  const EASE = [0.22, 1, 0.36, 1]; // “back” bezier, feels natural
+const SPRING = { type: "spring", stiffness: 220, damping: 28, mass: 0.8 };
+const FAST   = { duration: 0.35, ease: EASE };
+const MEDIUM = { duration: 0.55, ease: EASE };
+
+const staggerContainer = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: 0.08, delayChildren: 0.12 }
+  }
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: SPRING }
+};
+  
   // show the intro once then mark as seen
   useEffect(() => {
     if (hasSeenIntro) { setShowIntro(false); return; }
@@ -109,54 +130,45 @@ function Home() {
       {/* ---- FULLSCREEN INTRO OVERLAY (ONE TIME) ---- */}
       <AnimatePresence>
         {showIntro && (
-          <motion.div
-            key="intro"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
-            style={{
-              position: 'fixed',
-              inset: 0,
-              zIndex: 9999,
-              background: '#fff', // brand background if you want
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
+      <motion.div
+  key="intro"
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  exit={{ opacity: 0 }}
+  transition={MEDIUM} // was 0.4 linear; now eased
+  style={{ position: 'fixed', inset: 0, zIndex: 9999, background: '#fff',
+           display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+>
             <Intro />
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* ---- MAIN CONTENT ---- */}
-      <motion.div
-        variants={staggerContainer}
-        // If first visit, play variants via whileInView.
-        // If not first visit, render immediately with no initial animation.
-        initial={playAnims ? "hidden" : false}
-        whileInView={playAnims ? "show" : undefined}
-        animate={playAnims ? undefined : "show"}
-        viewport={{ once: true, amount: 0.3 }}
-      >
+ <motion.div
+  variants={staggerContainer}
+  initial={playAnims ? "hidden" : false}
+  animate={playAnims ? "show" : "show"}
+  viewport={{ once: true, amount: 0.2 }}
+>
+
         <AnimatePresence mode="wait">
           {!showIntro && (
             <>
-              <motion.div
-                initial={playAnims ? { opacity: 0, y: 30 } : false}
-                animate={playAnims ? { opacity: 1, y: 0 } : undefined}
-                transition={{ duration: 0.8 }}
-              >
+           <motion.div
+  initial={playAnims ? { opacity: 0, y: 30 } : false}
+  animate={playAnims ? { opacity: 1, y: 0 } : undefined}
+  transition={{ duration: 0.8 }}
+>
+
                 <Row>
                   <Col xs={12} md={6} lg={4} style={{ marginBottom: '15px' }}>
                     {homeData && (
-                      <motion.div
-                        initial={playAnims ? { opacity: 0, y: 40 } : false}
-                        whileInView={playAnims ? { opacity: 1, y: 0 } : undefined}
-                        transition={{ duration: 0.8 }}
-                        viewport={{ once: true, amount: 0.2 }}
-                      >
+                           <motion.div
+  initial={playAnims ? { opacity: 0, y: 30 } : false}
+  animate={playAnims ? { opacity: 1, y: 0 } : undefined}
+  transition={{ duration: 0.8 }}
+>
                         <div className="fade-in delay-1" style={{ marginLeft: '20px', maxWidth: '100%', zIndex: 2 }}>
                           <div style={{ maxWidth: '350px', wordWrap: 'break-word' }}>
                             <Typography
@@ -236,12 +248,11 @@ function Home() {
                   </Col>
 
                   <Col xs={12} md={6} lg={4}>
-                    <motion.div
-                      initial={playAnims ? { opacity: 0, y: 40 } : false}
-                      whileInView={playAnims ? { opacity: 1, y: 0 } : undefined}
-                      transition={{ duration: 0.8 }}
-                      viewport={{ once: true, amount: 0.2 }}
-                    >
+                           <motion.div
+  initial={playAnims ? { opacity: 0, y: 30 } : false}
+  animate={playAnims ? { opacity: 1, y: 0 } : undefined}
+  transition={{ duration: 0.8 }}
+>
                       <div className="flower-centerpiece">
                         <div className="relative-image-wrapper">
                           <img src={FlowerImage} alt="Flower" className="img-fluid" style={{ width: '100%', height: 'auto' }} />
@@ -346,11 +357,11 @@ function Home() {
                 </Row>
               </motion.div>
 
-              <motion.div
-                initial={playAnims ? { opacity: 0, y: 30 } : false}
-                animate={playAnims ? { opacity: 1, y: 0 } : undefined}
-                transition={{ duration: 1, delay: 0.2 }}
-              >
+                      <motion.div
+  initial={playAnims ? { opacity: 0, y: 30 } : false}
+  animate={playAnims ? { opacity: 1, y: 0 } : undefined}
+  transition={{ duration: 0.8 }}
+>
                 <Row style={{ marginTop: '20px'}}>
                   {/* --- COURSE CARD --- */}
                   {course && (

@@ -84,7 +84,7 @@ const Login = () => {
         justifyContent: "center",
         px: 2,
         py: 6,
-        background: "#fff",
+
       }}
     >
       <Paper

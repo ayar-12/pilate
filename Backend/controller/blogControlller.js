@@ -180,39 +180,48 @@ const searchBlogs = async (req, res) => {
   }
 };
 
-// PUT /blogs/:id/favorite  (recommend PUT)
+// PUT /blogs/:id/favorite
 const toggleFavorite = async (req, res) => {
   try {
-    const userId = req.user._id;
-    const blogId = req.params.id;
+    const userId = req.user?._id || req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: 'Not authenticated' });
+    }
 
+    const blogId = req.params.id;
     if (!mongoose.Types.ObjectId.isValid(blogId)) {
       return res.status(400).json({ success: false, message: 'Invalid blog ID' });
     }
 
-    const blog = await Blog.findById(blogId).select('_id');
+    const [blog, user] = await Promise.all([
+      Blog.findById(blogId).select('_id'),
+      User.findById(userId).select('favorites')
+    ]);
     if (!blog) return res.status(404).json({ success: false, message: 'Blog not found' });
-
-    const user = await User.findById(userId).select('favorites');
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
+    // ensure array
+    if (!Array.isArray(user.favorites)) user.favorites = [];
+
     const idx = user.favorites.findIndex(bid => bid.toString() === blogId);
-    let favorited;
-    if (idx === -1) {
-      user.favorites.push(blog._id);
-      favorited = true;
-    } else {
-      user.favorites.splice(idx, 1);
-      favorited = false;
-    }
+    const favorited = idx === -1;
+
+    if (favorited) user.favorites.push(blog._id);
+    else user.favorites.splice(idx, 1);
+
     await user.save();
 
-    return res.json({ success: true, favorited, favorites: user.favorites });
+    return res.json({
+      success: true,
+      favorited,
+      favorites: user.favorites.map(id => id.toString())
+    });
   } catch (err) {
     console.error('Toggle favorite error:', err);
-    return res.status(500).json({ success: false, message: 'Server error' });
+    return res.status(500).json({ success: false, message: err.message || 'Server error' });
   }
 };
+
 
 // GET /blogs/favorites
 const getMyFavorites = async (req, res) => {

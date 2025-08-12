@@ -12,6 +12,10 @@ const blogSchema = new mongoose.Schema({
     required: [true, 'Blog description is required'],
     trim: true
   },
+    favorites: {
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Blog' }],
+    default: []
+  },
   image: {
     type: String,
     required: [true, 'Blog image is required']

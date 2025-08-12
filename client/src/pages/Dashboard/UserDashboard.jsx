@@ -227,10 +227,10 @@ const FitnessDashboard = () => {
             </Box>
 
             <Box mt={2}>
-              <Button
+              <button
                 onClick={() => setShowStepDialog(true)}
                 variant="contained"
-                sx={{
+                style={{
                   minWidth: 0,
                   width: 48,
                   height: 48,
@@ -240,7 +240,7 @@ const FitnessDashboard = () => {
                 }}
               >
                 <AddIcon />
-              </Button>
+              </button>
             </Box>
 
             <Dialog open={showStepDialog} onClose={() => setShowStepDialog(false)} BackdropProps={{

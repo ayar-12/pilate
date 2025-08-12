@@ -151,7 +151,7 @@ const FitnessDashboard = () => {
       <Grid container spacing={{ xs: 2, sm: 2, md: 3 }} alignItems="stretch">
         {/* Profile */}
         <Grid item xs={12} sm={6} md={6} lg={3}>
-          <DashboardWidget title="User Profile" sx={{ background: "#FFFCFB" , width: { xs: 400, sm: 350 }}}>
+          <DashboardWidget title="User Profile" sx={{ background: "#FFFCFB" , width: { xs: 400, sm: 320 }}}>
             <Box display="flex" flexDirection="column" alignItems="center">
               <img
                 src={getAvatarUrl(userData?.avatar)}
@@ -243,7 +243,15 @@ const FitnessDashboard = () => {
               </Button>
             </Box>
 
-            <Dialog open={showStepDialog} onClose={() => setShowStepDialog(false)}>
+            <Dialog open={showStepDialog} onClose={() => setShowStepDialog(false)} BackdropProps={{
+    sx: {
+      backdropFilter: 'blur(8px)',
+      WebkitBackdropFilter: 'blur(8px)',
+      backgroundColor: 'rgba(0,0,0,0.25)',
+    },
+  }}
+  PaperProps={{ sx: { borderRadius: '20px', bgcolor: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.4)' } }}
+>
               <DialogTitle sx={{ fontSize: "15px" }}>Enter Your Steps</DialogTitle>
               <DialogContent>
                 <TextField

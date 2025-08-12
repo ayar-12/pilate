@@ -116,10 +116,10 @@ const toggleFavorite = async (blogId) => {
     // optimistic update
     toggleFavoriteBlog(blogId);
 
-    const response = await axios.put(
-  `${backendUrl}/api/blog/blogs/${blogId}/favorite`,
+     const response = await axios.put(
+  ` `${backendUrl}/api/blog/blogs/${blogId}/favorite`,
   {},
-  { withCredentials: true }
+  { withCredentials: true, headers }
 );
 
     if (response.data?.success) {

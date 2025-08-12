@@ -1,6 +1,7 @@
+// client/src/pages/BookingDetails.jsx
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ChevronRight } from "lucide-react";
+import { ChevronRight } from 'lucide-react';
 import axios from 'axios';
 import { useInView } from 'react-intersection-observer';
 import {
@@ -22,12 +23,46 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
 } from '@mui/material';
 import { AppContext } from '../context/AppContext';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
+
+/** Mobile/reduced-motion safe wrapper */
+const MotionWrap = ({ children }) => {
+  const prefersReduced = useReducedMotion();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  // On mobile or when user prefers reduced motion: simple mount animation
+  if (prefersReduced || isMobile) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        style={{ willChange: 'opacity, transform' }}
+      >
+        {children}
+      </motion.div>
+    );
+  }
+
+  // Desktop: in-view animation
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.25 }}
+      transition={{ duration: 0.8 }}
+      style={{ willChange: 'opacity, transform' }}
+    >
+      {children}
+    </motion.div>
+  );
+};
 
 const BookingDetails = () => {
   const { courseId } = useParams();
@@ -41,16 +76,18 @@ const BookingDetails = () => {
   const [openAlert, setOpenAlert] = useState(false);
 
   const { ref: videoRef, inView: videoInView } = useInView({ triggerOnce: true });
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const getImageUrl = (path) => {
-    if (!path) return "/placeholder-image.png";
-    if (path.startsWith("http")) return path;
-    return `${backendUrl}/${path.replace(/^\/+/g, "")}`;
+    if (!path) return '/placeholder-image.png';
+    if (path.startsWith('http')) return path;
+    return `${backendUrl}/${path.replace(/^\/+/g, '')}`;
   };
 
-  const normalizePath = (path) => path?.replace(/^\/+/g, '').replace(/^uploads\//, 'uploads/');
+  const normalizePath = (path) =>
+    path?.replace(/^\/+/g, '').replace(/^uploads\//, 'uploads/');
 
   const handleBookNow = () => {
     if (!isLoggedin) {
@@ -65,15 +102,18 @@ const BookingDetails = () => {
 
     const fetchCourseDetails = async () => {
       try {
-        const res = await axios.get(`${backendUrl}/api/course/courses/${courseId}`, {
-          signal: controller.signal
-        });
+        const res = await axios.get(
+          `${backendUrl}/api/course/courses/${courseId}`,
+          { signal: controller.signal }
+        );
         if (res.data.success) {
           const data = res.data.data;
           setCourse(data);
           if (data.video) {
             setVideoPreview(
-              data.video.startsWith("http") ? data.video : `${backendUrl}/${normalizePath(data.video)}`
+              data.video.startsWith('http')
+                ? data.video
+                : `${backendUrl}/${normalizePath(data.video)}`
             );
           }
         }
@@ -103,13 +143,9 @@ const BookingDetails = () => {
     );
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8 }}
-      viewport={{ once: true, amount: 0.4 }}
-    >
-      <Box sx={{ minHeight: "100vh", py: 6, padding: { xs: 1, sm: 1, md: 1 } }}>
+    <MotionWrap>
+      <Box sx={{ minHeight: '100vh', py: 6, padding: { xs: 1, sm: 1, md: 1 } }}>
+        {/* Top section */}
         <Box
           sx={{
             display: 'flex',
@@ -139,7 +175,7 @@ const BookingDetails = () => {
                 objectFit: 'cover',
                 borderRadius: '16px',
               }}
-              onError={(e) => (e.currentTarget.src = "/placeholder-image.png")}
+              onError={(e) => (e.currentTarget.src = '/placeholder-image.png')}
             />
 
             <Box
@@ -185,10 +221,7 @@ const BookingDetails = () => {
               Wellness & Fitness
             </Typography>
 
-            <Typography
-              variant="h4"
-              sx={{ fontWeight: 'bold', color: '#8d1f58', mb: 2 }}
-            >
+            <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#8d1f58', mb: 2 }}>
               {course.title}
             </Typography>
 
@@ -239,6 +272,7 @@ const BookingDetails = () => {
           </Box>
         </Box>
 
+        {/* Video */}
         {videoPreview && (
           <Box ref={videoRef} mt={10}>
             <Typography
@@ -277,13 +311,10 @@ const BookingDetails = () => {
           </Box>
         )}
 
+        {/* Recommendations */}
         {courses && courses.length > 0 && (
           <Box mt={10}>
-            <Typography
-              variant="h6"
-              color="#670D2F"
-              sx={{ mb: 4, textAlign: 'center' }}
-            >
+            <Typography variant="h6" color="#670D2F" sx={{ mb: 4, textAlign: 'center' }}>
               You Might Also Like
             </Typography>
 
@@ -291,13 +322,13 @@ const BookingDetails = () => {
               {courses
                 .filter((c) => c._id !== courseId)
                 .slice(0, 3)
-                .map((course) => (
+                .map((c) => (
                   <Grid
                     item
                     xs={12}
                     sm={6}
                     md={4}
-                    key={course._id}
+                    key={c._id}
                     display="flex"
                     justifyContent="center"
                   >
@@ -316,8 +347,8 @@ const BookingDetails = () => {
                       >
                         <CardMedia
                           component="img"
-                          image={getImageUrl(course.image)}
-                          alt={course.title}
+                          image={getImageUrl(c.image)}
+                          alt={c.title}
                           sx={{
                             position: 'absolute',
                             inset: 0,
@@ -327,7 +358,7 @@ const BookingDetails = () => {
                             zIndex: 0,
                           }}
                           onError={(e) => {
-                            e.currentTarget.src = "/placeholder-image.png";
+                            e.currentTarget.src = '/placeholder-image.png';
                           }}
                         />
 
@@ -350,19 +381,17 @@ const BookingDetails = () => {
                             color: 'white',
                           }}
                         >
-                          <Typography fontWeight="bold">{course.title}</Typography>
+                          <Typography fontWeight="bold">{c.title}</Typography>
 
                           <Typography sx={{ fontSize: '13px', mt: 1 }}>
-                            {course.description?.slice(0, 80)}...
+                            {c.description?.slice(0, 80)}...
                           </Typography>
 
                           <Typography sx={{ fontSize: '12px', mt: 1, color: '#f5f5f5' }}>
-                            🕒{" "}
-                            {Array.isArray(course.timing)
-                              ? course.timing
-                                  .map((slot) => `${slot.date} ${slot.time}`)
-                                  .join(" | ")
-                              : "No schedule"}
+                            🕒{' '}
+                            {Array.isArray(c.timing)
+                              ? c.timing.map((slot) => `${slot.date} ${slot.time}`).join(' | ')
+                              : 'No schedule'}
                           </Typography>
 
                           <Button
@@ -370,17 +399,17 @@ const BookingDetails = () => {
                             size="small"
                             sx={{
                               mt: 2,
-                              backgroundColor: "#670D2F",
+                              backgroundColor: '#670D2F',
                               borderRadius: 999,
-                              fontWeight: "bold",
-                              textTransform: "none",
+                              fontWeight: 'bold',
+                              textTransform: 'none',
                               px: 3,
                               py: 1,
-                              fontSize: "14px",
+                              fontSize: '14px',
                             }}
                             endIcon={<ChevronRight size={16} />}
                             component={Link}
-                            to={`/booking-details/${course._id}`}
+                            to={`/booking-details/${c._id}`}
                           >
                             Book Now
                           </Button>
@@ -436,7 +465,7 @@ const BookingDetails = () => {
           </DialogActions>
         </Dialog>
       </Box>
-    </motion.div>
+    </MotionWrap>
   );
 };
 

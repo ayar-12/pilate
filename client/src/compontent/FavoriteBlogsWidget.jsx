@@ -43,7 +43,7 @@ const FavoriteBlogsWidget = () => {
 
   if (loading) {
     return (
-      <Grid item xs={12} sm={6} md={4} lg={4} xl={4}>
+      <Grid item xs={12} sm={6} md={4} lg={4} xl={4}  >
         <Box display="flex" alignItems="center" justifyContent="center" height={350}>
           <CircularProgress size={24} />
         </Box>
@@ -55,8 +55,8 @@ const FavoriteBlogsWidget = () => {
   if (!displayBlog) {
     return (
       <Grid item xs={12} sm={6} md={4} lg={4} xl={4}>
-        <Box textAlign="center" p={2} sx={{ height: 350, borderRadius: 2, bgcolor: '#f7f7f7' }}>
-          <Typography variant="body2" color="textSecondary">لا توجد مقالات حتى الآن.</Typography>
+        <Box textAlign="center" p={2} sx={{ height: 350, borderRadius: 2, bgcolor: '#f7f7f7', marginTop: '5px' }}>
+          <Typography variant="body2" color="textSecondary">No Blogs  here.</Typography>
         </Box>
       </Grid>
     );
@@ -75,6 +75,7 @@ const FavoriteBlogsWidget = () => {
           justifyContent: 'flex-end',
           color: 'white',
           boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
+          
         }}
       >
         <CardMedia
@@ -94,7 +95,7 @@ const FavoriteBlogsWidget = () => {
               display: 'inline-block', mb: 1
             }}
           >
-            {isFallback ? 'آخر مقال' : 'مقال مفضل'}
+            {isFallback ? 'Newest Blog' : 'Your Favorite Blog'}
           </Typography>
 
           <Typography variant="h6" fontWeight="bold">{displayBlog.title}</Typography>
@@ -108,14 +109,14 @@ const FavoriteBlogsWidget = () => {
               variant="contained" size="small"
               sx={{ backgroundColor: '#FDFAF6', color: '#111', borderRadius: '50px', textTransform: 'none', px: 3, py: 0.5, fontSize: '13px' }}
             >
-              {isFallback ? 'اقرأ الآن' : 'قراءة'}
+              {isFallback ? 'Read Now' : 'Read'}
             </Button>
             <Button
-              onClick={() => navigate(isFallback ? '/blogs' : '/blogs')}
+              onClick={() => navigate(isFallback ? '/blog' : '/blog')}
               variant="contained" size="small"
               sx={{ backgroundColor: 'rgba(255,255,255,0.2)', color: 'white', borderRadius: '50px', textTransform: 'none', px: 3, py: 0.5, fontSize: '13px', boxShadow: 'none' }}
             >
-              {isFallback ? 'عرض جميع المقالات' : 'عرض المفضلة'}
+              {isFallback ? 'Show all blogs' : 'Show my favorite'}
             </Button>
           </Box>
         </CardContent>

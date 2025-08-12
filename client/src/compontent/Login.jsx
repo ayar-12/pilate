@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -6,30 +6,54 @@ import {
   Button,
   Paper,
   CircularProgress,
-  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AppContext } from "../context/AppContext";
-import { toast } from "react-toastify";
 
 const Login = () => {
   const { backendUrl, setIsLoggedin, getUserData, setUserData } = useContext(AppContext);
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
+  const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [loading, setLoading]   = useState(false);
+
+  // Centered alert dialog state
+  const [alert, setAlert] = useState({
+    open: false,
+    title: "",
+    message: "",
+    confirmText: "OK",
+    onConfirm: null,
+  });
+
+  const openAlert = ({ title, message, confirmText = "OK", onConfirm = null }) =>
+    setAlert({ open: true, title, message, confirmText, onConfirm });
+
+  const closeAlert = async () => {
+    const cb = alert.onConfirm;
+    setAlert((a) => ({ ...a, open: false }));
+    if (typeof cb === "function") await cb();
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
 
-    if (!email || !password) return setError("Please fill in all fields");
+    if (!email || !password) {
+      openAlert({ title: "Missing fields", message: "Please fill in all fields." });
+      return;
+    }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) return setError("Enter a valid email");
+    if (!emailRegex.test(email)) {
+      openAlert({ title: "Invalid email", message: "Enter a valid email." });
+      return;
+    }
 
     setLoading(true);
 
@@ -39,23 +63,32 @@ const Login = () => {
       if (data.success && data.token) {
         localStorage.setItem("token", data.token);
         axios.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
-
         setIsLoggedin(true);
-        toast.success("Welcome back!", { position: "top-center", autoClose: 2000 });
 
-        try {
-          await getUserData();
-        } catch (err) {
-          console.error("User data fetch error:", err);
-        } finally {
-          navigate("/");
-        }
+        // show success in centered modal, then fetch user + go home
+        openAlert({
+          title: "Welcome back!",
+          message: "You’ve signed in successfully.",
+          confirmText: "Continue",
+          onConfirm: async () => {
+            try {
+              await getUserData();
+            } catch (err) {
+              console.error("User data fetch error:", err);
+            } finally {
+              navigate("/");
+            }
+          },
+        });
       } else {
-        setError(data.message || "Login failed");
+        openAlert({ title: "Login failed", message: data.message || "Something went wrong." });
       }
     } catch (err) {
       console.error("Login error:", err);
-      setError(err.response?.data?.message || "Something went wrong.");
+      openAlert({
+        title: "Login error",
+        message: err.response?.data?.message || "Something went wrong.",
+      });
     } finally {
       setLoading(false);
     }
@@ -84,7 +117,6 @@ const Login = () => {
         justifyContent: "center",
         px: 2,
         py: 6,
-
       }}
     >
       <Paper
@@ -105,13 +137,7 @@ const Login = () => {
           Let's get you signed in
         </Typography>
 
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        )}
-
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
           <TextField
             label="Email"
             type="email"
@@ -138,7 +164,7 @@ const Login = () => {
               variant="contained"
               fullWidth
               disabled={loading}
-              sx={{ py: 1.5, borderRadius: 8, background: "#8d1f58" }}
+              sx={{ py: 1.5, borderRadius: 8, background: "#8d1f58", "&:hover": { background: "#7a1a4e" } }}
             >
               {loading ? <CircularProgress size={24} color="inherit" /> : "Login"}
             </Button>
@@ -160,6 +186,41 @@ const Login = () => {
           </Typography>
         </Box>
       </Paper>
+
+      {/* Centered alert dialog (blurred backdrop, 20px radius) */}
+      <Dialog
+        open={alert.open}
+        onClose={closeAlert}
+        BackdropProps={{
+          sx: {
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+            backgroundColor: "rgba(0,0,0,0.25)",
+          },
+        }}
+        PaperProps={{
+          sx: {
+            borderRadius: "20px",
+            bgcolor: "rgba(255,255,255,0.9)",
+            backdropFilter: "blur(6px)",
+            WebkitBackdropFilter: "blur(6px)",
+            border: "1px solid rgba(255,255,255,0.5)",
+            boxShadow: "0 12px 40px rgba(0,0,0,0.2)",
+          },
+        }}
+      >
+        <DialogTitle sx={{ fontWeight: 700, color: "#8d1f58" }}>
+          {alert.title}
+        </DialogTitle>
+        <DialogContent sx={{ pt: 0 }}>
+          {alert.message}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeAlert} autoFocus>
+            {alert.confirmText}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

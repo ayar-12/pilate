@@ -96,61 +96,39 @@ const getAllBlogs = useCallback(async () => {
   }
 }, [backendUrl]);
 
+
+
 const toggleFavorite = async (blogId) => {
   try {
-    if (!blogId) return;
-
-    if (!isLoggedin) {
-      toast.error("Please log in to add favorites");
-      return;
-    }
+    if (!isLoggedin) return toast.error("Please log in to add favorites");
 
     const token = localStorage.getItem('token');
-    if (!token) {
-      toast.error("Authentication required");
-      return;
-    }
+    if (!token) return toast.error("Authentication required");
 
-    const headers = { Authorization: `Bearer ${token}` };
-
-    // optimistic update
+    // optimistic UI
     toggleFavoriteBlog(blogId);
 
-     const response = await axios.put(
-   `${backendUrl}/api/blog/blogs/${blogId}/favorite`,
-  {},
-  { withCredentials: true, headers }
-);
+    const res = await axios.put(
+      `${backendUrl}/api/blog/blogs/${blogId}/favorite`,
+      {},
+      { withCredentials: true, headers: { Authorization: `Bearer ${token}` } }
+    );
 
-    if (response.data?.success) {
-      toast.success(response.data?.message || "Favorite updated successfully");
+    if (res.data?.success) {
+      const favSet = new Set((res.data.favorites || []).map(String));
+      setBlogs(prev => prev.map(b => ({ ...b, isFavorite: favSet.has(String(b._id)) })));
+    } else {
+      // rollback if server said no
+      toggleFavoriteBlog(blogId);
+      toast.error(res.data?.message || 'Failed to update favorite');
     }
-
-    // refresh favorites
-    try {
-      const favRes = await axios.get(
-        `${backendUrl}/api/blog/blogs/favorites`,
-        { headers, withCredentials: true }
-      );
-      if (favRes.data?.success) {
-        const favIds = (favRes.data?.data || []).map(b => b._id);
-        setBlogs(prev => prev.map(b => ({ ...b, isFavorite: favIds.includes(b._id) })));
-      }
-    } catch (refreshErr) {
-      console.warn('Failed to refresh favorites:', refreshErr);
-    }
-
   } catch (err) {
-    // rollback
+    // rollback on error
     toggleFavoriteBlog(blogId);
-    const msg = err.response?.data?.message || 'Failed to toggle favorite';
-    toast.error(msg);
-    if (err.response?.status === 401) {
-      setIsLoggedin(false);
-      setUserData(null);
-    }
+    toast.error(err.response?.data?.message || 'Failed to toggle favorite');
   }
-}
+};
+
 
 
   const getHomeData = useCallback(async () => {

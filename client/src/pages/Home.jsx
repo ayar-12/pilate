@@ -340,25 +340,7 @@ function Home() {
                   {/* --- COURSE CARD --- */}
                   {course && (
                     <Col xs={12} md={6} lg={4} className="p-0 m-0">
-                           <Link
-                          to={`/booking-details/${course._id}`}
-                          style={{
-                            position: 'absolute',
-                            top: '20px',
-                            right: '20px',
-                            background: '#fff',
-                            borderRadius: '50%',
-                            padding: '6px',
-                            width: '28px',
-                            height: '28px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            textDecoration: 'none',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                            zIndex: 10,
-                          }}
-                        >
+                           
                       <div
                         style={{
                           width: '100%',
@@ -509,7 +491,7 @@ function Home() {
                           ))}
                         </div>
                       </div>
-                               </Link>
+                           
                         
                     </Col>
                   )}
@@ -571,25 +553,7 @@ function Home() {
                  
                   {latestBlog && (
                     <Col xs={12} md={6} lg={4} className="p-0 m-0">
-                              <Link
-                          to={`/blog-details/${latestBlog._id}`}
-                          style={{
-                            position: 'absolute',
-                            top: '20px',
-                            right: '20px',
-                            background: '#fff',
-                            borderRadius: '50%',
-                            padding: '6px',
-                            width: '28px',
-                            height: '28px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            textDecoration: 'none',
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                            zIndex: 10,
-                          }}
-                        >
+                      
                       <Box
                         style={{
                           position: 'relative',
@@ -686,7 +650,7 @@ function Home() {
 </div>
 
                       </Box>
-                                  </Link>
+                                 
                         
                     </Col>
                   )}

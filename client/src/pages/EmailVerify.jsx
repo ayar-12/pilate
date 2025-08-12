@@ -4,11 +4,14 @@ import {
   Button,
   Typography,
   CircularProgress,
-  Paper
+  Paper,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from '@mui/material';
 import axios from 'axios';
 import { AppContext } from "../context/AppContext";
-import { toast } from 'react-toastify';
 import { useLocation, useNavigate } from "react-router-dom";
 
 const EmailVerify = () => {
@@ -17,20 +20,43 @@ const EmailVerify = () => {
   const [resendLoading, setResendLoading] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
 
+  // alert modal state
+  const [alert, setAlert] = useState({
+    open: false,
+    title: '',
+    message: '',
+    confirmText: 'OK',
+    onConfirm: null,
+  });
+
+  const openAlert = ({ title, message, confirmText = 'OK', onConfirm = null }) =>
+    setAlert({ open: true, title, message, confirmText, onConfirm });
+
+  const closeAlert = async () => {
+    const cb = alert.onConfirm;
+    setAlert((a) => ({ ...a, open: false }));
+    if (typeof cb === 'function') await cb();
+  };
+
   const location = useLocation();
   const navigate = useNavigate();
   const userId = location.state?.userId;
 
   useEffect(() => {
     if (!userId) {
-      toast.error("User ID not found. Please register again.");
-      navigate("/register");
+      openAlert({
+        title: 'Missing info',
+        message: 'User ID not found. Please register again.',
+        confirmText: 'Go to Register',
+        onConfirm: () => navigate('/register'),
+      });
     }
   }, [userId, navigate]);
 
   const handleInput = (e, index) => {
-    const value = e.target.value;
-    if (value.length > 0 && index < inputRef.current.length - 1) {
+    const value = e.target.value.replace(/\D/g, '');
+    e.target.value = value.slice(-1); // only last digit
+    if (value && index < inputRef.current.length - 1) {
       inputRef.current[index + 1].focus();
     }
   };
@@ -43,7 +69,7 @@ const EmailVerify = () => {
 
   const handlePaste = (e) => {
     e.preventDefault();
-    const paste = e.clipboardData.getData('text').slice(0, 6).split('');
+    const paste = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6).split('');
     paste.forEach((char, index) => {
       if (inputRef.current[index]) {
         inputRef.current[index].value = char;
@@ -59,31 +85,31 @@ const EmailVerify = () => {
     const otp = inputRef.current.map((input) => input.value).join('');
 
     if (otp.length !== 6 || !/^\d{6}$/.test(otp)) {
-      toast.error("Please enter a valid 6-digit OTP");
+      openAlert({ title: 'Invalid code', message: 'Please enter a valid 6-digit OTP.' });
       return;
     }
 
     setSubmitLoading(true);
-
     try {
-      const { data } = await axios.post(`${backendUrl}/api/auth/verify-account`, {
-
-        userId,
-        otp,
-      });
-
+      const { data } = await axios.post(`${backendUrl}/api/auth/verify-account`, { userId, otp });
       if (data.success) {
-        toast.success(data.message);
-        await getUserData();
-        navigate('/');
-      } else {
-        toast.error(data.message);
-        inputRef.current.forEach(input => {
-          input.style.border = '1px solid red';
+        openAlert({
+          title: 'Verified',
+          message: data.message || 'Your email has been verified.',
+          confirmText: 'Continue',
+          onConfirm: async () => {
+            await getUserData?.();
+            navigate('/');
+          },
         });
+      } else {
+        inputRef.current.forEach((input) => {
+          if (input) input.style.border = '1px solid red';
+        });
+        openAlert({ title: 'Verification failed', message: data.message || 'Please try again.' });
       }
     } catch (error) {
-      toast.error(error.message || 'Verification failed');
+      openAlert({ title: 'Server error', message: error?.message || 'Verification failed.' });
     } finally {
       setSubmitLoading(false);
     }
@@ -92,17 +118,14 @@ const EmailVerify = () => {
   const resendOtp = async () => {
     try {
       setResendLoading(true);
-      const { data } = await axios.post(`${backendUrl}/api/auth/send-verify-otp`, {
-        userId,
-      });
-
+      const { data } = await axios.post(`${backendUrl}/api/auth/send-verify-otp`, { userId });
       if (data.success) {
-        toast.success("OTP resent to your email.");
+        openAlert({ title: 'OTP sent', message: 'A new OTP has been sent to your email.' });
       } else {
-        toast.error(data.message || "Failed to resend OTP.");
+        openAlert({ title: 'Failed', message: data.message || 'Could not resend OTP.' });
       }
-    } catch (err) {
-      toast.error("Server error while resending OTP.");
+    } catch {
+      openAlert({ title: 'Server error', message: 'Error while resending OTP.' });
     } finally {
       setResendLoading(false);
     }
@@ -127,6 +150,7 @@ const EmailVerify = () => {
               <input
                 key={index}
                 type="text"
+                inputMode="numeric"
                 maxLength="1"
                 ref={(el) => (inputRef.current[index] = el)}
                 onInput={(e) => handleInput(e, index)}
@@ -137,7 +161,8 @@ const EmailVerify = () => {
                   textAlign: 'center',
                   fontSize: '18px',
                   border: '1px solid #ccc',
-                  borderRadius: '4px',
+                  borderRadius: '6px',
+                  outline: 'none',
                 }}
               />
             ))}
@@ -171,8 +196,5 @@ const EmailVerify = () => {
           </Button>
         </Box>
       </Paper>
-    </Box>
-  );
-};
 
-export default EmailVerify;
+      {/* Centered*

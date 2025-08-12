@@ -44,19 +44,29 @@ const Navbar = () => {
     return `${backendUrl}/${src.replace(/^\/+/, "")}`;
   };
 
-  const logout = async () => {
-    try {
-      await axios.post(`${backendUrl}/api/auth/logout`, {}, { withCredentials: true });
-      setIsLoggedin(false);
-      setUserData(null);
-      localStorage.removeItem("token");
-      navigate("/");
-      // optional hard reload if you truly need to flush everything:
-      // window.location.reload();
-    } catch (error) {
-      openAlert({ title: "Logout failed", message: "Please try again in a moment." });
-    }
-  };
+
+const logout = async () => {
+  try {
+    await axios.post(`${backendUrl}/api/auth/logout`, {}, { withCredentials: true });
+  } catch (e) {
+   
+  }
+
+
+  delete axios.defaults.headers.common.Authorization; // <- this is the bug
+  localStorage.removeItem('token');
+
+  // 🔄 reset app state
+  setIsLoggedin(false);
+  setUserData(null);
+
+  // ⛳ go home
+  navigate('/', { replace: true });
+
+  // Optional: if some components still cache userData, force a full reload:
+  // window.location.reload();
+};
+
 
   return (
     <header className="navbar">

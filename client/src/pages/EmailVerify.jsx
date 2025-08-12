@@ -197,4 +197,42 @@ const EmailVerify = () => {
         </Box>
       </Paper>
 
-      {/* Centered*
+      {/* Centered Alert Dialog with blurred backdrop + 20px rounded paper */}
+      <Dialog
+        open={alert.open}
+        onClose={closeAlert}
+        BackdropProps={{
+          sx: {
+            backdropFilter: 'blur(8px)',
+            WebkitBackdropFilter: 'blur(8px)',
+            backgroundColor: 'rgba(0,0,0,0.25)',
+          },
+        }}
+        PaperProps={{
+          sx: {
+            borderRadius: '20px',
+            bgcolor: 'rgba(255,255,255,0.9)',
+            backdropFilter: 'blur(6px)',
+            WebkitBackdropFilter: 'blur(6px)',
+            border: '1px solid rgba(255,255,255,0.5)',
+            boxShadow: '0 12px 40px rgba(0,0,0,0.2)',
+          },
+        }}
+      >
+        <DialogTitle sx={{ fontWeight: 700, color: '#8d1f58' }}>
+          {alert.title}
+        </DialogTitle>
+        <DialogContent sx={{ pt: 0 }}>
+          {alert.message}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeAlert} autoFocus>
+            {alert.confirmText || 'OK'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
+  );
+};
+
+export default EmailVerify;

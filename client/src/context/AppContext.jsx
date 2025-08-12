@@ -117,7 +117,7 @@ const toggleFavorite = async (blogId) => {
     toggleFavoriteBlog(blogId);
 
      const response = await axios.put(
-  ` `${backendUrl}/api/blog/blogs/${blogId}/favorite`,
+   `${backendUrl}/api/blog/blogs/${blogId}/favorite`,
   {},
   { withCredentials: true, headers }
 );

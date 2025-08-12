@@ -28,6 +28,8 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { AppContext } from '../context/AppContext';
+import { useNavigate } from 'react-router-dom';
+
 
 const DashboardWidget = ({ title, children, sx }) => (
   <Paper
@@ -68,6 +70,7 @@ const blurBackdrop = {
 
 const TodoWidget = () => {
   const { backendUrl } = useContext(AppContext);
+  const navigate = useNavigate();
   const [todos, setTodos] = useState([]);
   const [loading, setLoading] = useState(true);
 

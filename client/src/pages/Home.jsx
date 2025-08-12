@@ -207,7 +207,11 @@ function Home() {
                                 {homeData.button1} <ChevronRight size={16} />
                               </Link>
                             </button>
-                            <Link className="btn gallery-btn" to="/book-consultation" style={{ color: '#73155a', textDecoration: 'none', borderRadio; '50px', border: '1px solid #73155a' }}>
+                            <Link className="btn gallery-btn" to="/book-consultation" style={{ olor: '#73155a',
+  textDecoration: 'none',
+  borderRadius: '50px',
+  border: '1px solid #73155a',
+  '&:hover': { backgroundColor: '#73155a', color: '#fff' },}}>
                               {homeData.button2}
                             </Link>
                           </div>

@@ -13,14 +13,25 @@ import { AppContext } from "../context/AppContext.jsx";
 import { Typography, Box } from "@mui/material";
 
 function Home() {
-  const videoRef = useRef(null);
+  
   const { courses, backendUrl, blog, blogs, homeData } = useContext(AppContext);
 
-  // ---- ONE-TIME INTRO FLAG ----
+
   const hasSeenIntro = useMemo(() => localStorage.getItem('homeIntroSeen') === '1', []);
   const reduceMotion = useReducedMotion();
   const [showIntro, setShowIntro] = useState(() => !hasSeenIntro);
   const playAnims = !hasSeenIntro && !reduceMotion; // first visit only, honor reduced motion
+const bgVideoRef = useRef(null);
+const [showModal, setShowModal] = useState(false);
+
+const openVideo = () => {
+  try { bgVideoRef.current?.pause(); } catch {}
+  setShowModal(true);
+};
+const closeVideo = () => {
+  setShowModal(false);
+  try { bgVideoRef.current?.play(); } catch {}
+};
 
   // prevent page scroll during fullscreen intro
   useEffect(() => {
@@ -197,27 +208,7 @@ function Home() {
                                 </Link>
                               </motion.button>
 
-                              <motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.99 }} transition={FAST}>
-                                <Button
-                                  component={RouterLink}
-                                  to="/book-consultation"
-                                  variant="outlined"
-                                  size="large"
-                                  sx={{
-                                    px: 2.5,
-                                    py: 1,
-                                    borderRadius: '999px',
-                                    border: '1px solid #73155a',
-                                    textTransform: 'none',
-                                    fontWeight: 600,
-                                    borderColor: '#73155a',
-                                    color: '#73155a',
-                                    '&:hover': { bgcolor: '#73155a', color: '#fff', borderColor: '#73155a' },
-                                  }}
-                                >
-                                  {homeData.button2}
-                                </Button>
-                              </motion.div>
+                              
                             </div>
                           </div>
                         </motion.div>
@@ -250,22 +241,21 @@ function Home() {
 
                     <Col xs={12} md={6} lg={4} style={{ marginBottom: 0, paddingBottom: 0 }}>
                       {homeData?.video && (
-                        <div
-                          style={{
-                            position: 'relative',
-                            top: 0,
-                            left: 0,
-                            height: '300px',
-                            width: '100%',
-                            border: 'none',
-                            borderRadius: '20px',
-                            overflow: 'hidden',
-                            zIndex: 2,
-                            padding: 0,
-                            margin: 0,
-                            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.23)',
-                          }}
-                        >
+                    <div
+      onClick={openVideo}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && openVideo()}
+      style={{
+        position: 'relative',
+        height: 300,
+        width: '100%',
+        borderRadius: 20,
+        overflow: 'hidden',
+        boxShadow: '0 2px 8px rgba(0,0,0,.23)',
+        cursor: 'pointer',
+      }}
+    >
                           <video
                             src={videoUrl}
                             autoPlay
@@ -283,15 +273,28 @@ function Home() {
                             style={{ position: 'absolute', bottom: '20px', left: '20px', color: '#fff' }}
                           >
                             <p style={{ margin: 0 }}>{homeData?.videoTitle || 'Explore our Pilates Programs'}</p>
-                            <div style={{ marginTop: '10px' }}>
-                              <button
-                                style={{ borderRadius: '20px', background: '#8d1f58', width: '150px', color: '#fff' }}
-                                className="view-btn me-2"
-                                onClick={() => setShowModal(true)}
-                              >
-                                View
-                              </button>
-                            </div>
+                     
+                            <motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.99 }} transition={FAST}>
+                                <Button
+                                  component={RouterLink}
+                                  to="/book-consultation"
+                                  variant="outlined"
+                                  size="large"
+                                  sx={{
+                                    px: 2.5,
+                                    py: 1,
+                                    borderRadius: '999px',
+                                    border: '1px solid #73155a',
+                                    textTransform: 'none',
+                                    fontWeight: 600,
+                                    borderColor: '#73155a',
+                                    color: '#73155a',
+                                    '&:hover': { bgcolor: '#73155a', color: '#fff', borderColor: '#73155a' },
+                                  }}
+                                >
+                                  {homeData.button2}
+                                </Button>
+                              </motion.div>
                           </div>
 
                           <Modal show={showModal} onHide={() => setShowModal(false)} centered size="lg">

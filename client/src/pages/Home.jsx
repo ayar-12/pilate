@@ -22,7 +22,7 @@ function Home() {
   const [showIntro, setShowIntro] = useState(() => !hasSeenIntro);
   const playAnims = !hasSeenIntro && !reduceMotion; // first visit only, honor reduced motion
 const bgVideoRef = useRef(null);
-const [showModal, setShowModal] = useState(false);
+
 
 const openVideo = () => {
   try { bgVideoRef.current?.pause(); } catch {}

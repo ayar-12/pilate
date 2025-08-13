@@ -269,10 +269,10 @@ const closeVideo = () => {
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
 
-        <div style={{ position: 'absolute', bottom: 20, left: 20, color: '#fff' , fontSize: '40px',
+        <div style={{ position: 'absolute', bottom: 20, left: 20, color: '#fff' , fontSize: '15px',
                                 fontStyle:'bold',
                                  fontFamily: 'Poppins',
-                                fontWeight:'bold'}}>
+                                }}>
           <p style={{ margin: 0 }}>
             {homeData?.videoTitle || 'Explore our Pilates Programs'}
           </p>

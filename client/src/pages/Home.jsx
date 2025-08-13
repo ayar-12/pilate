@@ -283,14 +283,14 @@ const closeVideo = () => {
               <Link
                 to="/book-consultation"
                 onClick={(e) => e.stopPropagation()}
-                className="glass-button me-2"
+               
                 style={{
                   textDecoration: 'none',
                   color: '#8d1f58',
                   display: 'inline-flex',
                   alignItems: 'center',
                   padding: '8px 14px',
-                  borderRadius: 20,
+                  borderRadius: '50px',
                   background: '#FEFCF0',
                 }}
               >

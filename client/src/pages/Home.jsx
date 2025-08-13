@@ -274,17 +274,19 @@ const closeVideo = () => {
                           >
                             <p style={{ margin: 0 }}>{homeData?.videoTitle || 'Explore our Pilates Programs'}</p>
                      
-                            <motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.99 }} transition={FAST}>
-                                <Button
-                                  component={RouterLink}
-                                  to="/book-consultation"
-                                  variant="outlined"
-                                   className="glass-button me-2"
-                                  size="large"
-                                 
-                                >
-                                  {homeData.button2}
-                                </Button>
+                         <div style={{ display: 'flex', gap: '12px' }} className="hero-buttons fade-in delay-4 mt-3">
+                              <motion.button
+                                whileHover={{ y: -1 }}
+                                whileTap={{ scale: 0.99 }}
+                                transition={FAST}
+                                className="glass-button me-2"
+                                style={{ transform: 'translateZ(0)' }}
+                              >
+                                <Link style={{ textDecoration: 'none', color: '#8d1f58' }}   to="/book-consultation">
+                                {homeData.button2}
+                                </Link>
+                                  
+                               
                               </motion.div>
                           </div>
 

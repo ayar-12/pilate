@@ -204,6 +204,7 @@ function Home() {
                                 px: 2.5,
                                 py: 1,
                                 borderRadius: '999px',
+                                border: '1px solid #73155a',
                                 textTransform: 'none',
                                 fontWeight: 600,
                                 borderColor: '#73155a',

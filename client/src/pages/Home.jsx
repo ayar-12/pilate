@@ -279,18 +279,9 @@ const closeVideo = () => {
                                   component={RouterLink}
                                   to="/book-consultation"
                                   variant="outlined"
+                                   className="glass-button me-2"
                                   size="large"
-                                  sx={{
-                                    px: 2.5,
-                                    py: 1,
-                                    borderRadius: '999px',
-                                    border: '1px solid #73155a',
-                                    textTransform: 'none',
-                                    fontWeight: 600,
-                                    borderColor: '#73155a',
-                                    color: '#73155a',
-                                    '&:hover': { bgcolor: '#73155a', color: '#fff', borderColor: '#73155a' },
-                                  }}
+                                 
                                 >
                                   {homeData.button2}
                                 </Button>

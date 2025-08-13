@@ -239,85 +239,96 @@ const closeVideo = () => {
                       </motion.div>
                     </Col>
 
-                    <Col xs={12} md={6} lg={4} style={{ marginBottom: 0, paddingBottom: 0 }}>
-                      {homeData?.video && (
-                    <div
-      onClick={openVideo}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && openVideo()}
-      style={{
-        position: 'relative',
-        height: 300,
-        width: '100%',
-        borderRadius: 20,
-        overflow: 'hidden',
-        boxShadow: '0 2px 8px rgba(0,0,0,.23)',
-        cursor: 'pointer',
-      }}
-    >
-                          <video
-                            src={videoUrl}
-                            autoPlay
-                            muted
-                            loop
-                            playsInline
-                            onError={e => console.error('Video failed to load:', e.target.src)}
-                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                          >
-                            <source src={videoUrl} type="video/mp4" />
-                            Your browser does not support the video tag.
-                          </video>
+             <Col xs={12} md={6} lg={4} style={{ marginBottom: 0, paddingBottom: 0 }}>
+  {homeData?.video && (
+    <>
+      <div
+        onClick={openVideo}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && openVideo()}
+        style={{
+          position: 'relative',
+          height: 300,
+          width: '100%',
+          borderRadius: 20,
+          overflow: 'hidden',
+          boxShadow: '0 2px 8px rgba(0,0,0,.23)',
+          cursor: 'pointer',
+        }}
+      >
+        <video
+          ref={bgVideoRef}
+          src={videoUrl}
+          autoPlay
+          muted
+          loop
+          playsInline
+          onError={(e) => console.error('Video failed to load:', e.target.src)}
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+        />
 
-                          <div
-                            style={{ position: 'absolute', bottom: '20px', left: '20px', color: '#fff' }}
-                          >
-                            <p style={{ margin: 0 }}>{homeData?.videoTitle || 'Explore our Pilates Programs'}</p>
-                     
-                         <div style={{ display: 'flex', gap: '12px' }} className="hero-buttons fade-in delay-4 mt-3">
-                              <motion.button
-                                whileHover={{ y: -1 }}
-                                whileTap={{ scale: 0.99 }}
-                                transition={FAST}
-                                className="glass-button me-2"
-                                style={{ transform: 'translateZ(0)' }}
-                              >
-                                <Link style={{ textDecoration: 'none', color: '#8d1f58' }}   to="/book-consultation">
-                                {homeData.button2}
-                                </Link>
-                                  
-                               
-                              </motion.div>
-                          </div>
+        <div style={{ position: 'absolute', bottom: 20, left: 20, color: '#fff' }}>
+          <p style={{ margin: 0 }}>
+            {homeData?.videoTitle || 'Explore our Pilates Programs'}
+          </p>
 
-                          <Modal show={showModal} onHide={() => setShowModal(false)} centered size="lg">
-                            <Modal.Header closeButton>
-                              <Modal.Title style={{color: '#8d1f58'}}>{homeData?.videoTitle || 'Program Overview'}</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                              <p style={{color: 'gray', fontSize: '14px'}}>{homeData?.videoDocumantion?.trim() || 'No description available'}</p>
-                              <video
-                                src={videoUrl}
-                                controls
-                                style={{ width: '100%', maxHeight: '400px', borderRadius: '12px', marginTop: '20px' }}
-                                onError={(e) => { console.error('Modal video failed to load:', e); }}
-                              >
-                                <source src={videoUrl} type="video/mp4" />
-                                Your browser does not support the video tag.
-                              </video>
-                            </Modal.Body>
-                            <Modal.Footer>
-                              <Button
-                                style={{ borderRadius: '20px', background: '#8d1f58', width: '150px' }}
-                                onClick={() => setShowModal(false)}
-                              >
-                                Close
-                              </Button>
-                            </Modal.Footer>
-                          </Modal>
-                        </div>
-                      )}
-                    </Col>
+          <div className="hero-buttons fade-in delay-4 mt-3" style={{ display: 'flex', gap: 12 }}>
+            {/* Link styled as a button; stops click from opening the modal */}
+            <motion.div whileHover={{ y: -1 }} whileTap={{ scale: 0.99 }} transition={FAST}>
+              <Link
+                to="/book-consultation"
+                onClick={(e) => e.stopPropagation()}
+                className="glass-button me-2"
+                style={{
+                  textDecoration: 'none',
+                  color: '#8d1f58',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  padding: '8px 14px',
+                  borderRadius: 20,
+                  background: '#FEFCF0',
+                }}
+              >
+                {homeData.button2}
+              </Link>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+
+      {/* Modal OUTSIDE the clickable card */}
+      <Modal show={showModal} onHide={closeVideo} centered size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title style={{ color: '#8d1f58' }}>
+            {homeData?.videoTitle || 'Program Overview'}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p style={{ color: 'gray', fontSize: 14 }}>
+            {homeData?.videoDocumantion?.trim() || 'No description available'}
+          </p>
+          <video
+            src={videoUrl}
+            controls
+            autoPlay
+            style={{ width: '100%', maxHeight: '70vh', borderRadius: 12, marginTop: 12 }}
+            onError={(e) => console.error('Modal video failed to load:', e)}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            style={{ borderRadius: 20, background: '#8d1f58', width: 150 }}
+            onClick={closeVideo}
+          >
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
+  )}
+</Col>
+
                   </Row>
                 </motion.div>
 

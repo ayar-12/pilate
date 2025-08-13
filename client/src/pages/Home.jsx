@@ -1,12 +1,12 @@
 import React, { useRef, useState, useEffect, useContext, useMemo } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, Link as RouterLink } from "react-router-dom";
 import { Container, Row, Col , Modal, Button } from 'react-bootstrap';
 import { useMediaQuery } from 'react-responsive';
 import CallMadeIcon from '@mui/icons-material/CallMade';
 import './home.css';
-import { Link as RouterLink } from 'react-router-dom';
+
 import FlowerImage from '../assets/Flowers2.png';
 import Intro from "./Intro.jsx";
 import { AppContext } from "../context/AppContext.jsx";
@@ -19,10 +19,8 @@ function Home() {
   // ---- ONE-TIME INTRO FLAG ----
   const hasSeenIntro = useMemo(() => localStorage.getItem('homeIntroSeen') === '1', []);
   const reduceMotion = useReducedMotion();
-const playAnims = !hasSeenIntro && !reduceMotion; // first visit only, and skip if user prefers reduced motion
-
   const [showIntro, setShowIntro] = useState(() => !hasSeenIntro);
-  const playAnims = !hasSeenIntro; // if they've seen it, skip all animations
+  const playAnims = !hasSeenIntro && !reduceMotion; // first visit only, honor reduced motion
 
   // prevent page scroll during fullscreen intro
   useEffect(() => {
@@ -33,35 +31,32 @@ const playAnims = !hasSeenIntro && !reduceMotion; // first visit only, and skip 
     }
   }, [showIntro]);
 
+  // Smooth, friendly motion settings (shared)
+  const EASE   = [0.22, 1, 0.36, 1];
+  const SPRING = { type: "spring", stiffness: 220, damping: 28, mass: 0.8 };
+  const FAST   = { duration: 0.35, ease: EASE };
+  const MEDIUM = { duration: 0.55, ease: EASE };
 
-  const EASE = [0.22, 1, 0.36, 1]; // “back” bezier, feels natural
-const SPRING = { type: "spring", stiffness: 220, damping: 28, mass: 0.8 };
-const FAST   = { duration: 0.35, ease: EASE };
-const MEDIUM = { duration: 0.55, ease: EASE };
+  const staggerContainer = {
+    hidden: {},
+    show: { transition: { staggerChildren: 0.08, delayChildren: 0.12 } }
+  };
 
-const staggerContainer = {
-  hidden: {},
-  show: {
-    transition: { staggerChildren: 0.08, delayChildren: 0.12 }
-  }
-};
+  const fadeUp = {
+    hidden: { opacity: 0, y: 16 },
+    show:   { opacity: 1, y: 0, transition: SPRING }
+  };
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 16 },
-  show: { opacity: 1, y: 0, transition: SPRING }
-};
-  
   // show the intro once then mark as seen
   useEffect(() => {
     if (hasSeenIntro) { setShowIntro(false); return; }
     const t = setTimeout(() => {
       setShowIntro(false);
       localStorage.setItem('homeIntroSeen', '1');
-    }, 4000); // adjust duration as you like
+    }, 4000);
     return () => clearTimeout(t);
   }, [hasSeenIntro]);
 
-  const [flashRed, setFlashRed] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
   const [showModal, setShowModal] = useState(false);
@@ -75,14 +70,6 @@ const fadeUp = {
 
   // latest blog
   const latestBlog = useMemo(() => (blogs && blogs.length > 0 ? blogs[0] : null), [blogs]);
-
-
-
-  // Debug logging for homeData
-  useEffect(() => {
-    console.log("homeData in Home.jsx:", homeData);
-    if (homeData?.video) console.log("Video URL:", homeData.video);
-  }, [homeData, backendUrl]);
 
   // course carousel
   useEffect(() => {
@@ -114,14 +101,6 @@ const fadeUp = {
     };
   }, [backendUrl]);
 
-  // animation variants
-  const staggerContainer = {
-    hidden: {},
-    show: {
-      transition: { staggerChildren: 0.15, delayChildren: 0.2 },
-    },
-  };
-
   // pick current course safely
   const course = latestCourses[currentIndex];
 
@@ -130,45 +109,42 @@ const fadeUp = {
       {/* ---- FULLSCREEN INTRO OVERLAY (ONE TIME) ---- */}
       <AnimatePresence>
         {showIntro && (
-      <motion.div
-  key="intro"
-  initial={{ opacity: 0 }}
-  animate={{ opacity: 1 }}
-  exit={{ opacity: 0 }}
-  transition={MEDIUM} // was 0.4 linear; now eased
-  style={{ position: 'fixed', inset: 0, zIndex: 9999, background: '#fff',
-           display: 'flex', alignItems: 'center', justifyContent: 'center' }}
->
+          <motion.div
+            key="intro"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={MEDIUM}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 9999,
+              background: '#fff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
             <Intro />
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* ---- MAIN CONTENT ---- */}
- <motion.div
-  variants={staggerContainer}
-  initial={playAnims ? "hidden" : false}
-  animate={playAnims ? "show" : "show"}
-  viewport={{ once: true, amount: 0.2 }}
->
-
+      <motion.div
+        variants={staggerContainer}
+        initial={playAnims ? "hidden" : false}
+        animate="show"
+        viewport={{ once: true, amount: 0.2 }}
+      >
         <AnimatePresence mode="wait">
           {!showIntro && (
             <>
-           <motion.div
-  initial={playAnims ? { opacity: 0, y: 30 } : false}
-  animate={playAnims ? { opacity: 1, y: 0 } : undefined}
-  transition={{ duration: 0.8 }}
->
-
+              <motion.div variants={fadeUp} initial={playAnims ? "hidden" : false} animate="show">
                 <Row>
                   <Col xs={12} md={6} lg={4} style={{ marginBottom: '15px' }}>
                     {homeData && (
-                           <motion.div
-  initial={playAnims ? { opacity: 0, y: 30 } : false}
-  animate={playAnims ? { opacity: 1, y: 0 } : undefined}
-  transition={{ duration: 0.8 }}
->
+                      <motion.div variants={fadeUp} initial={playAnims ? "hidden" : false} animate="show">
                         <div className="fade-in delay-1" style={{ marginLeft: '20px', maxWidth: '100%', zIndex: 2 }}>
                           <div style={{ maxWidth: '350px', wordWrap: 'break-word' }}>
                             <Typography
@@ -219,28 +195,24 @@ const fadeUp = {
                                 {homeData.button1} <ChevronRight size={16} />
                               </Link>
                             </button>
-                        <Button
-  component={RouterLink}
-  to="/book-consultation"
-  variant="outlined"
-  size="large"
-  sx={{
-    px: 2.5,
-    py: 1,
-    borderRadius: '999px',
-    textTransform: 'none',
-    fontWeight: 600,
-    borderColor: '#73155a',
-    color: '#73155a',
-    '&:hover': {
-      bgcolor: '#73155a',
-      color: '#fff',
-      borderColor: '#73155a',
-    },
-  }}
->
-  {homeData.button2}
-</Button>
+                            <Button
+                              component={RouterLink}
+                              to="/book-consultation"
+                              variant="outlined"
+                              size="large"
+                              sx={{
+                                px: 2.5,
+                                py: 1,
+                                borderRadius: '999px',
+                                textTransform: 'none',
+                                fontWeight: 600,
+                                borderColor: '#73155a',
+                                color: '#73155a',
+                                '&:hover': { bgcolor: '#73155a', color: '#fff', borderColor: '#73155a' },
+                              }}
+                            >
+                              {homeData.button2}
+                            </Button>
                           </div>
                         </div>
                       </motion.div>
@@ -248,11 +220,7 @@ const fadeUp = {
                   </Col>
 
                   <Col xs={12} md={6} lg={4}>
-                           <motion.div
-  initial={playAnims ? { opacity: 0, y: 30 } : false}
-  animate={playAnims ? { opacity: 1, y: 0 } : undefined}
-  transition={{ duration: 0.8 }}
->
+                    <motion.div variants={fadeUp} initial={playAnims ? "hidden" : false} animate="show">
                       <div className="flower-centerpiece">
                         <div className="relative-image-wrapper">
                           <img src={FlowerImage} alt="Flower" className="img-fluid" style={{ width: '100%', height: 'auto' }} />
@@ -307,12 +275,7 @@ const fadeUp = {
                         </video>
 
                         <div
-                          style={{
-                            position: 'absolute',
-                            bottom: '20px',
-                            left: '20px',
-                            color: '#fff',
-                          }}
+                          style={{ position: 'absolute', bottom: '20px', left: '20px', color: '#fff' }}
                         >
                           <p style={{ margin: 0 }}>{homeData?.videoTitle || 'Explore our Pilates Programs'}</p>
                           <div style={{ marginTop: '10px' }}>
@@ -357,16 +320,11 @@ const fadeUp = {
                 </Row>
               </motion.div>
 
-                      <motion.div
-  initial={playAnims ? { opacity: 0, y: 30 } : false}
-  animate={playAnims ? { opacity: 1, y: 0 } : undefined}
-  transition={{ duration: 0.8 }}
->
+              <motion.div variants={fadeUp} initial={playAnims ? "hidden" : false} animate="show">
                 <Row style={{ marginTop: '20px'}}>
                   {/* --- COURSE CARD --- */}
                   {course && (
                     <Col xs={12} md={6} lg={4} className="p-0 m-0">
-                           
                       <div
                         style={{
                           width: '100%',
@@ -416,8 +374,6 @@ const fadeUp = {
                           <CallMadeIcon style={{ fontSize: '14px', color: '#8d1f58' }} />
                         </Link>
 
-                        
-
                         <div
                           style={{
                             position: 'absolute',
@@ -450,6 +406,7 @@ const fadeUp = {
                           ))}
                         </div>
 
+                        {/* Glass info bar for course */}
                         <div
                           style={{
                             position: 'absolute',
@@ -495,30 +452,27 @@ const fadeUp = {
                           }}
                         >
                           {latestCourses.map((_, i) => (
-                            <div
+                            <motion.div
                               key={i}
+                              animate={{
+                                scale: i === currentIndex ? 1 : 0.95,
+                                opacity: i === currentIndex ? 1 : 0.7
+                              }}
+                              transition={FAST}
                               style={{
-                                width: '28px',
-                                height: '28px',
-                                borderRadius: '50%',
+                                width: 28, height: 28, borderRadius: '50%',
                                 background: i === currentIndex ? '#fff' : 'transparent',
                                 color: i === currentIndex ? '#000' : '#fff',
                                 border: '1px solid #fff',
-                                fontSize: '12px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontWeight: 'bold',
-                                transition: 'all 0.3s ease',
+                                fontSize: 12, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                fontWeight: 'bold'
                               }}
                             >
                               {i + 1}
-                            </div>
+                            </motion.div>
                           ))}
                         </div>
                       </div>
-                           
-                        
                     </Col>
                   )}
 
@@ -576,10 +530,9 @@ const fadeUp = {
                     </Box>
                   </Col>
 
-                 
+                  {/* --- LATEST BLOG --- */}
                   {latestBlog && (
                     <Col xs={12} md={6} lg={4} className="p-0 m-0">
-                      
                       <Box
                         style={{
                           position: 'relative',
@@ -643,41 +596,47 @@ const fadeUp = {
                           {latestBlog.title}
                         </div>
 
-                    <div
-  style={{
-    position: 'absolute',
-    bottom: 10,
-    left: '20px',
-    background: 'rgba(255, 192, 203, 0.25)', // light pink overlay
-    backdropFilter: 'blur(12px) saturate(180%)',
-    WebkitBackdropFilter: 'blur(12px) saturate(180%)',
-    borderRadius: '12px',
-    padding: '10px 16px',
-    fontSize: '12px',
-    fontWeight: 600,
-    color: '#8d1f58',
-    width: 'calc(100% - 40px)',
-    maxWidth: '240px',
-    boxShadow: '0 4px 12px rgba(141, 31, 88, 0.3)', // pinkish shadow
-    border: '1px solid rgba(255, 182, 193, 0.4)', // subtle pink border
-    transition: 'all 0.3s ease-in-out',
-  }}
->
-  <p
-    style={{
-      color: 'white',
-      textShadow: '0 4px 12px rgba(0, 0, 0, 0.4)',
-      fontSize: '12px',
-        fontFamily: 'Poppins',
-    }}
-  >
-    {latestBlog.description?.split(' ').slice(0, 10).join(' ')}...
-  </p>
-</div>
-
+                        {/* Pink glass description with smooth hover */}
+                        <motion.div
+                          initial={playAnims ? { opacity: 0, y: 8 } : false}
+                          animate={{ opacity: 1, y: 0, transition: FAST }}
+                          whileHover={{
+                            boxShadow: '0 6px 18px rgba(141, 31, 88, 0.35)',
+                            backgroundColor: 'rgba(255, 192, 203, 0.32)',
+                            transition: FAST
+                          }}
+                          style={{
+                            position: 'absolute',
+                            bottom: 10,
+                            left: '20px',
+                            background: 'rgba(255, 192, 203, 0.25)',
+                            backdropFilter: 'blur(12px) saturate(180%)',
+                            WebkitBackdropFilter: 'blur(12px) saturate(180%)',
+                            borderRadius: '12px',
+                            padding: '10px 16px',
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            color: '#8d1f58',
+                            width: 'calc(100% - 40px)',
+                            maxWidth: '240px',
+                            boxShadow: '0 4px 12px rgba(141, 31, 88, 0.3)',
+                            border: '1px solid rgba(255, 182, 193, 0.4)',
+                            transition: 'box-shadow 0.3s ease, background-color 0.3s ease'
+                          }}
+                        >
+                          <p
+                            style={{
+                              color: 'white',
+                              textShadow: '0 4px 12px rgba(0, 0, 0, 0.4)',
+                              fontSize: '12px',
+                              fontFamily: 'Poppins',
+                              margin: 0
+                            }}
+                          >
+                            {latestBlog.description?.split(' ').slice(0, 10).join(' ')}...
+                          </p>
+                        </motion.div>
                       </Box>
-                                 
-                        
                     </Col>
                   )}
                 </Row>

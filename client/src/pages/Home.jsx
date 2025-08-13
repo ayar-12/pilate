@@ -155,11 +155,12 @@ const closeVideo = () => {
                             <div style={{ maxWidth: '350px', wordWrap: 'break-word' }}>
                               <Typography
                                 textShadow='1px 1px 2px rgba(0, 0, 0, 0.05)'
-                                fontFamily='Poppins'
+                               
                                 size='lg'
                                 color='#8d1f58'
                                 fontSize='40px'
                                 fontStyle='bold'
+                                 fontFamily='Poppins'
                                 fontWeight='bold'
                               >
                                 {homeData.title}
@@ -268,7 +269,10 @@ const closeVideo = () => {
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
 
-        <div style={{ position: 'absolute', bottom: 20, left: 20, color: '#fff' }}>
+        <div style={{ position: 'absolute', bottom: 20, left: 20, color: '#fff' , fontSize: '40px',
+                                fontStyle:'bold',
+                                 fontFamily: 'Poppins',
+                                fontWeight:'bold'}}>
           <p style={{ margin: 0 }}>
             {homeData?.videoTitle || 'Explore our Pilates Programs'}
           </p>

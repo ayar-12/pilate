@@ -135,6 +135,3 @@ For extended licenses or bulk use → [Contact me]  AYAR@PALMBEAUTY.NET
 
 Built with ❤️ by Ayar
 
-
-Do you also want me to prepare a **LICENSE.md file (commercial license)** that matches this README, so people can’t just take your repo for free use?
-```
